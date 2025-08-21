@@ -1,0 +1,309 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for Chinese (`zh`).
+class AppLocalizationsZh extends AppLocalizations {
+  AppLocalizationsZh([String locale = 'zh']) : super(locale);
+
+  @override
+  String get appName => 'NamelessAI';
+
+  @override
+  String get chat => '聊天';
+
+  @override
+  String get history => '历史';
+
+  @override
+  String get settings => '设置';
+
+  @override
+  String get newChat => '新聊天';
+
+  @override
+  String get saveChat => '保存聊天';
+
+  @override
+  String get sendMessage => '发送消息...';
+
+  @override
+  String get modelSelection => '模型选择';
+
+  @override
+  String get systemPrompt => '系统提示词';
+
+  @override
+  String get enterSystemPrompt => '输入系统提示词...';
+
+  @override
+  String get apiProviderSettings => 'API 提供商';
+
+  @override
+  String get systemPromptTemplates => '提示词模板';
+
+  @override
+  String get addProvider => '添加提供商';
+
+  @override
+  String get editProvider => '编辑提供商';
+
+  @override
+  String get deleteProvider => '删除提供商';
+
+  @override
+  String get providerName => '提供商名称';
+
+  @override
+  String get baseUrl => '基础 URL';
+
+  @override
+  String get apiKey => 'API 密钥';
+
+  @override
+  String get chatPath => '聊天路径';
+
+  @override
+  String get models => '模型';
+
+  @override
+  String get addModel => '添加模型';
+
+  @override
+  String get modelName => '模型名称';
+
+  @override
+  String get maxTokens => '最大令牌数 (可选)';
+
+  @override
+  String get isStreamable => '支持流式输出';
+
+  @override
+  String get save => '保存';
+
+  @override
+  String get cancel => '取消';
+
+  @override
+  String get delete => '删除';
+
+  @override
+  String get confirmDelete => '确认删除';
+
+  @override
+  String deleteConfirmation(Object itemType) {
+    return '您确定要删除此$itemType吗？';
+  }
+
+  @override
+  String get addTemplate => '添加模板';
+
+  @override
+  String get editTemplate => '编辑模板';
+
+  @override
+  String get deleteTemplate => '删除模板';
+
+  @override
+  String get templateName => '模板名称';
+
+  @override
+  String get templatePrompt => '模板内容';
+
+  @override
+  String get noProvidersAdded => '尚未添加 API 提供商。请前往“设置”添加。';
+
+  @override
+  String get noModelsConfigured => '此提供商未配置任何模型。';
+
+  @override
+  String get noChatHistory => '暂无聊天记录。开始新的聊天吧！';
+
+  @override
+  String get noSystemPromptTemplates => '暂无提示词模板。添加一个吧！';
+
+  @override
+  String get editMessage => '编辑消息';
+
+  @override
+  String get deleteMessage => '删除消息';
+
+  @override
+  String get message => '消息';
+
+  @override
+  String get copyCode => '复制代码';
+
+  @override
+  String get copiedToClipboard => '已复制到剪贴板！';
+
+  @override
+  String get error => '错误';
+
+  @override
+  String get somethingWentWrong => '发生了一些错误。';
+
+  @override
+  String get providerNameRequired => '提供商名称不能为空。';
+
+  @override
+  String get baseUrlRequired => '基础 URL 不能为空。';
+
+  @override
+  String get apiKeyRequired => 'API 密钥不能为空。';
+
+  @override
+  String get chatPathRequired => '聊天路径不能为空。';
+
+  @override
+  String get modelNameRequired => '模型名称不能为空。';
+
+  @override
+  String get templateNameRequired => '模板名称不能为空。';
+
+  @override
+  String get templatePromptRequired => '模板内容不能为空。';
+
+  @override
+  String get chatName => '聊天名称';
+
+  @override
+  String get enterChatName => '输入聊天名称...';
+
+  @override
+  String get chatSaved => '聊天已成功保存！';
+
+  @override
+  String get chatNameRequired => '聊天名称不能为空。';
+
+  @override
+  String get selectModel => '请选择一个模型以开始聊天。';
+
+  @override
+  String get language => '语言';
+
+  @override
+  String get english => 'English';
+
+  @override
+  String get chinese => '中文';
+
+  @override
+  String get theme => '主题';
+
+  @override
+  String get systemDefault => '跟随系统';
+
+  @override
+  String get light => '浅色模式';
+
+  @override
+  String get dark => '深色模式';
+
+  @override
+  String get monetTheming => '莫奈取色 (Android 12+)';
+
+  @override
+  String get enableMonet => '启用莫奈取色';
+
+  @override
+  String get saveAndResubmit => '保存并重新提交';
+
+  @override
+  String get editChatName => '修改聊天名称';
+
+  @override
+  String get sendKeySettings => '发送快捷键';
+
+  @override
+  String get sendWithEnter => 'Enter';
+
+  @override
+  String get sendWithCtrlEnter => 'Ctrl+Enter';
+
+  @override
+  String get sendWithShiftCtrlEnter => 'Shift+Ctrl+Enter';
+
+  @override
+  String get shortcutInEditMode => '在编辑模式下使用快捷键';
+
+  @override
+  String get chatSettings => '聊天设置';
+
+  @override
+  String get temperature => '温度 (Temperature)';
+
+  @override
+  String get topP => 'Top P';
+
+  @override
+  String get useStreaming => '使用流式输出';
+
+  @override
+  String get overrideModelSettings => '覆盖模型默认设置';
+
+  @override
+  String get streamingDefault => '默认';
+
+  @override
+  String get streamingOn => '开启';
+
+  @override
+  String get streamingOff => '关闭';
+
+  @override
+  String get about => '关于';
+
+  @override
+  String get version => '版本';
+
+  @override
+  String get developerOptions => '开发者选项';
+
+  @override
+  String get showStatistics => '显示统计信息';
+
+  @override
+  String get clearAllData => '清除所有数据';
+
+  @override
+  String get clearDataConfirmation => '此操作将删除所有提供商、聊天记录和设置，且无法撤销。您确定吗？';
+
+  @override
+  String get dataCleared => '所有数据已清除。';
+
+  @override
+  String get totalTime => '总耗时';
+
+  @override
+  String get firstChunkTime => '首字耗时';
+
+  @override
+  String get tokens => '令牌';
+
+  @override
+  String get prompt => '输入';
+
+  @override
+  String get completion => '输出';
+
+  @override
+  String get displaySettings => '显示设置';
+
+  @override
+  String get outputCharacters => '输出字数';
+
+  @override
+  String get showTotalTime => '显示总耗时';
+
+  @override
+  String get showFirstChunkTime => '显示首字耗时';
+
+  @override
+  String get showTokenUsage => '显示令牌用量';
+
+  @override
+  String get showOutputCharacters => '显示输出字数';
+}

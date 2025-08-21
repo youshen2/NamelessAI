@@ -1,0 +1,79 @@
+import 'package:dynamic_color/dynamic_color.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:nameless_ai/data/app_database.dart';
+import 'package:nameless_ai/data/providers/api_provider_manager.dart';
+import 'package:nameless_ai/data/providers/app_config_provider.dart';
+import 'package:nameless_ai/data/providers/chat_session_manager.dart';
+import 'package:nameless_ai/data/providers/system_prompt_template_manager.dart';
+import 'package:nameless_ai/router/app_router.dart';
+import 'package:nameless_ai/l10n/app_localizations.dart';
+import 'package:nameless_ai/utils/app_theme.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final appDocumentDir = await getApplicationDocumentsDirectory();
+  await Hive.initFlutter(appDocumentDir.path);
+  await AppDatabase.registerAdapters();
+  await AppDatabase.openBoxes();
+
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AppConfigProvider()),
+        ChangeNotifierProvider(create: (_) => APIProviderManager()),
+        ChangeNotifierProvider(create: (_) => ChatSessionManager()),
+        ChangeNotifierProvider(create: (_) => SystemPromptTemplateManager()),
+      ],
+      child: Consumer<AppConfigProvider>(
+        builder: (context, appConfig, child) {
+          return DynamicColorBuilder(
+            builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+              ColorScheme lightColorScheme;
+              ColorScheme darkColorScheme;
+
+              if (appConfig.enableMonet &&
+                  lightDynamic != null &&
+                  darkDynamic != null) {
+                lightColorScheme = lightDynamic;
+                darkColorScheme = darkDynamic;
+              } else {
+                lightColorScheme = ColorScheme.fromSeed(seedColor: Colors.blue);
+                darkColorScheme = ColorScheme.fromSeed(
+                    seedColor: Colors.blue, brightness: Brightness.dark);
+              }
+
+              return MaterialApp.router(
+                title: AppLocalizations.of(context)?.appName ?? 'NamelessAI',
+                debugShowCheckedModeBanner: false,
+                theme: AppTheme.lightTheme(lightColorScheme),
+                darkTheme: AppTheme.darkTheme(darkColorScheme),
+                themeMode: appConfig.themeMode,
+                locale: appConfig.locale,
+                localizationsDelegates: const [
+                  AppLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                supportedLocales: AppLocalizations.supportedLocales,
+                routerConfig: AppRouter.router,
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
