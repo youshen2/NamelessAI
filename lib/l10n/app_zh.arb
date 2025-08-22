@@ -22,7 +22,7 @@
   "models": "模型",
   "addModel": "添加模型",
   "modelName": "模型名称",
-  "maxTokens": "最大令牌数 (可选)",
+  "maxTokens": "最大Token数 (可选)",
   "isStreamable": "支持流式输出",
   "save": "保存",
   "cancel": "取消",
@@ -90,14 +90,14 @@
   "dataCleared": "所有数据已清除。",
   "totalTime": "总耗时",
   "firstChunkTime": "首字耗时",
-  "tokens": "令牌",
+  "tokens": "Tokens",
   "prompt": "输入",
   "completion": "输出",
   "displaySettings": "显示设置",
   "outputCharacters": "输出字数",
   "showTotalTime": "显示总耗时",
   "showFirstChunkTime": "显示首字耗时",
-  "showTokenUsage": "显示令牌用量",
+  "showTokenUsage": "显示Token用量",
   "showOutputCharacters": "显示输出字数",
   "thinking": "正在思考... {duration}",
   "@thinking": {
@@ -117,5 +117,10 @@
   },
   "thinkingTitle": "思考",
   "maxContextMessages": "最大上下文数量",
-  "maxContextMessagesHint": "要发送的最近消息数量 (0或留空则无限制)"
+  "maxContextMessagesHint": "要发送的消息数量 (0或留空则无限制)",
+  "appearanceSettings": "外观设置",
+  "statisticsSettings": "统计信息显示",
+  "scrollSettings": "滚动设置",
+  "disableAutoScrollOnUp": "手动滚动时禁用自动滚动",
+  "resumeAutoScrollOnBottom": "滚动到底部时恢复自动滚动"
 }

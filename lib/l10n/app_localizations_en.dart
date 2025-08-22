@@ -329,4 +329,19 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get maxContextMessagesHint =>
       'Number of recent messages to send (0 or empty = unlimited)';
+
+  @override
+  String get appearanceSettings => 'Appearance';
+
+  @override
+  String get statisticsSettings => 'Statistics Display';
+
+  @override
+  String get scrollSettings => 'Scroll Settings';
+
+  @override
+  String get disableAutoScrollOnUp => 'Disable auto-scroll on manual scroll';
+
+  @override
+  String get resumeAutoScrollOnBottom => 'Resume auto-scroll when at bottom';
 }

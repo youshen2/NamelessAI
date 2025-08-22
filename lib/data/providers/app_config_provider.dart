@@ -15,6 +15,9 @@ class AppConfigProvider extends ChangeNotifier {
   bool _showTokenUsage = false;
   bool _showOutputCharacters = false;
 
+  bool _disableAutoScrollOnUp = true;
+  bool _resumeAutoScrollOnBottom = true;
+
   AppConfigProvider() {
     _loadConfig();
   }
@@ -29,6 +32,9 @@ class AppConfigProvider extends ChangeNotifier {
   bool get showFirstChunkTime => _showFirstChunkTime;
   bool get showTokenUsage => _showTokenUsage;
   bool get showOutputCharacters => _showOutputCharacters;
+
+  bool get disableAutoScrollOnUp => _disableAutoScrollOnUp;
+  bool get resumeAutoScrollOnBottom => _resumeAutoScrollOnBottom;
 
   void _loadConfig() {
     final themeModeIndex = AppDatabase.appConfigBox
@@ -59,6 +65,11 @@ class AppConfigProvider extends ChangeNotifier {
         AppDatabase.appConfigBox.get('showTokenUsage', defaultValue: false);
     _showOutputCharacters = AppDatabase.appConfigBox
         .get('showOutputCharacters', defaultValue: false);
+
+    _disableAutoScrollOnUp = AppDatabase.appConfigBox
+        .get('disableAutoScrollOnUp', defaultValue: true);
+    _resumeAutoScrollOnBottom = AppDatabase.appConfigBox
+        .get('resumeAutoScrollOnBottom', defaultValue: true);
 
     notifyListeners();
   }
@@ -131,6 +142,22 @@ class AppConfigProvider extends ChangeNotifier {
     if (_showOutputCharacters != show) {
       _showOutputCharacters = show;
       AppDatabase.appConfigBox.put('showOutputCharacters', show);
+      notifyListeners();
+    }
+  }
+
+  void setDisableAutoScrollOnUp(bool value) {
+    if (_disableAutoScrollOnUp != value) {
+      _disableAutoScrollOnUp = value;
+      AppDatabase.appConfigBox.put('disableAutoScrollOnUp', value);
+      notifyListeners();
+    }
+  }
+
+  void setResumeAutoScrollOnBottom(bool value) {
+    if (_resumeAutoScrollOnBottom != value) {
+      _resumeAutoScrollOnBottom = value;
+      AppDatabase.appConfigBox.put('resumeAutoScrollOnBottom', value);
       notifyListeners();
     }
   }

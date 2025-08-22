@@ -175,7 +175,29 @@ class ChatSessionManager extends ChangeNotifier {
     if (_currentSession == null) return;
     bool removed = _removeMessageInSession(_currentSession!, messageId);
     if (removed) {
-      updateCurrentSession(_currentSession!);
+      final session = _currentSession!;
+      final branches = session.branches;
+      final keysToRemove = <String>[];
+
+      branches.forEach((key, branchList) {
+        branchList.removeWhere((branch) => branch.isEmpty);
+
+        if (branchList.isEmpty) {
+          keysToRemove.add(key);
+        } else {
+          final activeSelection = session.activeBranchSelections[key] ?? 0;
+          if (activeSelection >= branchList.length) {
+            session.activeBranchSelections[key] = branchList.length - 1;
+          }
+        }
+      });
+
+      for (final key in keysToRemove) {
+        branches.remove(key);
+        session.activeBranchSelections.remove(key);
+      }
+
+      updateCurrentSession(session);
     }
   }
 
@@ -458,9 +480,12 @@ class ChatSessionManager extends ChangeNotifier {
         }
         finalMessage.thinkingStartTime = null;
       }
-      _generatingSessions.remove(sessionId);
+
       session.updatedAt = DateTime.now();
-      await AppDatabase.chatSessionsBox.put(session.id, session);
+      await session.save();
+      notifyListeners();
+
+      _generatingSessions.remove(sessionId);
       _loadSessions();
       if (_currentSession?.id == session.id) {
         _currentSession = session;

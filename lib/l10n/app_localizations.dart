@@ -721,6 +721,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Number of recent messages to send (0 or empty = unlimited)'**
   String get maxContextMessagesHint;
+
+  /// No description provided for @appearanceSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get appearanceSettings;
+
+  /// No description provided for @statisticsSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics Display'**
+  String get statisticsSettings;
+
+  /// No description provided for @scrollSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Scroll Settings'**
+  String get scrollSettings;
+
+  /// No description provided for @disableAutoScrollOnUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Disable auto-scroll on manual scroll'**
+  String get disableAutoScrollOnUp;
+
+  /// No description provided for @resumeAutoScrollOnBottom.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume auto-scroll when at bottom'**
+  String get resumeAutoScrollOnBottom;
 }
 
 class _AppLocalizationsDelegate

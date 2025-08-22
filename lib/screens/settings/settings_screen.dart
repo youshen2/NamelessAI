@@ -8,7 +8,7 @@ import 'package:nameless_ai/screens/settings/widgets/display_settings_sheet.dart
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
-  void _showDisplaySettings(BuildContext context) {
+  void _showStatisticsSettings(BuildContext context) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -52,8 +52,13 @@ class SettingsScreen extends StatelessWidget {
                 ),
                 ListTile(
                   leading: const Icon(Icons.palette_outlined),
-                  title: Text(localizations.displaySettings),
-                  onTap: () => _showDisplaySettings(context),
+                  title: Text(localizations.appearanceSettings),
+                  onTap: () => context.go('/settings/display'),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.bar_chart_outlined),
+                  title: Text(localizations.statisticsSettings),
+                  onTap: () => _showStatisticsSettings(context),
                 ),
               ],
             ),
@@ -101,82 +106,6 @@ class SettingsScreen extends StatelessWidget {
                 ),
               ),
             ),
-          Card(
-            margin: const EdgeInsets.only(bottom: 16),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(localizations.language,
-                      style: Theme.of(context).textTheme.titleMedium),
-                  RadioListTile<Locale?>(
-                    title: Text(localizations.systemDefault),
-                    value: null,
-                    groupValue: appConfig.locale,
-                    onChanged: (value) => appConfig.setLocale(value),
-                    activeColor: Theme.of(context).colorScheme.primary,
-                  ),
-                  RadioListTile<Locale>(
-                    title: Text(localizations.english),
-                    value: const Locale('en'),
-                    groupValue: appConfig.locale,
-                    onChanged: (value) => appConfig.setLocale(value),
-                    activeColor: Theme.of(context).colorScheme.primary,
-                  ),
-                  RadioListTile<Locale>(
-                    title: Text(localizations.chinese),
-                    value: const Locale('zh'),
-                    groupValue: appConfig.locale,
-                    onChanged: (value) => appConfig.setLocale(value),
-                    activeColor: Theme.of(context).colorScheme.primary,
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Card(
-            margin: const EdgeInsets.only(bottom: 16),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(localizations.theme,
-                      style: Theme.of(context).textTheme.titleMedium),
-                  RadioListTile<ThemeMode>(
-                    title: Text(localizations.systemDefault),
-                    value: ThemeMode.system,
-                    groupValue: appConfig.themeMode,
-                    onChanged: (value) => appConfig.setThemeMode(value!),
-                    activeColor: Theme.of(context).colorScheme.primary,
-                  ),
-                  RadioListTile<ThemeMode>(
-                    title: Text(localizations.light),
-                    value: ThemeMode.light,
-                    groupValue: appConfig.themeMode,
-                    onChanged: (value) => appConfig.setThemeMode(value!),
-                    activeColor: Theme.of(context).colorScheme.primary,
-                  ),
-                  RadioListTile<ThemeMode>(
-                    title: Text(localizations.dark),
-                    value: ThemeMode.dark,
-                    groupValue: appConfig.themeMode,
-                    onChanged: (value) => appConfig.setThemeMode(value!),
-                    activeColor: Theme.of(context).colorScheme.primary,
-                  ),
-                  const Divider(height: 32),
-                  SwitchListTile(
-                    title: Text(localizations.enableMonet),
-                    subtitle: Text(localizations.monetTheming),
-                    value: appConfig.enableMonet,
-                    onChanged: (value) => appConfig.setEnableMonet(value),
-                    activeColor: Theme.of(context).colorScheme.primary,
-                  ),
-                ],
-              ),
-            ),
-          ),
           Card(
             margin: const EdgeInsets.only(bottom: 16),
             child: ListTile(

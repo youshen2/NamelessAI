@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -24,6 +25,10 @@ class _ChatScreenState extends State<ChatScreen> {
   final FocusNode _inputFocusNode = FocusNode();
   late ChatSessionManager _chatSessionManager;
 
+  String? _currentSessionId;
+  bool _userScrolledUp = false;
+  final double _scrollThreshold = 50.0;
+
   @override
   void initState() {
     super.initState();
@@ -31,13 +36,43 @@ class _ChatScreenState extends State<ChatScreen> {
         Provider.of<ChatSessionManager>(context, listen: false);
     SchedulerBinding.instance.addPostFrameCallback((_) {
       _loadInitialChatState();
-      _chatSessionManager.addListener(_scrollToBottomListener);
+      _currentSessionId = _chatSessionManager.currentSession?.id;
+      _chatSessionManager.addListener(_chatUpdateListener);
+      _scrollController.addListener(_scrollListener);
     });
   }
 
-  void _scrollToBottomListener() {
+  void _chatUpdateListener() {
     if (mounted) {
-      _scrollToBottom();
+      final manager = Provider.of<ChatSessionManager>(context, listen: false);
+      if (manager.isGenerating &&
+          manager.currentSession?.id == _currentSessionId) {
+        _scrollToBottom();
+      }
+    }
+  }
+
+  void _scrollListener() {
+    if (!mounted) return;
+    final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
+    final position = _scrollController.position;
+
+    if (appConfig.disableAutoScrollOnUp &&
+        position.userScrollDirection == ScrollDirection.forward) {
+      if (!_userScrolledUp) {
+        setState(() {
+          _userScrolledUp = true;
+        });
+      }
+    }
+
+    if (appConfig.resumeAutoScrollOnBottom &&
+        position.pixels >= position.maxScrollExtent - _scrollThreshold) {
+      if (_userScrolledUp) {
+        setState(() {
+          _userScrolledUp = false;
+        });
+      }
     }
   }
 
@@ -71,17 +106,23 @@ class _ChatScreenState extends State<ChatScreen> {
     if (mounted) {
       setState(() {});
     }
-    _scrollToBottom();
+    _scrollToBottom(instant: true);
   }
 
-  void _scrollToBottom() {
+  void _scrollToBottom({bool instant = false}) {
+    if (_userScrolledUp) return;
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
+        if (instant) {
+          _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+        } else {
+          _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        }
       }
     });
   }
@@ -105,6 +146,9 @@ class _ChatScreenState extends State<ChatScreen> {
     }
 
     _messageController.clear();
+    setState(() {
+      _userScrolledUp = false;
+    });
     await chatSessionManager.sendMessage(
         messageText, selectedProvider, selectedModel);
   }
@@ -207,7 +251,9 @@ class _ChatScreenState extends State<ChatScreen> {
       showSnackBar(context, localizations.selectModel, isError: true);
       return;
     }
-
+    setState(() {
+      _userScrolledUp = false;
+    });
     await chatSessionManager.resubmitMessage(
         message.id, newContent, selectedProvider, selectedModel);
   }
@@ -226,7 +272,9 @@ class _ChatScreenState extends State<ChatScreen> {
       showSnackBar(context, localizations.selectModel, isError: true);
       return;
     }
-
+    setState(() {
+      _userScrolledUp = false;
+    });
     await chatSessionManager.regenerateResponse(
         message.id, selectedProvider, selectedModel);
   }
@@ -292,6 +340,13 @@ class _ChatScreenState extends State<ChatScreen> {
     final localizations = AppLocalizations.of(context)!;
     return Consumer<ChatSessionManager>(
       builder: (context, manager, child) {
+        if (manager.currentSession?.id != _currentSessionId) {
+          _currentSessionId = manager.currentSession?.id;
+          _userScrolledUp = false;
+          SchedulerBinding.instance
+              .addPostFrameCallback((_) => _scrollToBottom(instant: true));
+        }
+
         final messages = manager.activeMessages;
         return Scaffold(
           appBar: AppBar(
@@ -465,8 +520,9 @@ class _ChatScreenState extends State<ChatScreen> {
   void dispose() {
     _messageController.dispose();
     _inputFocusNode.dispose();
+    _scrollController.removeListener(_scrollListener);
     _scrollController.dispose();
-    _chatSessionManager.removeListener(_scrollToBottomListener);
+    _chatSessionManager.removeListener(_chatUpdateListener);
     super.dispose();
   }
 }

@@ -325,4 +325,19 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get maxContextMessagesHint => '要发送的最近消息数量 (0或留空则无限制)';
+
+  @override
+  String get appearanceSettings => '外观设置';
+
+  @override
+  String get statisticsSettings => '统计信息显示';
+
+  @override
+  String get scrollSettings => '滚动设置';
+
+  @override
+  String get disableAutoScrollOnUp => '手动上滚时禁用自动滚动';
+
+  @override
+  String get resumeAutoScrollOnBottom => '滚动到底部时恢复自动滚动';
 }

@@ -117,5 +117,10 @@
   },
   "thinkingTitle": "Thinking",
   "maxContextMessages": "Max Context Messages",
-  "maxContextMessagesHint": "Number of recent messages to send (0 or empty = unlimited)"
+  "maxContextMessagesHint": "Number of recent messages to send (0 or empty = unlimited)",
+  "appearanceSettings": "Appearance",
+  "statisticsSettings": "Statistics Display",
+  "scrollSettings": "Scroll Settings",
+  "disableAutoScrollOnUp": "Disable auto-scroll on manual scroll",
+  "resumeAutoScrollOnBottom": "Resume auto-scroll when at bottom"
 }
