@@ -242,7 +242,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get useStreaming => '使用流式输出';
 
   @override
-  String get overrideModelSettings => '覆盖模型默认设置';
+  String get overrideModelSettings => '使用模型默认设置';
 
   @override
   String get streamingDefault => '默认';
@@ -414,10 +414,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get noTemplatesFound => '未找到模板。';
 
   @override
-  String get exportSettings => '导出设置';
+  String get exportData => '导出数据';
 
   @override
-  String get importSettings => '导入设置';
+  String get importData => '导入数据';
 
   @override
   String get reinitializeDatabase => '重新初始化数据库';
@@ -433,20 +433,41 @@ class AppLocalizationsZh extends AppLocalizations {
   String get generalSettings => '通用设置';
 
   @override
-  String get autoSaveNewChats => '自动保存新聊天';
+  String itemDeleted(String itemName) {
+    return '$itemName 已被删除。';
+  }
 
   @override
-  String get autoSaveNewChatsHint => '在发送第一条消息后自动保存会话。';
+  String get exportSuccess => '数据导出成功。';
 
   @override
-  String get confirmNewChat => '开始新聊天前确认';
+  String exportError(String error) {
+    return '导出数据时出错: $error';
+  }
 
   @override
-  String get confirmNewChatHint => '如果当前聊天有未保存的更改，则显示确认对话框。';
+  String get importSuccess => '数据导入成功。请重启应用以查看更改。';
 
   @override
-  String get newChatConfirmation => '当前聊天有未保存的更改。确定要开始新的聊天吗？您的更改将会丢失。';
+  String importError(String error) {
+    return '导入数据时出错: $error';
+  }
 
   @override
-  String get startNewChat => '开始新聊天';
+  String get importConfirmation => '这将覆盖所有当前数据，此操作无法撤销。您确定要从备份中恢复吗？';
+
+  @override
+  String get useFirstSentenceAsTitle => '使用首条消息作为标题';
+
+  @override
+  String get useFirstSentenceAsTitleHint => '自动使用发送的第一条消息作为该聊天会话的标题。';
+
+  @override
+  String get dataManagement => '数据管理';
+
+  @override
+  String get modelLabel => '模型';
+
+  @override
+  String get timeLabel => '时间';
 }

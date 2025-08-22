@@ -204,7 +204,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           listen: false);
                       await manager.deleteSession(session.id);
                       showSnackBar(
-                          context, '${session.name} ${localizations.delete}d');
+                          context, '${localizations.delete} ${session.name}');
                       if (_selectedSessionForPreview?.id == session.id) {
                         setState(() {
                           _selectedSessionForPreview = null;

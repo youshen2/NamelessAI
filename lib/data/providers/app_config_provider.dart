@@ -29,8 +29,7 @@ class AppConfigProvider extends ChangeNotifier {
   bool _compactMode = false;
   double _chatBubbleWidth = 0.8;
 
-  bool _autoSaveNewChats = true;
-  bool _confirmNewChat = true;
+  bool _useFirstSentenceAsTitle = true;
 
   AppConfigProvider() {
     _loadConfig();
@@ -57,8 +56,7 @@ class AppConfigProvider extends ChangeNotifier {
   bool get compactMode => _compactMode;
   double get chatBubbleWidth => _chatBubbleWidth;
 
-  bool get autoSaveNewChats => _autoSaveNewChats;
-  bool get confirmNewChat => _confirmNewChat;
+  bool get useFirstSentenceAsTitle => _useFirstSentenceAsTitle;
 
   void _loadConfig() {
     final box = AppDatabase.appConfigBox;
@@ -91,8 +89,8 @@ class AppConfigProvider extends ChangeNotifier {
     _showModelName = box.get('showModelName', defaultValue: true);
     _compactMode = box.get('compactMode', defaultValue: false);
     _chatBubbleWidth = box.get('chatBubbleWidth', defaultValue: 0.8);
-    _autoSaveNewChats = box.get('autoSaveNewChats', defaultValue: true);
-    _confirmNewChat = box.get('confirmNewChat', defaultValue: true);
+    _useFirstSentenceAsTitle =
+        box.get('useFirstSentenceAsTitle', defaultValue: true);
 
     notifyListeners();
   }
@@ -221,17 +219,10 @@ class AppConfigProvider extends ChangeNotifier {
     }
   }
 
-  void setAutoSaveNewChats(bool value) {
-    if (_autoSaveNewChats != value) {
-      _autoSaveNewChats = value;
-      _updateValue('autoSaveNewChats', value);
-    }
-  }
-
-  void setConfirmNewChat(bool value) {
-    if (_confirmNewChat != value) {
-      _confirmNewChat = value;
-      _updateValue('confirmNewChat', value);
+  void setUseFirstSentenceAsTitle(bool value) {
+    if (_useFirstSentenceAsTitle != value) {
+      _useFirstSentenceAsTitle = value;
+      _updateValue('useFirstSentenceAsTitle', value);
     }
   }
 }

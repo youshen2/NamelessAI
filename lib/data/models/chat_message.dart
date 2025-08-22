@@ -109,4 +109,40 @@ class ChatMessage extends HiveObject {
       thinkingStartTime: thinkingStartTime ?? this.thinkingStartTime,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'role': role,
+        'content': content,
+        'timestamp': timestamp.toIso8601String(),
+        'isEditing': isEditing,
+        'isLoading': isLoading,
+        'promptTokens': promptTokens,
+        'completionTokens': completionTokens,
+        'completionTimeMs': completionTimeMs,
+        'firstChunkTimeMs': firstChunkTimeMs,
+        'outputCharacters': outputCharacters,
+        'isError': isError,
+        'modelName': modelName,
+        'thinkingContent': thinkingContent,
+        'thinkingDurationMs': thinkingDurationMs,
+      };
+
+  factory ChatMessage.fromJson(Map<String, dynamic> json) => ChatMessage(
+        id: json['id'],
+        role: json['role'],
+        content: json['content'],
+        timestamp: DateTime.parse(json['timestamp']),
+        isEditing: json['isEditing'] ?? false,
+        isLoading: json['isLoading'] ?? false,
+        promptTokens: json['promptTokens'],
+        completionTokens: json['completionTokens'],
+        completionTimeMs: json['completionTimeMs'],
+        firstChunkTimeMs: json['firstChunkTimeMs'],
+        outputCharacters: json['outputCharacters'],
+        isError: json['isError'] ?? false,
+        modelName: json['modelName'],
+        thinkingContent: json['thinkingContent'],
+        thinkingDurationMs: json['thinkingDurationMs'],
+      );
 }

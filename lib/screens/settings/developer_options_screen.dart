@@ -3,9 +3,14 @@ import 'package:nameless_ai/data/app_database.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
 import 'package:nameless_ai/utils/helpers.dart';
 
-class DeveloperOptionsScreen extends StatelessWidget {
+class DeveloperOptionsScreen extends StatefulWidget {
   const DeveloperOptionsScreen({super.key});
 
+  @override
+  State<DeveloperOptionsScreen> createState() => _DeveloperOptionsScreenState();
+}
+
+class _DeveloperOptionsScreenState extends State<DeveloperOptionsScreen> {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
@@ -17,27 +22,6 @@ class DeveloperOptionsScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
-          Card(
-            child: Column(
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.upload_file),
-                  title: Text(localizations.exportSettings),
-                  onTap: () {
-                    showSnackBar(context, 'Not implemented yet');
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.download_done),
-                  title: Text(localizations.importSettings),
-                  onTap: () {
-                    showSnackBar(context, 'Not implemented yet');
-                  },
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
           Card(
             color: Theme.of(context).colorScheme.errorContainer,
             child: Column(
@@ -74,8 +58,10 @@ class DeveloperOptionsScreen extends StatelessWidget {
                     );
                     if (confirmed == true) {
                       await AppDatabase.reinitialize();
-                      showSnackBar(
-                          context, localizations.databaseReinitialized);
+                      if (mounted) {
+                        showSnackBar(
+                            context, localizations.databaseReinitialized);
+                      }
                     }
                   },
                 ),
@@ -110,7 +96,9 @@ class DeveloperOptionsScreen extends StatelessWidget {
                     );
                     if (confirmed == true) {
                       await AppDatabase.clearAllData();
-                      showSnackBar(context, localizations.dataCleared);
+                      if (mounted) {
+                        showSnackBar(context, localizations.dataCleared);
+                      }
                     }
                   },
                 ),

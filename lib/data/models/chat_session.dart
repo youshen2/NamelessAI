@@ -106,6 +106,56 @@ class ChatSession extends HiveObject {
       maxContextMessages: maxContextMessages ?? this.maxContextMessages,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'providerId': providerId,
+        'modelId': modelId,
+        'messages': messages.map((m) => m.toJson()).toList(),
+        'systemPrompt': systemPrompt,
+        'createdAt': createdAt.toIso8601String(),
+        'updatedAt': updatedAt.toIso8601String(),
+        'temperature': temperature,
+        'topP': topP,
+        'branches': branches.map((key, value) => MapEntry(
+            key,
+            value
+                .map((branch) => branch.map((msg) => msg.toJson()).toList())
+                .toList())),
+        'activeBranchSelections': activeBranchSelections,
+        'useStreaming': useStreaming,
+        'maxContextMessages': maxContextMessages,
+      };
+
+  factory ChatSession.fromJson(Map<String, dynamic> json) => ChatSession(
+        id: json['id'],
+        name: json['name'],
+        providerId: json['providerId'],
+        modelId: json['modelId'],
+        messages: (json['messages'] as List)
+            .map((m) => ChatMessage.fromJson(m))
+            .toList(),
+        systemPrompt: json['systemPrompt'],
+        createdAt: DateTime.parse(json['createdAt']),
+        updatedAt: DateTime.parse(json['updatedAt']),
+        temperature: (json['temperature'] as num).toDouble(),
+        topP: (json['topP'] as num).toDouble(),
+        branches: (json['branches'] as Map<String, dynamic>).map(
+          (key, value) => MapEntry(
+            key,
+            (value as List)
+                .map((branch) => (branch as List)
+                    .map((msg) => ChatMessage.fromJson(msg))
+                    .toList())
+                .toList(),
+          ),
+        ),
+        activeBranchSelections:
+            Map<String, int>.from(json['activeBranchSelections']),
+        useStreaming: json['useStreaming'],
+        maxContextMessages: json['maxContextMessages'],
+      );
 }
 
 extension ChatSessionExtensions on ChatSession {

@@ -31,4 +31,17 @@ class SystemPromptTemplate extends HiveObject {
       prompt: prompt ?? this.prompt,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'prompt': prompt,
+      };
+
+  factory SystemPromptTemplate.fromJson(Map<String, dynamic> json) =>
+      SystemPromptTemplate(
+        id: json['id'],
+        name: json['name'],
+        prompt: json['prompt'],
+      );
 }

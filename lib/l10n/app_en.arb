@@ -147,16 +147,42 @@
   "selectTemplate": "Select a Template",
   "searchTemplates": "Search templates...",
   "noTemplatesFound": "No templates found.",
-  "exportSettings": "Export Settings",
-  "importSettings": "Import Settings",
+  "exportData": "Export Data",
+  "importData": "Import Data",
   "reinitializeDatabase": "Re-initialize Database",
   "reinitializeDatabaseWarning": "This is a destructive action for debugging. It will re-register database adapters. The app may need to be restarted. Continue?",
   "databaseReinitialized": "Database re-initialized. Please restart the app.",
   "generalSettings": "General",
-  "autoSaveNewChats": "Auto-save new chats",
-  "autoSaveNewChatsHint": "Automatically save a session after the first message.",
-  "confirmNewChat": "Confirm before starting new chat",
-  "confirmNewChatHint": "Show a confirmation dialog if the current chat has unsaved changes.",
-  "newChatConfirmation": "The current chat has unsaved changes. Do you want to start a new chat anyway? Your changes will be lost.",
-  "startNewChat": "Start New Chat"
+  "itemDeleted": "{itemName} has been deleted.",
+  "@itemDeleted": {
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      }
+    }
+  },
+  "exportSuccess": "Data exported successfully.",
+  "exportError": "Error exporting data: {error}",
+  "@exportError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "importSuccess": "Data imported successfully. Please restart the app to see the changes.",
+  "importError": "Error importing data: {error}",
+  "@importError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "importConfirmation": "This will overwrite all current data. This action cannot be undone. Are you sure you want to restore from a backup?",
+  "useFirstSentenceAsTitle": "Use first message as title",
+  "useFirstSentenceAsTitleHint": "Automatically use the first sent message as the chat title.",
+  "dataManagement": "Data Management",
+  "modelLabel": "Model",
+  "timeLabel": "Time"
 }

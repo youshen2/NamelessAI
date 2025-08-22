@@ -146,7 +146,7 @@ class _ChatScreenState extends State<ChatScreen> {
       return;
     }
 
-    if (chatSessionManager.isNewSession && appConfig.autoSaveNewChats) {
+    if (chatSessionManager.isNewSession && appConfig.useFirstSentenceAsTitle) {
       String chatName = messageText.length > 40
           ? '${messageText.substring(0, 37)}...'
           : messageText;
@@ -200,36 +200,8 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> _startNewChat() async {
-    final localizations = AppLocalizations.of(context)!;
-    final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
     final chatSessionManager =
         Provider.of<ChatSessionManager>(context, listen: false);
-
-    if (appConfig.confirmNewChat &&
-        chatSessionManager.currentSession != null &&
-        chatSessionManager.isNewSession &&
-        chatSessionManager.currentSession!.messages.isNotEmpty) {
-      final confirmed = await showDialog<bool>(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text(localizations.newChat),
-          content: Text(localizations.newChatConfirmation),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: Text(localizations.cancel),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              child: Text(localizations.startNewChat),
-            ),
-          ],
-        ),
-      );
-      if (confirmed != true) {
-        return;
-      }
-    }
 
     final apiProviderManager =
         Provider.of<APIProviderManager>(context, listen: false);

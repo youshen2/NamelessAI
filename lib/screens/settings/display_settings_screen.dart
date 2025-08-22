@@ -221,66 +221,6 @@ class DisplaySettingsScreen extends StatelessWidget {
               ),
             ),
           ),
-          Card(
-            margin: const EdgeInsets.only(bottom: 16),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                    child: Text(localizations.scrollSettings,
-                        style: Theme.of(context).textTheme.titleMedium),
-                  ),
-                  SwitchListTile(
-                    title: Text(localizations.disableAutoScrollOnUp),
-                    value: appConfig.disableAutoScrollOnUp,
-                    onChanged: (value) =>
-                        appConfig.setDisableAutoScrollOnUp(value),
-                    activeColor: Theme.of(context).colorScheme.primary,
-                  ),
-                  SwitchListTile(
-                    title: Text(localizations.resumeAutoScrollOnBottom),
-                    value: appConfig.resumeAutoScrollOnBottom,
-                    onChanged: (value) =>
-                        appConfig.setResumeAutoScrollOnBottom(value),
-                    activeColor: Theme.of(context).colorScheme.primary,
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Card(
-            margin: const EdgeInsets.only(bottom: 16),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                    child: Text(localizations.generalSettings,
-                        style: Theme.of(context).textTheme.titleMedium),
-                  ),
-                  SwitchListTile(
-                    title: Text(localizations.autoSaveNewChats),
-                    subtitle: Text(localizations.autoSaveNewChatsHint),
-                    value: appConfig.autoSaveNewChats,
-                    onChanged: appConfig.setAutoSaveNewChats,
-                    activeColor: Theme.of(context).colorScheme.primary,
-                  ),
-                  SwitchListTile(
-                    title: Text(localizations.confirmNewChat),
-                    subtitle: Text(localizations.confirmNewChatHint),
-                    value: appConfig.confirmNewChat,
-                    onChanged: appConfig.setConfirmNewChat,
-                    activeColor: Theme.of(context).colorScheme.primary,
-                  ),
-                ],
-              ),
-            ),
-          ),
         ],
       ),
     );

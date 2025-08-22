@@ -51,6 +51,24 @@ class APIProvider extends HiveObject {
       chatCompletionPath: chatCompletionPath ?? this.chatCompletionPath,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'baseUrl': baseUrl,
+        'apiKey': apiKey,
+        'models': models.map((m) => m.toJson()).toList(),
+        'chatCompletionPath': chatCompletionPath,
+      };
+
+  factory APIProvider.fromJson(Map<String, dynamic> json) => APIProvider(
+        id: json['id'],
+        name: json['name'],
+        baseUrl: json['baseUrl'],
+        apiKey: json['apiKey'],
+        models: (json['models'] as List).map((m) => Model.fromJson(m)).toList(),
+        chatCompletionPath: json['chatCompletionPath'],
+      );
 }
 
 @HiveType(typeId: 1)
@@ -93,4 +111,20 @@ class Model extends HiveObject {
       supportsThinking: supportsThinking ?? this.supportsThinking,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'maxTokens': maxTokens,
+        'isStreamable': isStreamable,
+        'supportsThinking': supportsThinking,
+      };
+
+  factory Model.fromJson(Map<String, dynamic> json) => Model(
+        id: json['id'],
+        name: json['name'],
+        maxTokens: json['maxTokens'],
+        isStreamable: json['isStreamable'],
+        supportsThinking: json['supportsThinking'] ?? false,
+      );
 }

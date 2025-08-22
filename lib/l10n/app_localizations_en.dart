@@ -420,10 +420,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noTemplatesFound => 'No templates found.';
 
   @override
-  String get exportSettings => 'Export Settings';
+  String get exportData => 'Export Data';
 
   @override
-  String get importSettings => 'Import Settings';
+  String get importData => 'Import Data';
 
   @override
   String get reinitializeDatabase => 'Re-initialize Database';
@@ -440,23 +440,44 @@ class AppLocalizationsEn extends AppLocalizations {
   String get generalSettings => 'General';
 
   @override
-  String get autoSaveNewChats => 'Auto-save new chats';
+  String itemDeleted(String itemName) {
+    return '$itemName has been deleted.';
+  }
 
   @override
-  String get autoSaveNewChatsHint =>
-      'Automatically save a session after the first message.';
+  String get exportSuccess => 'Data exported successfully.';
 
   @override
-  String get confirmNewChat => 'Confirm before starting new chat';
+  String exportError(String error) {
+    return 'Error exporting data: $error';
+  }
 
   @override
-  String get confirmNewChatHint =>
-      'Show a confirmation dialog if the current chat has unsaved changes.';
+  String get importSuccess =>
+      'Data imported successfully. Please restart the app to see the changes.';
 
   @override
-  String get newChatConfirmation =>
-      'The current chat has unsaved changes. Do you want to start a new chat anyway? Your changes will be lost.';
+  String importError(String error) {
+    return 'Error importing data: $error';
+  }
 
   @override
-  String get startNewChat => 'Start New Chat';
+  String get importConfirmation =>
+      'This will overwrite all current data. This action cannot be undone. Are you sure you want to restore from a backup?';
+
+  @override
+  String get useFirstSentenceAsTitle => 'Use first message as title';
+
+  @override
+  String get useFirstSentenceAsTitleHint =>
+      'Automatically use the first sent message as the chat title.';
+
+  @override
+  String get dataManagement => 'Data Management';
+
+  @override
+  String get modelLabel => 'Model';
+
+  @override
+  String get timeLabel => 'Time';
 }

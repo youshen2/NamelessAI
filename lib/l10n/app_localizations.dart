@@ -896,17 +896,17 @@ abstract class AppLocalizations {
   /// **'No templates found.'**
   String get noTemplatesFound;
 
-  /// No description provided for @exportSettings.
+  /// No description provided for @exportData.
   ///
   /// In en, this message translates to:
-  /// **'Export Settings'**
-  String get exportSettings;
+  /// **'Export Data'**
+  String get exportData;
 
-  /// No description provided for @importSettings.
+  /// No description provided for @importData.
   ///
   /// In en, this message translates to:
-  /// **'Import Settings'**
-  String get importSettings;
+  /// **'Import Data'**
+  String get importData;
 
   /// No description provided for @reinitializeDatabase.
   ///
@@ -932,41 +932,71 @@ abstract class AppLocalizations {
   /// **'General'**
   String get generalSettings;
 
-  /// No description provided for @autoSaveNewChats.
+  /// No description provided for @itemDeleted.
   ///
   /// In en, this message translates to:
-  /// **'Auto-save new chats'**
-  String get autoSaveNewChats;
+  /// **'{itemName} has been deleted.'**
+  String itemDeleted(String itemName);
 
-  /// No description provided for @autoSaveNewChatsHint.
+  /// No description provided for @exportSuccess.
   ///
   /// In en, this message translates to:
-  /// **'Automatically save a session after the first message.'**
-  String get autoSaveNewChatsHint;
+  /// **'Data exported successfully.'**
+  String get exportSuccess;
 
-  /// No description provided for @confirmNewChat.
+  /// No description provided for @exportError.
   ///
   /// In en, this message translates to:
-  /// **'Confirm before starting new chat'**
-  String get confirmNewChat;
+  /// **'Error exporting data: {error}'**
+  String exportError(String error);
 
-  /// No description provided for @confirmNewChatHint.
+  /// No description provided for @importSuccess.
   ///
   /// In en, this message translates to:
-  /// **'Show a confirmation dialog if the current chat has unsaved changes.'**
-  String get confirmNewChatHint;
+  /// **'Data imported successfully. Please restart the app to see the changes.'**
+  String get importSuccess;
 
-  /// No description provided for @newChatConfirmation.
+  /// No description provided for @importError.
   ///
   /// In en, this message translates to:
-  /// **'The current chat has unsaved changes. Do you want to start a new chat anyway? Your changes will be lost.'**
-  String get newChatConfirmation;
+  /// **'Error importing data: {error}'**
+  String importError(String error);
 
-  /// No description provided for @startNewChat.
+  /// No description provided for @importConfirmation.
   ///
   /// In en, this message translates to:
-  /// **'Start New Chat'**
-  String get startNewChat;
+  /// **'This will overwrite all current data. This action cannot be undone. Are you sure you want to restore from a backup?'**
+  String get importConfirmation;
+
+  /// No description provided for @useFirstSentenceAsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Use first message as title'**
+  String get useFirstSentenceAsTitle;
+
+  /// No description provided for @useFirstSentenceAsTitleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatically use the first sent message as the chat title.'**
+  String get useFirstSentenceAsTitleHint;
+
+  /// No description provided for @dataManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'Data Management'**
+  String get dataManagement;
+
+  /// No description provided for @modelLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Model'**
+  String get modelLabel;
+
+  /// No description provided for @timeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get timeLabel;
 }
 
 class _AppLocalizationsDelegate

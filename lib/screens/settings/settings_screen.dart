@@ -1,98 +1,176 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
-import 'package:nameless_ai/data/providers/app_config_provider.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
+import 'package:nameless_ai/services/backup_service.dart';
+import 'package:nameless_ai/utils/helpers.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  final BackupService _backupService = BackupService();
+  bool _isWorking = false;
+
+  Future<void> _exportData() async {
+    setState(() => _isWorking = true);
+    final localizations = AppLocalizations.of(context)!;
+    try {
+      await _backupService.exportData(context);
+      if (mounted) {
+        showSnackBar(context, localizations.exportSuccess);
+      }
+    } catch (e) {
+      if (mounted) {
+        showSnackBar(context, localizations.exportError(e.toString()),
+            isError: true);
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isWorking = false);
+      }
+    }
+  }
+
+  Future<void> _importData() async {
+    final localizations = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(localizations.importData),
+        content: Text(localizations.importConfirmation),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(localizations.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: FilledButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.error),
+            child: Text(localizations.importData),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    setState(() => _isWorking = true);
+    try {
+      await _backupService.importData(context);
+      if (mounted) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => AlertDialog(
+            title: Text(localizations.importSuccess.split('.').first),
+            content: Text(localizations.importSuccess),
+            actions: [
+              FilledButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('OK'),
+              )
+            ],
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        showSnackBar(context, localizations.importError(e.toString()),
+            isError: true);
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isWorking = false);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    final appConfig = Provider.of<AppConfigProvider>(context);
-    final isDesktop = MediaQuery.of(context).size.width >= 600;
 
     return Scaffold(
       appBar: AppBar(
         title: Text(localizations.settings),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16.0),
+      body: Stack(
         children: [
-          Card(
-            margin: const EdgeInsets.only(bottom: 16),
-            child: Column(
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.api),
-                  title: Text(localizations.apiProviderSettings),
-                  onTap: () => context.go('/settings/api_providers'),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.library_books),
-                  title: Text(localizations.systemPromptTemplates),
-                  onTap: () => context.go('/settings/system_prompts'),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.palette_outlined),
-                  title: Text(localizations.appearanceSettings),
-                  onTap: () => context.go('/settings/display'),
-                ),
-              ],
-            ),
-          ),
-          if (isDesktop)
-            Card(
-              margin: const EdgeInsets.only(bottom: 16),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
+          ListView(
+            padding: const EdgeInsets.all(16.0),
+            children: [
+              Card(
+                margin: const EdgeInsets.only(bottom: 16),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(localizations.sendKeySettings,
-                        style: Theme.of(context).textTheme.titleMedium),
-                    RadioListTile<SendKeyOption>(
-                      title: Text(localizations.sendWithEnter),
-                      value: SendKeyOption.enter,
-                      groupValue: appConfig.sendKeyOption,
-                      onChanged: (value) => appConfig.setSendKeyOption(value!),
-                      activeColor: Theme.of(context).colorScheme.primary,
+                    ListTile(
+                      leading: const Icon(Icons.api),
+                      title: Text(localizations.apiProviderSettings),
+                      onTap: () => context.go('/settings/api_providers'),
                     ),
-                    RadioListTile<SendKeyOption>(
-                      title: Text(localizations.sendWithCtrlEnter),
-                      value: SendKeyOption.ctrlEnter,
-                      groupValue: appConfig.sendKeyOption,
-                      onChanged: (value) => appConfig.setSendKeyOption(value!),
-                      activeColor: Theme.of(context).colorScheme.primary,
-                    ),
-                    RadioListTile<SendKeyOption>(
-                      title: Text(localizations.sendWithShiftCtrlEnter),
-                      value: SendKeyOption.shiftCtrlEnter,
-                      groupValue: appConfig.sendKeyOption,
-                      onChanged: (value) => appConfig.setSendKeyOption(value!),
-                      activeColor: Theme.of(context).colorScheme.primary,
-                    ),
-                    const Divider(),
-                    SwitchListTile(
-                      title: Text(localizations.shortcutInEditMode),
-                      value: appConfig.useSendKeyInEditMode,
-                      onChanged: (value) =>
-                          appConfig.setUseSendKeyInEditMode(value),
-                      activeColor: Theme.of(context).colorScheme.primary,
+                    ListTile(
+                      leading: const Icon(Icons.library_books),
+                      title: Text(localizations.systemPromptTemplates),
+                      onTap: () => context.go('/settings/system_prompts'),
                     ),
                   ],
                 ),
               ),
-            ),
-          Card(
-            margin: const EdgeInsets.only(bottom: 16),
-            child: ListTile(
-              leading: const Icon(Icons.info_outline),
-              title: Text(localizations.about),
-              onTap: () => context.go('/settings/about'),
-            ),
+              Card(
+                margin: const EdgeInsets.only(bottom: 16),
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.tune),
+                      title: Text(localizations.generalSettings),
+                      onTap: () => context.go('/settings/general'),
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.palette_outlined),
+                      title: Text(localizations.appearanceSettings),
+                      onTap: () => context.go('/settings/display'),
+                    ),
+                  ],
+                ),
+              ),
+              Card(
+                margin: const EdgeInsets.only(bottom: 16),
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.upload_file_outlined),
+                      title: Text(localizations.exportData),
+                      onTap: _isWorking ? null : _exportData,
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.download_done_outlined),
+                      title: Text(localizations.importData),
+                      onTap: _isWorking ? null : _importData,
+                    ),
+                  ],
+                ),
+              ),
+              Card(
+                margin: const EdgeInsets.only(bottom: 16),
+                child: ListTile(
+                  leading: const Icon(Icons.info_outline),
+                  title: Text(localizations.about),
+                  onTap: () => context.go('/settings/about'),
+                ),
+              ),
+            ],
           ),
+          if (_isWorking)
+            Container(
+              color: Colors.black.withOpacity(0.3),
+              child: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
         ],
       ),
     );

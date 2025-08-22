@@ -205,20 +205,7 @@ class _MessageBubbleState extends State<MessageBubble>
               crossAxisAlignment: alignment,
               children: [
                 _buildMessageContent(context),
-                if (!widget.isReadOnly)
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(top: 6.0, right: 8.0, left: 8.0),
-                    child: Wrap(
-                      spacing: 12.0,
-                      runSpacing: 4.0,
-                      alignment: WrapAlignment.end,
-                      children: [
-                        ..._buildStatistics(context),
-                        ..._buildMetaInfo(context),
-                      ],
-                    ),
-                  ),
+                if (!widget.isReadOnly) _buildMetaAndStats(context, alignment),
                 if (!widget.isReadOnly && !widget.message.isEditing)
                   _buildActionBar(context),
                 if (widget.branchCount > 1) _buildBranchNavigator(context),
@@ -543,8 +530,49 @@ class _MessageBubbleState extends State<MessageBubble>
     );
   }
 
+  Widget _buildMetaAndStats(
+      BuildContext context, CrossAxisAlignment alignment) {
+    final meta = _buildMetaInfo(context);
+    final stats = _buildStatistics(context);
+
+    if (meta.isEmpty && stats.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final wrapAlignment = alignment == CrossAxisAlignment.start
+        ? WrapAlignment.start
+        : WrapAlignment.end;
+
+    return Column(
+      crossAxisAlignment: alignment,
+      children: [
+        if (meta.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 2.0, right: 8.0, left: 8.0),
+            child: Wrap(
+              spacing: 12.0,
+              runSpacing: 4.0,
+              alignment: wrapAlignment,
+              children: meta,
+            ),
+          ),
+        if (stats.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 4.0, right: 8.0, left: 8.0),
+            child: Wrap(
+              spacing: 12.0,
+              runSpacing: 4.0,
+              alignment: wrapAlignment,
+              children: stats,
+            ),
+          ),
+      ],
+    );
+  }
+
   List<Widget> _buildMetaInfo(BuildContext context) {
     final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
+    final localizations = AppLocalizations.of(context)!;
     final showName = appConfig.showModelName &&
         widget.message.modelName != null &&
         widget.message.role == 'assistant';
@@ -553,18 +581,16 @@ class _MessageBubbleState extends State<MessageBubble>
     final meta = <Widget>[];
 
     if (showName) {
-      meta.add(_StatItem(
-        label: widget.message.modelName!,
-        value: '',
-        isMeta: true,
+      meta.add(_MetaItem(
+        label: '${localizations.modelLabel}: ',
+        value: widget.message.modelName!,
       ));
     }
     if (showTime) {
-      meta.add(_StatItem(
-        label:
+      meta.add(_MetaItem(
+        label: '${localizations.timeLabel}: ',
+        value:
             '${widget.message.timestamp.hour.toString().padLeft(2, '0')}:${widget.message.timestamp.minute.toString().padLeft(2, '0')}',
-        value: '',
-        isMeta: true,
       ));
     }
 
@@ -616,13 +642,11 @@ class _MessageBubbleState extends State<MessageBubble>
   }
 }
 
-class _StatItem extends StatelessWidget {
+class _MetaItem extends StatelessWidget {
   final String label;
   final String value;
-  final bool isMeta;
 
-  const _StatItem(
-      {required this.label, required this.value, this.isMeta = false});
+  const _MetaItem({required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -631,9 +655,33 @@ class _StatItem extends StatelessWidget {
         .bodySmall
         ?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant);
 
-    if (isMeta) {
-      return Text(label, style: style);
-    }
+    return RichText(
+      text: TextSpan(
+        style: style,
+        children: [
+          TextSpan(text: label),
+          TextSpan(
+            text: value,
+            style: style?.copyWith(fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StatItem extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _StatItem({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    final style = Theme.of(context)
+        .textTheme
+        .bodySmall
+        ?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant);
 
     return RichText(
       text: TextSpan(

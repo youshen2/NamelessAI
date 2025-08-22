@@ -77,7 +77,7 @@
   "temperature": "Temperature",
   "topP": "Top P",
   "useStreaming": "使用流式输出",
-  "overrideModelSettings": "覆盖模型默认设置",
+  "overrideModelSettings": "使用模型默认设置",
   "streamingDefault": "默认",
   "streamingOn": "开启",
   "streamingOff": "关闭",
@@ -147,16 +147,42 @@
   "selectTemplate": "选择模板",
   "searchTemplates": "搜索模板...",
   "noTemplatesFound": "未找到模板。",
-  "exportSettings": "导出设置",
-  "importSettings": "导入设置",
+  "exportData": "导出数据",
+  "importData": "导入数据",
   "reinitializeDatabase": "重新初始化数据库",
   "reinitializeDatabaseWarning": "这是一个用于调试的破坏性操作。它将重新注册数据库适配器。应用可能需要重启。要继续吗？",
   "databaseReinitialized": "数据库已重新初始化。请重启应用。",
   "generalSettings": "通用设置",
-  "autoSaveNewChats": "自动保存新聊天",
-  "autoSaveNewChatsHint": "在发送第一条消息后自动保存会话。",
-  "confirmNewChat": "开始新聊天前确认",
-  "confirmNewChatHint": "如果当前聊天有未保存的更改，则显示确认对话框。",
-  "newChatConfirmation": "当前聊天有未保存的更改。确定要开始新的聊天吗？您的更改将会丢失。",
-  "startNewChat": "开始新聊天"
+  "itemDeleted": "{itemName} 已被删除。",
+  "@itemDeleted": {
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      }
+    }
+  },
+  "exportSuccess": "数据导出成功。",
+  "exportError": "导出数据时出错: {error}",
+  "@exportError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "importSuccess": "数据导入成功。请重启应用以查看更改。",
+  "importError": "导入数据时出错: {error}",
+  "@importError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "importConfirmation": "这将覆盖所有当前数据，此操作无法撤销。您确定要从备份中恢复吗？",
+  "useFirstSentenceAsTitle": "使用首条消息作为标题",
+  "useFirstSentenceAsTitleHint": "自动使用发送的第一条消息作为该聊天会话的标题。",
+  "dataManagement": "数据管理",
+  "modelLabel": "模型",
+  "timeLabel": "时间"
 }

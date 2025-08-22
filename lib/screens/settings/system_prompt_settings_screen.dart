@@ -35,58 +35,46 @@ class _SystemPromptSettingsScreenState
             itemBuilder: (context, index) {
               final template = manager.templates[index];
               return Card(
-                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Text(template.name,
+                          style: Theme.of(context).textTheme.titleLarge),
+                      const SizedBox(height: 12),
+                      SelectableText(
+                        template.prompt,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                      const SizedBox(height: 16),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Expanded(
-                            child: Text(
-                              template.name,
-                              style: Theme.of(context).textTheme.titleMedium,
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                          IconButton(
+                            icon: const Icon(Icons.edit_outlined),
+                            tooltip: localizations.editTemplate,
+                            onPressed: () =>
+                                _showTemplateForm(context, template: template),
                           ),
-                          Row(
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.edit_outlined),
-                                tooltip: localizations.editTemplate,
-                                onPressed: () => _showTemplateForm(context,
-                                    template: template),
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.delete_outline,
-                                    color: Theme.of(context).colorScheme.error),
-                                tooltip: localizations.deleteTemplate,
-                                onPressed: () async {
-                                  final confirmed = await showConfirmDialog(
-                                      context,
-                                      localizations.systemPromptTemplates);
-                                  if (confirmed == true) {
-                                    await manager.deleteTemplate(template.id);
-                                    showSnackBar(context,
-                                        '${template.name} ${localizations.delete}d');
-                                  }
-                                },
-                              ),
-                            ],
+                          IconButton(
+                            icon: Icon(Icons.delete_outline,
+                                color: Theme.of(context).colorScheme.error),
+                            tooltip: localizations.delete,
+                            onPressed: () async {
+                              final confirmed = await showConfirmDialog(
+                                  context, localizations.systemPromptTemplates);
+                              if (confirmed == true) {
+                                await manager.deleteTemplate(template.id);
+                                if (mounted) {
+                                  showSnackBar(context,
+                                      localizations.itemDeleted(template.name));
+                                }
+                              }
+                            },
                           ),
                         ],
-                      ),
-                      const SizedBox(height: 4),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Text(
-                          template.prompt,
-                          style: Theme.of(context).textTheme.bodyMedium,
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                        ),
                       ),
                     ],
                   ),
@@ -159,7 +147,6 @@ class _SystemPromptTemplateFormState extends State<SystemPromptTemplateForm> {
   }
 
   Future<void> _saveTemplate() async {
-    final localizations = AppLocalizations.of(context)!;
     if (_formKey.currentState!.validate()) {
       final manager =
           Provider.of<SystemPromptTemplateManager>(context, listen: false);
@@ -171,14 +158,12 @@ class _SystemPromptTemplateFormState extends State<SystemPromptTemplateForm> {
 
       if (widget.template == null) {
         await manager.addTemplate(newTemplate);
-        showSnackBar(
-            context, '${newTemplate.name} ${localizations.addTemplate}d');
       } else {
         await manager.updateTemplate(newTemplate);
-        showSnackBar(
-            context, '${newTemplate.name} ${localizations.editTemplate}d');
       }
-      Navigator.pop(context);
+      if (mounted) {
+        Navigator.pop(context);
+      }
     }
   }
 

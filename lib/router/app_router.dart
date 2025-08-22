@@ -6,6 +6,7 @@ import 'package:nameless_ai/screens/settings/about_screen.dart';
 import 'package:nameless_ai/screens/settings/api_provider_settings_screen.dart';
 import 'package:nameless_ai/screens/settings/developer_options_screen.dart';
 import 'package:nameless_ai/screens/settings/display_settings_screen.dart';
+import 'package:nameless_ai/screens/settings/general_settings_screen.dart';
 import 'package:nameless_ai/screens/settings/settings_screen.dart';
 import 'package:nameless_ai/screens/settings/system_prompt_settings_screen.dart';
 
@@ -55,6 +56,11 @@ class AppRouter {
                 path: 'display',
                 name: 'display_settings',
                 builder: (context, state) => const DisplaySettingsScreen(),
+              ),
+              GoRoute(
+                path: 'general',
+                name: 'general_settings',
+                builder: (context, state) => const GeneralSettingsScreen(),
               ),
             ],
           ),

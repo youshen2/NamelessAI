@@ -29,66 +29,66 @@ class _APIProviderSettingsScreenState extends State<APIProviderSettingsScreen> {
             );
           }
           return ListView.builder(
+            padding: const EdgeInsets.all(8),
             itemCount: manager.providers.length,
             itemBuilder: (context, index) {
               final provider = manager.providers[index];
               return Card(
-                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: ExpansionTile(
-                  title: Text(provider.name),
-                  subtitle: Text(provider.baseUrl),
-                  childrenPadding: const EdgeInsets.all(16),
-                  expandedCrossAxisAlignment: CrossAxisAlignment.start,
-                  tilePadding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  children: [
-                    Text(
-                        '${localizations.apiKey}: ${provider.apiKey.substring(0, 4)}...'),
-                    const SizedBox(height: 8),
-                    Text(
-                        '${localizations.chatPath}: ${provider.chatCompletionPath}'),
-                    const SizedBox(height: 8),
-                    Text('${localizations.models}:',
-                        style: Theme.of(context).textTheme.titleSmall),
-                    if (provider.models.isEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(left: 8.0, top: 4.0),
-                        child: Text(localizations.noModelsConfigured,
-                            style: TextStyle(fontStyle: FontStyle.italic)),
-                      ),
-                    ...provider.models.map((model) => Padding(
+                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(provider.name,
+                          style: Theme.of(context).textTheme.titleLarge),
+                      const SizedBox(height: 4),
+                      Text(provider.baseUrl,
+                          style: Theme.of(context).textTheme.bodySmall),
+                      const SizedBox(height: 16),
+                      Text('${localizations.models}:',
+                          style: Theme.of(context).textTheme.titleMedium),
+                      const SizedBox(height: 8),
+                      if (provider.models.isEmpty)
+                        Padding(
                           padding: const EdgeInsets.only(left: 8.0, top: 4.0),
-                          child: Text(
-                              '- ${model.name} (Stream: ${model.isStreamable ? '✓' : '✗'}, Thinking: ${model.supportsThinking ? '✓' : '✗'})'),
-                        )),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        TextButton(
-                          onPressed: () =>
-                              _showProviderForm(context, provider: provider),
-                          child: Text(localizations.editProvider),
+                          child: Text(localizations.noModelsConfigured,
+                              style:
+                                  const TextStyle(fontStyle: FontStyle.italic)),
                         ),
-                        const SizedBox(width: 8),
-                        FilledButton(
-                          onPressed: () async {
-                            final confirmed = await showConfirmDialog(
-                                context, localizations.apiProviderSettings);
-                            if (confirmed == true) {
-                              await manager.deleteProvider(provider.id);
-                              showSnackBar(context,
-                                  '${provider.name} ${localizations.delete}d');
-                            }
-                          },
-                          style: FilledButton.styleFrom(
-                              backgroundColor:
-                                  Theme.of(context).colorScheme.error),
-                          child: Text(localizations.delete),
-                        ),
-                      ],
-                    ),
-                  ],
+                      ...provider.models.map((model) => Padding(
+                            padding: const EdgeInsets.only(left: 8.0, top: 4.0),
+                            child: Text(
+                                '- ${model.name} (Stream: ${model.isStreamable ? '✓' : '✗'}, Thinking: ${model.supportsThinking ? '✓' : '✗'})'),
+                          )),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.edit_outlined),
+                            tooltip: localizations.editProvider,
+                            onPressed: () =>
+                                _showProviderForm(context, provider: provider),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.delete_outline,
+                                color: Theme.of(context).colorScheme.error),
+                            tooltip: localizations.delete,
+                            onPressed: () async {
+                              final confirmed = await showConfirmDialog(
+                                  context, localizations.apiProviderSettings);
+                              if (confirmed == true) {
+                                await manager.deleteProvider(provider.id);
+                                showSnackBar(context,
+                                    localizations.itemDeleted(provider.name));
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               );
             },
@@ -270,7 +270,6 @@ class _APIProviderFormState extends State<APIProviderForm> {
   }
 
   Future<void> _saveProvider() async {
-    final localizations = AppLocalizations.of(context)!;
     if (_formKey.currentState!.validate()) {
       final manager = Provider.of<APIProviderManager>(context, listen: false);
       final newProvider = APIProvider(
@@ -284,14 +283,12 @@ class _APIProviderFormState extends State<APIProviderForm> {
 
       if (widget.provider == null) {
         await manager.addProvider(newProvider);
-        showSnackBar(
-            context, '${newProvider.name} ${localizations.addProvider}d');
       } else {
         await manager.updateProvider(newProvider);
-        showSnackBar(
-            context, '${newProvider.name} ${localizations.editProvider}d');
       }
-      Navigator.pop(context);
+      if (mounted) {
+        Navigator.pop(context);
+      }
     }
   }
 
