@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/models/api_provider.dart';
 import 'package:nameless_ai/data/providers/api_provider_manager.dart';
@@ -164,104 +165,26 @@ class _APIProviderFormState extends State<APIProviderForm> {
     super.dispose();
   }
 
-  void _addOrEditModel({Model? model, int? index}) {
-    final localizations = AppLocalizations.of(context)!;
-    final TextEditingController modelNameController =
-        TextEditingController(text: model?.name);
-    final TextEditingController maxTokensController =
-        TextEditingController(text: model?.maxTokens?.toString() ?? '');
-    bool isStreamable = model?.isStreamable ?? true;
-    bool supportsThinking = model?.supportsThinking ?? false;
-
-    showDialog(
+  void _addOrEditModel({Model? model, int? index}) async {
+    final result = await showModalBottomSheet<Model>(
       context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            return AlertDialog(
-              title: Text(model == null
-                  ? localizations.addModel
-                  : localizations.editProvider),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextField(
-                      controller: modelNameController,
-                      decoration:
-                          InputDecoration(labelText: localizations.modelName),
-                    ),
-                    TextField(
-                      controller: maxTokensController,
-                      decoration:
-                          InputDecoration(labelText: localizations.maxTokens),
-                      keyboardType: TextInputType.number,
-                    ),
-                    SwitchListTile(
-                      title: Text(localizations.isStreamable),
-                      value: isStreamable,
-                      onChanged: (value) {
-                        setDialogState(() {
-                          isStreamable = value;
-                        });
-                      },
-                    ),
-                    SwitchListTile(
-                      title: Text(localizations.supportsThinking),
-                      value: supportsThinking,
-                      onChanged: (value) {
-                        setDialogState(() {
-                          supportsThinking = value;
-                        });
-                      },
-                    ),
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(top: 8.0, left: 16, right: 16),
-                      child: Text(
-                        localizations.supportsThinkingHint,
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text(localizations.cancel),
-                ),
-                FilledButton(
-                  onPressed: () {
-                    if (modelNameController.text.isEmpty) {
-                      showSnackBar(context, localizations.modelNameRequired,
-                          isError: true);
-                      return;
-                    }
-                    final newModel = Model(
-                      name: modelNameController.text,
-                      maxTokens: int.tryParse(maxTokensController.text),
-                      isStreamable: isStreamable,
-                      supportsThinking: supportsThinking,
-                      id: model?.id,
-                    );
-                    setState(() {
-                      if (index != null) {
-                        _models[index] = newModel;
-                      } else {
-                        _models.add(newModel);
-                      }
-                    });
-                    Navigator.pop(context);
-                  },
-                  child: Text(localizations.save),
-                ),
-              ],
-            );
-          },
-        );
-      },
+      isScrollControlled: true,
+      builder: (context) => Padding(
+        padding:
+            EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        child: _ModelFormSheet(model: model),
+      ),
     );
+
+    if (result != null) {
+      setState(() {
+        if (index != null) {
+          _models[index] = result;
+        } else {
+          _models.add(result);
+        }
+      });
+    }
   }
 
   void _deleteModel(int index) {
@@ -445,6 +368,118 @@ class _APIProviderFormState extends State<APIProviderForm> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ModelFormSheet extends StatefulWidget {
+  final Model? model;
+  const _ModelFormSheet({this.model});
+
+  @override
+  State<_ModelFormSheet> createState() => _ModelFormSheetState();
+}
+
+class _ModelFormSheetState extends State<_ModelFormSheet> {
+  final _formKey = GlobalKey<FormState>();
+  late TextEditingController _modelNameController;
+  late TextEditingController _maxTokensController;
+  late bool _isStreamable;
+  late bool _supportsThinking;
+
+  @override
+  void initState() {
+    super.initState();
+    _modelNameController = TextEditingController(text: widget.model?.name);
+    _maxTokensController =
+        TextEditingController(text: widget.model?.maxTokens?.toString() ?? '');
+    _isStreamable = widget.model?.isStreamable ?? true;
+    _supportsThinking = widget.model?.supportsThinking ?? false;
+  }
+
+  @override
+  void dispose() {
+    _modelNameController.dispose();
+    _maxTokensController.dispose();
+    super.dispose();
+  }
+
+  void _save() {
+    if (_formKey.currentState!.validate()) {
+      final newModel = Model(
+        id: widget.model?.id,
+        name: _modelNameController.text,
+        maxTokens: int.tryParse(_maxTokensController.text),
+        isStreamable: _isStreamable,
+        supportsThinking: _supportsThinking,
+      );
+      Navigator.pop(context, newModel);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              widget.model == null
+                  ? localizations.addModel
+                  : localizations.editProvider,
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            const SizedBox(height: 24),
+            TextFormField(
+              controller: _modelNameController,
+              decoration: InputDecoration(labelText: localizations.modelName),
+              validator: (value) =>
+                  value!.isEmpty ? localizations.modelNameRequired : null,
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _maxTokensController,
+              decoration: InputDecoration(labelText: localizations.maxTokens),
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            ),
+            const SizedBox(height: 8),
+            SwitchListTile(
+              title: Text(localizations.isStreamable),
+              value: _isStreamable,
+              onChanged: (value) => setState(() => _isStreamable = value),
+              contentPadding: EdgeInsets.zero,
+            ),
+            SwitchListTile(
+              title: Text(localizations.supportsThinking),
+              subtitle: Text(localizations.supportsThinkingHint),
+              value: _supportsThinking,
+              onChanged: (value) => setState(() => _supportsThinking = value),
+              contentPadding: EdgeInsets.zero,
+            ),
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(localizations.cancel),
+                ),
+                const SizedBox(width: 8),
+                FilledButton(
+                  onPressed: _save,
+                  child: Text(localizations.save),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -107,6 +107,8 @@ class _MessageBubbleState extends State<MessageBubble>
   late final Animation<Offset> _slideAnimation;
   late final Animation<double> _fadeAnimation;
 
+  static final Set<String> _animatedMessageIds = {};
+
   @override
   void initState() {
     super.initState();
@@ -123,7 +125,12 @@ class _MessageBubbleState extends State<MessageBubble>
     _fadeAnimation =
         CurvedAnimation(parent: _animationController, curve: Curves.easeIn);
 
-    _animationController.forward();
+    if (!_animatedMessageIds.contains(widget.message.id)) {
+      _animationController.forward();
+      _animatedMessageIds.add(widget.message.id);
+    } else {
+      _animationController.value = 1.0;
+    }
   }
 
   @override

@@ -7,7 +7,6 @@ import 'package:nameless_ai/data/providers/api_provider_manager.dart';
 import 'package:nameless_ai/data/providers/system_prompt_template_manager.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
 import 'package:nameless_ai/utils/helpers.dart';
-import 'package:nameless_ai/widgets/responsive_layout.dart';
 
 class ChatSettingsSheet extends StatefulWidget {
   final ChatSession session;
@@ -28,6 +27,9 @@ class ChatSettingsSheet extends StatefulWidget {
 class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
   late TextEditingController _systemPromptController;
   late TextEditingController _maxContextController;
+  late TextEditingController _temperatureController;
+  late TextEditingController _topPController;
+
   late double _temperature;
   late double _topP;
   late bool? _useStreaming;
@@ -46,12 +48,18 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
     _useStreaming = widget.session.useStreaming;
     _selectedProviderId = widget.session.providerId;
     _selectedModelId = widget.session.modelId;
+
+    _temperatureController =
+        TextEditingController(text: _temperature.toStringAsFixed(2));
+    _topPController = TextEditingController(text: _topP.toStringAsFixed(2));
   }
 
   @override
   void dispose() {
     _systemPromptController.dispose();
     _maxContextController.dispose();
+    _temperatureController.dispose();
+    _topPController.dispose();
     super.dispose();
   }
 
@@ -68,15 +76,7 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
     final selectedPrompt = await showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
-      builder: (context) => DraggableScrollableSheet(
-        expand: false,
-        initialChildSize: 0.8,
-        minChildSize: 0.5,
-        maxChildSize: 0.95,
-        builder: (context, scrollController) => _TemplateSelectionScreen(
-          scrollController: scrollController,
-        ),
-      ),
+      builder: (context) => const _TemplateSelectionSheet(),
     );
 
     if (selectedPrompt != null) {
@@ -84,6 +84,56 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
         _systemPromptController.text = selectedPrompt;
       });
     }
+  }
+
+  Widget _buildSliderWithTextField({
+    required String label,
+    required double value,
+    required double min,
+    required double max,
+    required int divisions,
+    required TextEditingController controller,
+    required ValueChanged<double> onSliderChanged,
+    required ValueChanged<String> onTextFieldSubmitted,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('$label: ${value.toStringAsFixed(2)}',
+            style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Expanded(
+              flex: 3,
+              child: Slider(
+                value: value,
+                min: min,
+                max: max,
+                divisions: divisions,
+                label: value.toStringAsFixed(2),
+                onChanged: onSliderChanged,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              flex: 1,
+              child: TextFormField(
+                controller: controller,
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
+                textAlign: TextAlign.center,
+                decoration: const InputDecoration(
+                  contentPadding: EdgeInsets.symmetric(horizontal: 8),
+                ),
+                onFieldSubmitted: onTextFieldSubmitted,
+                onTapOutside: (_) => onTextFieldSubmitted(controller.text),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
   }
 
   @override
@@ -183,38 +233,56 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
                   maxLines: 4,
                   minLines: 2,
                 ),
-                const SizedBox(height: 16),
-                Text(
-                    '${localizations.temperature}: ${_temperature.toStringAsFixed(2)}',
-                    style: Theme.of(context).textTheme.titleMedium),
-                Slider(
+                const SizedBox(height: 24),
+                _buildSliderWithTextField(
+                  label: localizations.temperature,
                   value: _temperature,
                   min: 0.0,
                   max: 2.0,
                   divisions: 200,
-                  label: _temperature.toStringAsFixed(2),
-                  onChanged: (value) {
+                  controller: _temperatureController,
+                  onSliderChanged: (value) {
                     setState(() {
                       _temperature = value;
+                      _temperatureController.text = value.toStringAsFixed(2);
                     });
                   },
+                  onTextFieldSubmitted: (text) {
+                    final value = double.tryParse(text);
+                    if (value != null) {
+                      setState(() {
+                        _temperature = value.clamp(0.0, 2.0);
+                        _temperatureController.text =
+                            _temperature.toStringAsFixed(2);
+                      });
+                    }
+                  },
                 ),
-                const SizedBox(height: 16),
-                Text('${localizations.topP}: ${_topP.toStringAsFixed(2)}',
-                    style: Theme.of(context).textTheme.titleMedium),
-                Slider(
+                const SizedBox(height: 24),
+                _buildSliderWithTextField(
+                  label: localizations.topP,
                   value: _topP,
                   min: 0.0,
                   max: 1.0,
                   divisions: 100,
-                  label: _topP.toStringAsFixed(2),
-                  onChanged: (value) {
+                  controller: _topPController,
+                  onSliderChanged: (value) {
                     setState(() {
                       _topP = value;
+                      _topPController.text = value.toStringAsFixed(2);
                     });
                   },
+                  onTextFieldSubmitted: (text) {
+                    final value = double.tryParse(text);
+                    if (value != null) {
+                      setState(() {
+                        _topP = value.clamp(0.0, 1.0);
+                        _topPController.text = _topP.toStringAsFixed(2);
+                      });
+                    }
+                  },
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 24),
                 Text(localizations.useStreaming,
                     style: Theme.of(context).textTheme.titleMedium),
                 DropdownButtonFormField<bool?>(
@@ -255,6 +323,7 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 ),
+                const SizedBox(height: 16),
               ],
             ),
           ),
@@ -293,16 +362,15 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
   }
 }
 
-class _TemplateSelectionScreen extends StatefulWidget {
-  final ScrollController scrollController;
-  const _TemplateSelectionScreen({required this.scrollController});
+class _TemplateSelectionSheet extends StatefulWidget {
+  const _TemplateSelectionSheet();
 
   @override
-  State<_TemplateSelectionScreen> createState() =>
-      __TemplateSelectionScreenState();
+  State<_TemplateSelectionSheet> createState() =>
+      __TemplateSelectionSheetState();
 }
 
-class __TemplateSelectionScreenState extends State<_TemplateSelectionScreen> {
+class __TemplateSelectionSheetState extends State<_TemplateSelectionSheet> {
   final TextEditingController _searchController = TextEditingController();
   List<SystemPromptTemplate> _filteredTemplates = [];
 
@@ -337,49 +405,50 @@ class __TemplateSelectionScreenState extends State<_TemplateSelectionScreen> {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    return Material(
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    localizations.selectTemplate,
-                    style: Theme.of(context).textTheme.headlineSmall,
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height * 0.8,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      localizations.selectTemplate,
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
                   ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () => Navigator.of(context).pop(),
-                )
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: localizations.searchTemplates,
-                prefixIcon: const Icon(Icons.search),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.of(context).pop(),
+                  )
+                ],
               ),
             ),
-          ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: _filteredTemplates.isEmpty
-                ? Center(child: Text(localizations.noTemplatesFound))
-                : ListView.builder(
-                    controller: widget.scrollController,
-                    itemCount: _filteredTemplates.length,
-                    itemBuilder: (context, index) {
-                      final template = _filteredTemplates[index];
-                      return Card(
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 6),
-                        child: ListTile(
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  hintText: localizations.searchTemplates,
+                  prefixIcon: const Icon(Icons.search),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Expanded(
+              child: _filteredTemplates.isEmpty
+                  ? Center(child: Text(localizations.noTemplatesFound))
+                  : ListView.builder(
+                      itemCount: _filteredTemplates.length,
+                      itemBuilder: (context, index) {
+                        final template = _filteredTemplates[index];
+                        return ListTile(
                           title: Text(template.name),
                           subtitle: Text(
                             template.prompt,
@@ -388,12 +457,12 @@ class __TemplateSelectionScreenState extends State<_TemplateSelectionScreen> {
                           ),
                           onTap: () =>
                               Navigator.of(context).pop(template.prompt),
-                        ),
-                      );
-                    },
-                  ),
-          ),
-        ],
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
       ),
     );
   }

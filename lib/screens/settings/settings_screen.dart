@@ -17,9 +17,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _exportData() async {
     final localizations = AppLocalizations.of(context)!;
-    final exportOptions = await showDialog<Map<String, bool>>(
+    final exportOptions = await showModalBottomSheet<Map<String, bool>>(
       context: context,
-      builder: (context) => const _ExportOptionsDialog(),
+      builder: (context) => const _ExportOptionsSheet(),
     );
 
     if (exportOptions == null) return;
@@ -184,14 +184,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 }
 
-class _ExportOptionsDialog extends StatefulWidget {
-  const _ExportOptionsDialog();
+class _ExportOptionsSheet extends StatefulWidget {
+  const _ExportOptionsSheet();
 
   @override
-  State<_ExportOptionsDialog> createState() => _ExportOptionsDialogState();
+  State<_ExportOptionsSheet> createState() => _ExportOptionsSheetState();
 }
 
-class _ExportOptionsDialogState extends State<_ExportOptionsDialog> {
+class _ExportOptionsSheetState extends State<_ExportOptionsSheet> {
   final Map<String, bool> _options = {
     'apiProviders': true,
     'chatSessions': true,
@@ -202,12 +202,15 @@ class _ExportOptionsDialogState extends State<_ExportOptionsDialog> {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    return AlertDialog(
-      title: Text(localizations.exportSettings),
-      content: Column(
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Text(localizations.exportSettings,
+              style: Theme.of(context).textTheme.headlineSmall),
+          const SizedBox(height: 8),
           Text(localizations.selectContentToExport),
           const SizedBox(height: 16),
           CheckboxListTile(
@@ -231,18 +234,23 @@ class _ExportOptionsDialogState extends State<_ExportOptionsDialog> {
             value: _options['appConfig'],
             onChanged: (val) => setState(() => _options['appConfig'] = val!),
           ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text(localizations.cancel),
+              ),
+              const SizedBox(width: 8),
+              FilledButton(
+                onPressed: () => Navigator.of(context).pop(_options),
+                child: Text(localizations.exportData),
+              ),
+            ],
+          ),
         ],
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(localizations.cancel),
-        ),
-        FilledButton(
-          onPressed: () => Navigator.of(context).pop(_options),
-          child: Text(localizations.exportData),
-        ),
-      ],
     );
   }
 }

@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:nameless_ai/api/models.dart';
 import 'package:nameless_ai/data/models/api_provider.dart';
+import 'package:uuid/uuid.dart';
 
 class ApiService {
   final Dio _dio;
@@ -30,6 +31,27 @@ class ApiService {
       );
       debugPrint(
           "NamelessAI - Received Response: ${jsonEncode(response.data)}");
+
+      if (response.data is String) {
+        // Handle non-compliant APIs that return a raw string
+        return ChatCompletionResponse(
+          id: 'non-compliant-${const Uuid().v4()}',
+          object: 'chat.completion',
+          created: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+          model: request.model,
+          choices: [
+            ChatChoice(
+              index: 0,
+              message: ChatMessageResponse(
+                role: 'assistant',
+                content: response.data as String,
+              ),
+              finishReason: 'stop',
+            ),
+          ],
+        );
+      }
+
       return ChatCompletionResponse.fromJson(response.data);
     } on DioException catch (e) {
       throw Exception('Failed to get chat completion: ${e.message}');
