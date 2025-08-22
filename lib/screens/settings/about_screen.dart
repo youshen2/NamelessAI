@@ -55,18 +55,16 @@ class _AboutScreenState extends State<AboutScreen> {
           children: <Widget>[
             const FlutterLogo(size: 100),
             const SizedBox(height: 24),
-            SelectableText(
+            Text(
               _packageInfo.appName,
               style: Theme.of(context).textTheme.headlineMedium,
-              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             GestureDetector(
               onTap: _handleTap,
-              child: SelectableText(
+              child: Text(
                 '${localizations.version} ${_packageInfo.version} (${_packageInfo.buildNumber})',
                 style: Theme.of(context).textTheme.bodyLarge,
-                textAlign: TextAlign.center,
               ),
             ),
           ],
