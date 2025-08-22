@@ -1063,6 +1063,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Scroll to bottom'**
   String get scrollToBottom;
+
+  /// No description provided for @pageUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Page Up'**
+  String get pageUp;
 }
 
 class _AppLocalizationsDelegate

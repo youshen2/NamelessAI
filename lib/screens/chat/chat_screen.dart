@@ -31,7 +31,9 @@ class _ChatScreenState extends State<ChatScreen> {
   bool _userScrolledUp = false;
   final double _scrollThreshold = 50.0;
   bool _showScrollUpButton = false;
+  bool _showScrollPageUpButton = false;
   bool _showScrollDownButton = false;
+  final Set<String> _animatedMessageIds = {};
 
   @override
   void initState() {
@@ -52,10 +54,12 @@ class _ChatScreenState extends State<ChatScreen> {
     final manager = Provider.of<ChatSessionManager>(context, listen: false);
 
     if (manager.currentSession?.id != _currentSessionId) {
+      _animatedMessageIds.clear();
       _currentSessionId = manager.currentSession?.id;
       _userScrolledUp = false;
       setState(() {
         _showScrollUpButton = false;
+        _showScrollPageUpButton = false;
         _showScrollDownButton = false;
       });
       _scrollToBottom(instant: true);
@@ -92,14 +96,17 @@ class _ChatScreenState extends State<ChatScreen> {
       }
     }
 
-    final shouldShowUp = position.pixels > 200;
+    final shouldShowUp = position.pixels > MediaQuery.of(context).size.height;
+    final shouldShowPageUp = position.pixels > 200;
     final shouldShowDown = position.pixels < position.maxScrollExtent - 200 &&
         position.maxScrollExtent > MediaQuery.of(context).size.height;
 
     if (shouldShowUp != _showScrollUpButton ||
+        shouldShowPageUp != _showScrollPageUpButton ||
         shouldShowDown != _showScrollDownButton) {
       setState(() {
         _showScrollUpButton = shouldShowUp;
+        _showScrollPageUpButton = shouldShowPageUp;
         _showScrollDownButton = shouldShowDown;
       });
     }
@@ -141,6 +148,15 @@ class _ChatScreenState extends State<ChatScreen> {
   void _scrollToTop() {
     _scrollController.animateTo(
       0,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeOutCubic,
+    );
+  }
+
+  void _scrollPageUp() {
+    _scrollController.animateTo(
+      (_scrollController.offset - _scrollController.position.viewportDimension)
+          .clamp(0.0, _scrollController.position.maxScrollExtent),
       duration: const Duration(milliseconds: 500),
       curve: Curves.easeOutCubic,
     );
@@ -424,6 +440,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         }
                         return ListView.builder(
                           controller: _scrollController,
+                          addAutomaticKeepAlives: true,
                           itemCount: messages.length,
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           itemBuilder: (context, index) {
@@ -451,6 +468,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             return MessageBubble(
                               key: ValueKey(message.id),
                               message: message,
+                              animatedMessageIds: _animatedMessageIds,
                               onEdit: (msg, isEditing) =>
                                   _toggleEditing(msg.id, isEditing),
                               onSave: _saveEditedMessage,
@@ -483,9 +501,18 @@ class _ChatScreenState extends State<ChatScreen> {
                   children: [
                     if (_showScrollUpButton)
                       _buildScrollButton(
-                        icon: Icons.arrow_upward,
+                        icon: Icons.vertical_align_top,
                         onPressed: _scrollToTop,
                         tooltip: localizations.scrollToTop,
+                      ),
+                    if (_showScrollPageUpButton)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: _buildScrollButton(
+                          icon: Icons.arrow_upward,
+                          onPressed: _scrollPageUp,
+                          tooltip: localizations.pageUp,
+                        ),
                       ),
                     if (_showScrollDownButton)
                       Padding(

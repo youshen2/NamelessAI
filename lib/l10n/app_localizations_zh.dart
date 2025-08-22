@@ -503,4 +503,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get scrollToBottom => '回到底部';
+
+  @override
+  String get pageUp => '向上翻页';
 }

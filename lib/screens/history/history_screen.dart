@@ -301,6 +301,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 onCopy: (_) {},
                 activeBranchIndex: 0,
                 onBranchChange: (_) {},
+                animatedMessageIds: {},
               );
             },
           ),

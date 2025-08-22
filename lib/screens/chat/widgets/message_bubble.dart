@@ -13,6 +13,24 @@ import 'package:nameless_ai/screens/chat/widgets/typing_indicator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:markdown/markdown.dart' as md;
 
+class HrBuilder extends MarkdownElementBuilder {
+  final BuildContext context;
+  HrBuilder({required this.context});
+
+  @override
+  Widget? visitElementAfter(md.Element element, TextStyle? preferredStyle) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Divider(
+        color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.5),
+        thickness: 1.5,
+        indent: 20,
+        endIndent: 20,
+      ),
+    );
+  }
+}
+
 class MathBuilder extends MarkdownElementBuilder {
   final BuildContext context;
   final double fontSize;
@@ -26,17 +44,19 @@ class MathBuilder extends MarkdownElementBuilder {
 
     return Padding(
       padding: EdgeInsets.symmetric(vertical: isDisplayMode ? 8.0 : 2.0),
-      child: Math.tex(
-        text,
-        mathStyle: isDisplayMode ? MathStyle.display : MathStyle.text,
-        textStyle: preferredStyle?.copyWith(
-          fontSize: fontSize,
-          color: Theme.of(context).colorScheme.onSurface,
-        ),
-        onErrorFallback: (err) => SelectableText(
-          isDisplayMode ? '\$\$${text}\$\$' : '\$${text}\$',
-          style: preferredStyle?.copyWith(
-            color: Theme.of(context).colorScheme.error,
+      child: SelectionArea(
+        child: Math.tex(
+          text,
+          mathStyle: isDisplayMode ? MathStyle.display : MathStyle.text,
+          textStyle: preferredStyle?.copyWith(
+            fontSize: fontSize,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+          onErrorFallback: (err) => SelectableText(
+            isDisplayMode ? '\$\$${text}\$\$' : '\$${text}\$',
+            style: preferredStyle?.copyWith(
+              color: Theme.of(context).colorScheme.error,
+            ),
           ),
         ),
       ),
@@ -68,6 +88,7 @@ class MathDisplaySyntax extends md.InlineSyntax {
 
 class MessageBubble extends StatefulWidget {
   final ChatMessage message;
+  final Set<String> animatedMessageIds;
   final Function(ChatMessage, bool) onEdit;
   final Function(ChatMessage, String) onSave;
   final Function(ChatMessage) onDelete;
@@ -82,6 +103,7 @@ class MessageBubble extends StatefulWidget {
   const MessageBubble({
     super.key,
     required this.message,
+    required this.animatedMessageIds,
     required this.onEdit,
     required this.onSave,
     required this.onDelete,
@@ -99,7 +121,7 @@ class MessageBubble extends StatefulWidget {
 }
 
 class _MessageBubbleState extends State<MessageBubble>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   late TextEditingController _editController;
   final FocusNode _editFocusNode = FocusNode();
   bool _isHovering = false;
@@ -108,7 +130,8 @@ class _MessageBubbleState extends State<MessageBubble>
   late final Animation<Offset> _slideAnimation;
   late final Animation<double> _fadeAnimation;
 
-  static final Set<String> _animatedMessageIds = {};
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -126,9 +149,9 @@ class _MessageBubbleState extends State<MessageBubble>
     _fadeAnimation =
         CurvedAnimation(parent: _animationController, curve: Curves.easeIn);
 
-    if (!_animatedMessageIds.contains(widget.message.id)) {
+    if (!widget.animatedMessageIds.contains(widget.message.id)) {
       _animationController.forward();
-      _animatedMessageIds.add(widget.message.id);
+      widget.animatedMessageIds.add(widget.message.id);
     } else {
       _animationController.value = 1.0;
     }
@@ -137,12 +160,12 @@ class _MessageBubbleState extends State<MessageBubble>
   @override
   void didUpdateWidget(covariant MessageBubble oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.message.content != widget.message.content &&
-        !widget.message.isEditing) {
+    if (oldWidget.message.content != widget.message.content) {
       _editController.text = widget.message.content;
     }
     if (oldWidget.message.isEditing != widget.message.isEditing) {
       if (widget.message.isEditing) {
+        _editController.text = widget.message.content;
         _editFocusNode.requestFocus();
       }
     }
@@ -185,6 +208,7 @@ class _MessageBubbleState extends State<MessageBubble>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final appConfig = Provider.of<AppConfigProvider>(context);
     final isUser = widget.message.role == 'user';
 
@@ -388,6 +412,7 @@ class _MessageBubbleState extends State<MessageBubble>
         'code': MarkdownCodeBlockBuilder(context: context),
         'math_inline': MathBuilder(context: context, fontSize: fontSize),
         'math_display': MathBuilder(context: context, fontSize: fontSize),
+        'hr': HrBuilder(context: context),
       },
       onTapLink: (text, href, title) {
         if (href != null) {

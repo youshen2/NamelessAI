@@ -515,4 +515,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get scrollToBottom => 'Scroll to bottom';
+
+  @override
+  String get pageUp => 'Page Up';
 }

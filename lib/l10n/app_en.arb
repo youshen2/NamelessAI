@@ -195,5 +195,6 @@
   "showDebugButtonHint": "Show a debug button on message bubbles to inspect data.",
   "debugInfo": "Debug Info",
   "scrollToTop": "Scroll to top",
-  "scrollToBottom": "Scroll to bottom"
+  "scrollToBottom": "Scroll to bottom",
+  "pageUp": "Page Up"
 }

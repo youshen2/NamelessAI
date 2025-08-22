@@ -8,27 +8,11 @@ import 'package:nameless_ai/data/models/api_provider.dart';
 import 'package:nameless_ai/data/models/chat_session.dart';
 import 'package:nameless_ai/data/models/system_prompt_template.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
 
 class BackupService {
-  Future<bool> _requestPermissions() async {
-    if (Platform.isAndroid) {
-      var status = await Permission.storage.status;
-      if (!status.isGranted) {
-        status = await Permission.storage.request();
-      }
-      return status.isGranted;
-    }
-    return true;
-  }
-
   Future<void> exportData(BuildContext context,
       {required Map<String, bool> options}) async {
-    if (!await _requestPermissions()) {
-      throw Exception("Storage permission not granted");
-    }
-
     final backupData = {
       'version': 1,
       'createdAt': DateTime.now().toIso8601String(),
@@ -76,10 +60,6 @@ class BackupService {
   }
 
   Future<void> importData(BuildContext context) async {
-    if (!await _requestPermissions()) {
-      throw Exception("Storage permission not granted");
-    }
-
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['json'],

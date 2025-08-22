@@ -195,5 +195,6 @@
   "showDebugButtonHint": "在消息气泡上显示一个调试按钮以检查数据。",
   "debugInfo": "调试信息",
   "scrollToTop": "回到顶部",
-  "scrollToBottom": "回到底部"
+  "scrollToBottom": "回到底部",
+  "pageUp": "向上翻页"
 }
