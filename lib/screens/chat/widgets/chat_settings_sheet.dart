@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/models/chat_session.dart';
+import 'package:nameless_ai/data/models/system_prompt_template.dart';
 import 'package:nameless_ai/data/providers/api_provider_manager.dart';
 import 'package:nameless_ai/data/providers/system_prompt_template_manager.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
@@ -65,38 +66,14 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
 
     showDialog(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(localizations.systemPromptTemplates),
-          content: SizedBox(
-            width: double.maxFinite,
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: manager.templates.length,
-              itemBuilder: (context, index) {
-                final template = manager.templates[index];
-                return ListTile(
-                  title: Text(template.name),
-                  subtitle: Text(template.prompt,
-                      maxLines: 1, overflow: TextOverflow.ellipsis),
-                  onTap: () {
-                    setState(() {
-                      _systemPromptController.text = template.prompt;
-                    });
-                    Navigator.of(context).pop();
-                  },
-                );
-              },
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(localizations.cancel),
-            )
-          ],
-        );
-      },
+      builder: (context) => _TemplateSelectionDialog(
+        onSelect: (prompt) {
+          setState(() {
+            _systemPromptController.text = prompt;
+          });
+          Navigator.of(context).pop();
+        },
+      ),
     );
   }
 
@@ -303,6 +280,102 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _TemplateSelectionDialog extends StatefulWidget {
+  final ValueChanged<String> onSelect;
+
+  const _TemplateSelectionDialog({required this.onSelect});
+
+  @override
+  State<_TemplateSelectionDialog> createState() =>
+      __TemplateSelectionDialogState();
+}
+
+class __TemplateSelectionDialogState extends State<_TemplateSelectionDialog> {
+  final TextEditingController _searchController = TextEditingController();
+  List<SystemPromptTemplate> _filteredTemplates = [];
+
+  @override
+  void initState() {
+    super.initState();
+    final manager =
+        Provider.of<SystemPromptTemplateManager>(context, listen: false);
+    _filteredTemplates = manager.templates;
+    _searchController.addListener(_filterTemplates);
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_filterTemplates);
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _filterTemplates() {
+    final manager =
+        Provider.of<SystemPromptTemplateManager>(context, listen: false);
+    final query = _searchController.text.toLowerCase();
+    setState(() {
+      _filteredTemplates = manager.templates.where((template) {
+        return template.name.toLowerCase().contains(query) ||
+            template.prompt.toLowerCase().contains(query);
+      }).toList();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    return AlertDialog(
+      title: Text(localizations.selectTemplate),
+      content: SizedBox(
+        width: double.maxFinite,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: localizations.searchTemplates,
+                prefixIcon: const Icon(Icons.search),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: _filteredTemplates.isEmpty
+                  ? Center(child: Text(localizations.noTemplatesFound))
+                  : ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: _filteredTemplates.length,
+                      itemBuilder: (context, index) {
+                        final template = _filteredTemplates[index];
+                        return Card(
+                          margin: const EdgeInsets.symmetric(vertical: 4),
+                          child: ListTile(
+                            title: Text(template.name),
+                            subtitle: Text(
+                              template.prompt,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            onTap: () => widget.onSelect(template.prompt),
+                          ),
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(localizations.cancel),
+        )
+      ],
     );
   }
 }

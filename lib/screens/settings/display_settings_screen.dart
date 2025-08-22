@@ -45,22 +45,20 @@ class DisplaySettingsScreen extends StatelessWidget {
         children: [
           Card(
             margin: const EdgeInsets.only(bottom: 16),
-            child: _buildRadioGroup<Locale?>(
-              context: context,
-              title: localizations.language,
-              groupValue: appConfig.locale,
-              options: [
-                (localizations.systemDefault, null),
-                (localizations.english, const Locale('en')),
-                (localizations.chinese, const Locale('zh')),
-              ],
-              onChanged: (value) => appConfig.setLocale(value),
-            ),
-          ),
-          Card(
-            margin: const EdgeInsets.only(bottom: 16),
             child: Column(
               children: [
+                _buildRadioGroup<Locale?>(
+                  context: context,
+                  title: localizations.language,
+                  groupValue: appConfig.locale,
+                  options: [
+                    (localizations.systemDefault, null),
+                    (localizations.english, const Locale('en')),
+                    (localizations.chinese, const Locale('zh')),
+                  ],
+                  onChanged: (value) => appConfig.setLocale(value),
+                ),
+                const Divider(height: 1),
                 _buildRadioGroup<ThemeMode>(
                   context: context,
                   title: localizations.theme,
@@ -72,7 +70,7 @@ class DisplaySettingsScreen extends StatelessWidget {
                   ],
                   onChanged: (value) => appConfig.setThemeMode(value!),
                 ),
-                const Divider(height: 16),
+                const Divider(height: 1),
                 SwitchListTile(
                   title: Text(localizations.enableMonet),
                   subtitle: Text(localizations.monetTheming),
@@ -192,6 +190,46 @@ class DisplaySettingsScreen extends StatelessWidget {
                 children: [
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                    child: Text(localizations.statisticsSettings,
+                        style: Theme.of(context).textTheme.titleMedium),
+                  ),
+                  SwitchListTile(
+                    title: Text(localizations.showTotalTime),
+                    value: appConfig.showTotalTime,
+                    onChanged: appConfig.setShowTotalTime,
+                    activeColor: Theme.of(context).colorScheme.primary,
+                  ),
+                  SwitchListTile(
+                    title: Text(localizations.showFirstChunkTime),
+                    value: appConfig.showFirstChunkTime,
+                    onChanged: appConfig.setShowFirstChunkTime,
+                    activeColor: Theme.of(context).colorScheme.primary,
+                  ),
+                  SwitchListTile(
+                    title: Text(localizations.showTokenUsage),
+                    value: appConfig.showTokenUsage,
+                    onChanged: appConfig.setShowTokenUsage,
+                    activeColor: Theme.of(context).colorScheme.primary,
+                  ),
+                  SwitchListTile(
+                    title: Text(localizations.showOutputCharacters),
+                    value: appConfig.showOutputCharacters,
+                    onChanged: appConfig.setShowOutputCharacters,
+                    activeColor: Theme.of(context).colorScheme.primary,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Card(
+            margin: const EdgeInsets.only(bottom: 16),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
                     child: Text(localizations.scrollSettings,
                         style: Theme.of(context).textTheme.titleMedium),
                   ),
@@ -207,6 +245,36 @@ class DisplaySettingsScreen extends StatelessWidget {
                     value: appConfig.resumeAutoScrollOnBottom,
                     onChanged: (value) =>
                         appConfig.setResumeAutoScrollOnBottom(value),
+                    activeColor: Theme.of(context).colorScheme.primary,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Card(
+            margin: const EdgeInsets.only(bottom: 16),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                    child: Text(localizations.generalSettings,
+                        style: Theme.of(context).textTheme.titleMedium),
+                  ),
+                  SwitchListTile(
+                    title: Text(localizations.autoSaveNewChats),
+                    subtitle: Text(localizations.autoSaveNewChatsHint),
+                    value: appConfig.autoSaveNewChats,
+                    onChanged: appConfig.setAutoSaveNewChats,
+                    activeColor: Theme.of(context).colorScheme.primary,
+                  ),
+                  SwitchListTile(
+                    title: Text(localizations.confirmNewChat),
+                    subtitle: Text(localizations.confirmNewChatHint),
+                    value: appConfig.confirmNewChat,
+                    onChanged: appConfig.setConfirmNewChat,
                     activeColor: Theme.of(context).colorScheme.primary,
                   ),
                 ],

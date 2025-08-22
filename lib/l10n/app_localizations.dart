@@ -865,6 +865,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Display the model name under each AI response.'**
   String get showModelNameHint;
+
+  /// No description provided for @regenerateResponse.
+  ///
+  /// In en, this message translates to:
+  /// **'Regenerate'**
+  String get regenerateResponse;
+
+  /// No description provided for @copyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get copyMessage;
+
+  /// No description provided for @selectTemplate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a Template'**
+  String get selectTemplate;
+
+  /// No description provided for @searchTemplates.
+  ///
+  /// In en, this message translates to:
+  /// **'Search templates...'**
+  String get searchTemplates;
+
+  /// No description provided for @noTemplatesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No templates found.'**
+  String get noTemplatesFound;
+
+  /// No description provided for @exportSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Settings'**
+  String get exportSettings;
+
+  /// No description provided for @importSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Import Settings'**
+  String get importSettings;
+
+  /// No description provided for @reinitializeDatabase.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-initialize Database'**
+  String get reinitializeDatabase;
+
+  /// No description provided for @reinitializeDatabaseWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'This is a destructive action for debugging. It will re-register database adapters. The app may need to be restarted. Continue?'**
+  String get reinitializeDatabaseWarning;
+
+  /// No description provided for @databaseReinitialized.
+  ///
+  /// In en, this message translates to:
+  /// **'Database re-initialized. Please restart the app.'**
+  String get databaseReinitialized;
+
+  /// No description provided for @generalSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'General'**
+  String get generalSettings;
+
+  /// No description provided for @autoSaveNewChats.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-save new chats'**
+  String get autoSaveNewChats;
+
+  /// No description provided for @autoSaveNewChatsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatically save a session after the first message.'**
+  String get autoSaveNewChatsHint;
+
+  /// No description provided for @confirmNewChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm before starting new chat'**
+  String get confirmNewChat;
+
+  /// No description provided for @confirmNewChatHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Show a confirmation dialog if the current chat has unsaved changes.'**
+  String get confirmNewChatHint;
+
+  /// No description provided for @newChatConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'The current chat has unsaved changes. Do you want to start a new chat anyway? Your changes will be lost.'**
+  String get newChatConfirmation;
+
+  /// No description provided for @startNewChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Start New Chat'**
+  String get startNewChat;
 }
 
 class _AppLocalizationsDelegate

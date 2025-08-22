@@ -403,4 +403,60 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get showModelNameHint =>
       'Display the model name under each AI response.';
+
+  @override
+  String get regenerateResponse => 'Regenerate';
+
+  @override
+  String get copyMessage => 'Copy';
+
+  @override
+  String get selectTemplate => 'Select a Template';
+
+  @override
+  String get searchTemplates => 'Search templates...';
+
+  @override
+  String get noTemplatesFound => 'No templates found.';
+
+  @override
+  String get exportSettings => 'Export Settings';
+
+  @override
+  String get importSettings => 'Import Settings';
+
+  @override
+  String get reinitializeDatabase => 'Re-initialize Database';
+
+  @override
+  String get reinitializeDatabaseWarning =>
+      'This is a destructive action for debugging. It will re-register database adapters. The app may need to be restarted. Continue?';
+
+  @override
+  String get databaseReinitialized =>
+      'Database re-initialized. Please restart the app.';
+
+  @override
+  String get generalSettings => 'General';
+
+  @override
+  String get autoSaveNewChats => 'Auto-save new chats';
+
+  @override
+  String get autoSaveNewChatsHint =>
+      'Automatically save a session after the first message.';
+
+  @override
+  String get confirmNewChat => 'Confirm before starting new chat';
+
+  @override
+  String get confirmNewChatHint =>
+      'Show a confirmation dialog if the current chat has unsaved changes.';
+
+  @override
+  String get newChatConfirmation =>
+      'The current chat has unsaved changes. Do you want to start a new chat anyway? Your changes will be lost.';
+
+  @override
+  String get startNewChat => 'Start New Chat';
 }

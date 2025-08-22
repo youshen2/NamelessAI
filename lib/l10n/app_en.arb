@@ -141,5 +141,22 @@
   "compactMode": "Compact Mode",
   "compactModeHint": "Reduces padding and margins for a denser UI.",
   "showModelName": "Show Model Name",
-  "showModelNameHint": "Display the model name under each AI response."
+  "showModelNameHint": "Display the model name under each AI response.",
+  "regenerateResponse": "Regenerate",
+  "copyMessage": "Copy",
+  "selectTemplate": "Select a Template",
+  "searchTemplates": "Search templates...",
+  "noTemplatesFound": "No templates found.",
+  "exportSettings": "Export Settings",
+  "importSettings": "Import Settings",
+  "reinitializeDatabase": "Re-initialize Database",
+  "reinitializeDatabaseWarning": "This is a destructive action for debugging. It will re-register database adapters. The app may need to be restarted. Continue?",
+  "databaseReinitialized": "Database re-initialized. Please restart the app.",
+  "generalSettings": "General",
+  "autoSaveNewChats": "Auto-save new chats",
+  "autoSaveNewChatsHint": "Automatically save a session after the first message.",
+  "confirmNewChat": "Confirm before starting new chat",
+  "confirmNewChatHint": "Show a confirmation dialog if the current chat has unsaved changes.",
+  "newChatConfirmation": "The current chat has unsaved changes. Do you want to start a new chat anyway? Your changes will be lost.",
+  "startNewChat": "Start New Chat"
 }

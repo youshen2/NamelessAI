@@ -141,5 +141,22 @@
   "compactMode": "紧凑模式",
   "compactModeHint": "减少边距与间距，使界面更紧凑。",
   "showModelName": "显示模型名称",
-  "showModelNameHint": "在每条AI回复下方显示模型名称。"
+  "showModelNameHint": "在每条AI回复下方显示模型名称。",
+  "regenerateResponse": "重新生成",
+  "copyMessage": "复制",
+  "selectTemplate": "选择模板",
+  "searchTemplates": "搜索模板...",
+  "noTemplatesFound": "未找到模板。",
+  "exportSettings": "导出设置",
+  "importSettings": "导入设置",
+  "reinitializeDatabase": "重新初始化数据库",
+  "reinitializeDatabaseWarning": "这是一个用于调试的破坏性操作。它将重新注册数据库适配器。应用可能需要重启。要继续吗？",
+  "databaseReinitialized": "数据库已重新初始化。请重启应用。",
+  "generalSettings": "通用设置",
+  "autoSaveNewChats": "自动保存新聊天",
+  "autoSaveNewChatsHint": "在发送第一条消息后自动保存会话。",
+  "confirmNewChat": "开始新聊天前确认",
+  "confirmNewChatHint": "如果当前聊天有未保存的更改，则显示确认对话框。",
+  "newChatConfirmation": "当前聊天有未保存的更改。确定要开始新的聊天吗？您的更改将会丢失。",
+  "startNewChat": "开始新聊天"
 }

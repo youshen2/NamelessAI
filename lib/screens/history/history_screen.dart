@@ -299,6 +299,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 onResubmit: (_, __) {},
                 onRegenerate: (_) {},
                 onCopy: (_) {},
+                activeBranchIndex: 0,
                 onBranchChange: (_) {},
               );
             },

@@ -44,4 +44,10 @@ class AppDatabase {
     await systemPromptTemplatesBox.clear();
     await appConfigBox.clear();
   }
+
+  static Future<void> reinitialize() async {
+    await closeBoxes();
+    await registerAdapters();
+    await openBoxes();
+  }
 }

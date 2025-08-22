@@ -30,38 +30,66 @@ class _SystemPromptSettingsScreenState
             );
           }
           return ListView.builder(
+            padding: const EdgeInsets.all(8),
             itemCount: manager.templates.length,
             itemBuilder: (context, index) {
               final template = manager.templates[index];
               return Card(
-                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: ListTile(
-                  title: Text(template.name),
-                  subtitle: Text(template.prompt,
-                      maxLines: 2, overflow: TextOverflow.ellipsis),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
+                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      IconButton(
-                        icon: const Icon(Icons.edit),
-                        onPressed: () =>
-                            _showTemplateForm(context, template: template),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              template.name,
+                              style: Theme.of(context).textTheme.titleMedium,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          Row(
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.edit_outlined),
+                                tooltip: localizations.editTemplate,
+                                onPressed: () => _showTemplateForm(context,
+                                    template: template),
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.delete_outline,
+                                    color: Theme.of(context).colorScheme.error),
+                                tooltip: localizations.deleteTemplate,
+                                onPressed: () async {
+                                  final confirmed = await showConfirmDialog(
+                                      context,
+                                      localizations.systemPromptTemplates);
+                                  if (confirmed == true) {
+                                    await manager.deleteTemplate(template.id);
+                                    showSnackBar(context,
+                                        '${template.name} ${localizations.delete}d');
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () async {
-                          final confirmed = await showConfirmDialog(
-                              context, localizations.systemPromptTemplates);
-                          if (confirmed == true) {
-                            await manager.deleteTemplate(template.id);
-                            showSnackBar(context,
-                                '${template.name} ${localizations.delete}d');
-                          }
-                        },
+                      const SizedBox(height: 4),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Text(
+                          template.prompt,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ],
                   ),
-                  onTap: () => _showTemplateForm(context, template: template),
                 ),
               );
             },
@@ -162,10 +190,9 @@ class _SystemPromptTemplateFormState extends State<SystemPromptTemplateForm> {
         bottom: MediaQuery.of(context).viewInsets.bottom,
         left: 16,
         right: 16,
-        top: 16,
+        top: 8,
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
             height: 4,
@@ -184,40 +211,37 @@ class _SystemPromptTemplateFormState extends State<SystemPromptTemplateForm> {
           ),
           const SizedBox(height: 16),
           Expanded(
-            child: SingleChildScrollView(
-              controller: widget.scrollController,
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextFormField(
-                      controller: _nameController,
-                      decoration: InputDecoration(
-                          labelText: localizations.templateName),
-                      validator: (value) => value!.isEmpty
-                          ? localizations.templateNameRequired
-                          : null,
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _promptController,
-                      decoration: InputDecoration(
-                          labelText: localizations.templatePrompt),
-                      maxLines: 5,
-                      minLines: 3,
-                      keyboardType: TextInputType.multiline,
-                      validator: (value) => value!.isEmpty
-                          ? localizations.templatePromptRequired
-                          : null,
-                    ),
-                  ],
-                ),
+            child: Form(
+              key: _formKey,
+              child: ListView(
+                controller: widget.scrollController,
+                children: [
+                  TextFormField(
+                    controller: _nameController,
+                    decoration:
+                        InputDecoration(labelText: localizations.templateName),
+                    validator: (value) => value!.isEmpty
+                        ? localizations.templateNameRequired
+                        : null,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _promptController,
+                    decoration: InputDecoration(
+                        labelText: localizations.templatePrompt),
+                    maxLines: 8,
+                    minLines: 3,
+                    keyboardType: TextInputType.multiline,
+                    validator: (value) => value!.isEmpty
+                        ? localizations.templatePromptRequired
+                        : null,
+                  ),
+                ],
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 16.0),
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [

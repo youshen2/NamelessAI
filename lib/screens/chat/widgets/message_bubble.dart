@@ -89,8 +89,8 @@ class MessageBubble extends StatefulWidget {
     required this.onCopy,
     this.isReadOnly = false,
     this.branchCount = 0,
-    this.activeBranchIndex = 0,
     required this.onBranchChange,
+    required this.activeBranchIndex,
   });
 
   @override
@@ -205,8 +205,20 @@ class _MessageBubbleState extends State<MessageBubble>
               crossAxisAlignment: alignment,
               children: [
                 _buildMessageContent(context),
-                if (!widget.isReadOnly) _buildStatistics(context),
-                if (!widget.isReadOnly) _buildMetaInfo(context),
+                if (!widget.isReadOnly)
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(top: 6.0, right: 8.0, left: 8.0),
+                    child: Wrap(
+                      spacing: 12.0,
+                      runSpacing: 4.0,
+                      alignment: WrapAlignment.end,
+                      children: [
+                        ..._buildStatistics(context),
+                        ..._buildMetaInfo(context),
+                      ],
+                    ),
+                  ),
                 if (!widget.isReadOnly && !widget.message.isEditing)
                   _buildActionBar(context),
                 if (widget.branchCount > 1) _buildBranchNavigator(context),
@@ -267,7 +279,6 @@ class _MessageBubbleState extends State<MessageBubble>
   }
 
   Widget _buildThinkingContent(BuildContext context, Color textColor) {
-    final localizations = AppLocalizations.of(context)!;
     final markdownStyleSheet = MarkdownStyleSheet(
       p: TextStyle(
           color: textColor.withOpacity(0.8), fontSize: 14, height: 1.3),
@@ -427,26 +438,27 @@ class _MessageBubbleState extends State<MessageBubble>
             ),
           ),
           const SizedBox(height: 8),
-          Wrap(
-            alignment: WrapAlignment.end,
-            spacing: 8.0,
-            runSpacing: 4.0,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              TextButton(
+              IconButton(
+                icon: const Icon(Icons.cancel_outlined),
+                tooltip: localizations.cancel,
                 onPressed: () => widget.onEdit(widget.message, false),
-                child: Text(localizations.cancel),
               ),
-              OutlinedButton(
+              IconButton(
+                icon: const Icon(Icons.check_circle_outline),
+                tooltip: localizations.save,
                 onPressed: () =>
                     widget.onSave(widget.message, _editController.text),
-                child: Text(localizations.save),
               ),
               if (isUser)
-                FilledButton.icon(
-                  icon: const Icon(Icons.send, size: 18),
+                IconButton(
+                  icon: const Icon(Icons.send_and_archive_outlined),
+                  tooltip: localizations.saveAndResubmit,
+                  color: Theme.of(context).colorScheme.primary,
                   onPressed: () =>
                       widget.onResubmit(widget.message, _editController.text),
-                  label: Text(localizations.saveAndResubmit),
                 ),
             ],
           ),
@@ -471,10 +483,10 @@ class _MessageBubbleState extends State<MessageBubble>
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _actionButton(Icons.copy_all_outlined, localizations.copyCode,
+            _actionButton(Icons.copy_all_outlined, localizations.copyMessage,
                 () => widget.onCopy(widget.message.content)),
             if (!isUser)
-              _actionButton(Icons.refresh, "Regenerate",
+              _actionButton(Icons.refresh, localizations.regenerateResponse,
                   () => widget.onRegenerate(widget.message)),
             _actionButton(Icons.edit_outlined, localizations.editMessage,
                 () => widget.onEdit(widget.message, true)),
@@ -531,51 +543,40 @@ class _MessageBubbleState extends State<MessageBubble>
     );
   }
 
-  Widget _buildMetaInfo(BuildContext context) {
+  List<Widget> _buildMetaInfo(BuildContext context) {
     final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
     final showName = appConfig.showModelName &&
         widget.message.modelName != null &&
         widget.message.role == 'assistant';
     final showTime = appConfig.showTimestamps;
 
-    if (!showName && !showTime) return const SizedBox.shrink();
+    final meta = <Widget>[];
 
-    final textStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
-          color:
-              Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.8),
-        );
+    if (showName) {
+      meta.add(_StatItem(
+        label: widget.message.modelName!,
+        value: '',
+        isMeta: true,
+      ));
+    }
+    if (showTime) {
+      meta.add(_StatItem(
+        label:
+            '${widget.message.timestamp.hour.toString().padLeft(2, '0')}:${widget.message.timestamp.minute.toString().padLeft(2, '0')}',
+        value: '',
+        isMeta: true,
+      ));
+    }
 
-    return Padding(
-      padding: const EdgeInsets.only(top: 4.0, right: 8.0, left: 8.0),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (showName)
-            Text(
-              widget.message.modelName!,
-              style: textStyle,
-            ),
-          if (showName && showTime)
-            Text(
-              ' · ',
-              style: textStyle,
-            ),
-          if (showTime)
-            Text(
-              '${widget.message.timestamp.hour.toString().padLeft(2, '0')}:${widget.message.timestamp.minute.toString().padLeft(2, '0')}',
-              style: textStyle,
-            ),
-        ],
-      ),
-    );
+    return meta;
   }
 
-  Widget _buildStatistics(BuildContext context) {
-    if (widget.isReadOnly) return const SizedBox.shrink();
+  List<Widget> _buildStatistics(BuildContext context) {
+    if (widget.isReadOnly) return [];
 
     final appConfig = Provider.of<AppConfigProvider>(context);
     if (widget.message.role != 'assistant' || widget.message.isError) {
-      return const SizedBox.shrink();
+      return [];
     }
 
     final localizations = AppLocalizations.of(context)!;
@@ -611,26 +612,17 @@ class _MessageBubbleState extends State<MessageBubble>
               '${localizations.prompt}: $prompt / ${localizations.completion}: $completion'));
     }
 
-    if (stats.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    return Padding(
-      padding: const EdgeInsets.only(top: 6.0),
-      child: Wrap(
-        spacing: 12.0,
-        runSpacing: 4.0,
-        children: stats,
-      ),
-    );
+    return stats;
   }
 }
 
 class _StatItem extends StatelessWidget {
   final String label;
   final String value;
+  final bool isMeta;
 
-  const _StatItem({required this.label, required this.value});
+  const _StatItem(
+      {required this.label, required this.value, this.isMeta = false});
 
   @override
   Widget build(BuildContext context) {
@@ -638,6 +630,11 @@ class _StatItem extends StatelessWidget {
         .textTheme
         .bodySmall
         ?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant);
+
+    if (isMeta) {
+      return Text(label, style: style);
+    }
+
     return RichText(
       text: TextSpan(
         style: style,

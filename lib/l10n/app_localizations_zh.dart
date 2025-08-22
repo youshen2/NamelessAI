@@ -397,4 +397,56 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get showModelNameHint => '在每条AI回复下方显示模型名称。';
+
+  @override
+  String get regenerateResponse => '重新生成';
+
+  @override
+  String get copyMessage => '复制';
+
+  @override
+  String get selectTemplate => '选择模板';
+
+  @override
+  String get searchTemplates => '搜索模板...';
+
+  @override
+  String get noTemplatesFound => '未找到模板。';
+
+  @override
+  String get exportSettings => '导出设置';
+
+  @override
+  String get importSettings => '导入设置';
+
+  @override
+  String get reinitializeDatabase => '重新初始化数据库';
+
+  @override
+  String get reinitializeDatabaseWarning =>
+      '这是一个用于调试的破坏性操作。它将重新注册数据库适配器。应用可能需要重启。要继续吗？';
+
+  @override
+  String get databaseReinitialized => '数据库已重新初始化。请重启应用。';
+
+  @override
+  String get generalSettings => '通用设置';
+
+  @override
+  String get autoSaveNewChats => '自动保存新聊天';
+
+  @override
+  String get autoSaveNewChatsHint => '在发送第一条消息后自动保存会话。';
+
+  @override
+  String get confirmNewChat => '开始新聊天前确认';
+
+  @override
+  String get confirmNewChatHint => '如果当前聊天有未保存的更改，则显示确认对话框。';
+
+  @override
+  String get newChatConfirmation => '当前聊天有未保存的更改。确定要开始新的聊天吗？您的更改将会丢失。';
+
+  @override
+  String get startNewChat => '开始新聊天';
 }

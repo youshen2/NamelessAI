@@ -133,6 +133,7 @@ class _ChatScreenState extends State<ChatScreen> {
         Provider.of<ChatSessionManager>(context, listen: false);
     final apiProviderManager =
         Provider.of<APIProviderManager>(context, listen: false);
+    final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
 
     final String messageText = _messageController.text.trim();
     if (messageText.isEmpty || chatSessionManager.isGenerating) return;
@@ -143,6 +144,13 @@ class _ChatScreenState extends State<ChatScreen> {
     if (selectedProvider == null || selectedModel == null) {
       showSnackBar(context, localizations.selectModel, isError: true);
       return;
+    }
+
+    if (chatSessionManager.isNewSession && appConfig.autoSaveNewChats) {
+      String chatName = messageText.length > 40
+          ? '${messageText.substring(0, 37)}...'
+          : messageText;
+      await chatSessionManager.saveCurrentSession(chatName);
     }
 
     _messageController.clear();
@@ -191,10 +199,41 @@ class _ChatScreenState extends State<ChatScreen> {
     return KeyEventResult.ignored;
   }
 
-  void _startNewChat() {
+  Future<void> _startNewChat() async {
+    final localizations = AppLocalizations.of(context)!;
+    final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
+    final chatSessionManager =
+        Provider.of<ChatSessionManager>(context, listen: false);
+
+    if (appConfig.confirmNewChat &&
+        chatSessionManager.currentSession != null &&
+        chatSessionManager.isNewSession &&
+        chatSessionManager.currentSession!.messages.isNotEmpty) {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(localizations.newChat),
+          content: Text(localizations.newChatConfirmation),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(localizations.cancel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text(localizations.startNewChat),
+            ),
+          ],
+        ),
+      );
+      if (confirmed != true) {
+        return;
+      }
+    }
+
     final apiProviderManager =
         Provider.of<APIProviderManager>(context, listen: false);
-    Provider.of<ChatSessionManager>(context, listen: false).startNewSession(
+    chatSessionManager.startNewSession(
       providerId: apiProviderManager.selectedProvider?.id,
       modelId: apiProviderManager.selectedModel?.id,
     );

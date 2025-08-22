@@ -3,25 +3,9 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/providers/app_config_provider.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
-import 'package:nameless_ai/screens/settings/widgets/display_settings_sheet.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
-
-  void _showStatisticsSettings(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) => DraggableScrollableSheet(
-        expand: false,
-        initialChildSize: 0.5,
-        minChildSize: 0.3,
-        maxChildSize: 0.7,
-        builder: (context, scrollController) =>
-            DisplaySettingsSheet(scrollController: scrollController),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,11 +38,6 @@ class SettingsScreen extends StatelessWidget {
                   leading: const Icon(Icons.palette_outlined),
                   title: Text(localizations.appearanceSettings),
                   onTap: () => context.go('/settings/display'),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.bar_chart_outlined),
-                  title: Text(localizations.statisticsSettings),
-                  onTap: () => _showStatisticsSettings(context),
                 ),
               ],
             ),
