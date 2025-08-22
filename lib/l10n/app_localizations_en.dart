@@ -509,4 +509,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get debugInfo => 'Debug Info';
+
+  @override
+  String get scrollToTop => 'Scroll to top';
+
+  @override
+  String get scrollToBottom => 'Scroll to bottom';
 }

@@ -16,8 +16,6 @@ class GeneralSettingsScreen extends StatelessWidget {
         title: Text(localizations.generalSettings),
       ),
       body: ListView(
-        physics: const BouncingScrollPhysics(
-            parent: AlwaysScrollableScrollPhysics()),
         padding: const EdgeInsets.all(16.0),
         children: [
           Card(

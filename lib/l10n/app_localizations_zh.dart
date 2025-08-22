@@ -497,4 +497,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get debugInfo => '调试信息';
+
+  @override
+  String get scrollToTop => '回到顶部';
+
+  @override
+  String get scrollToBottom => '回到底部';
 }

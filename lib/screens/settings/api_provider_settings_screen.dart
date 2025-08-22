@@ -21,6 +21,13 @@ class _APIProviderSettingsScreenState extends State<APIProviderSettingsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(localizations.apiProviderSettings),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            tooltip: localizations.addProvider,
+            onPressed: () => _showProviderForm(context),
+          ),
+        ],
       ),
       body: Consumer<APIProviderManager>(
         builder: (context, manager, child) {
@@ -30,8 +37,6 @@ class _APIProviderSettingsScreenState extends State<APIProviderSettingsScreen> {
             );
           }
           return ListView.builder(
-            physics: const BouncingScrollPhysics(
-                parent: AlwaysScrollableScrollPhysics()),
             padding: const EdgeInsets.all(8),
             itemCount: manager.providers.length,
             itemBuilder: (context, index) {
@@ -97,11 +102,6 @@ class _APIProviderSettingsScreenState extends State<APIProviderSettingsScreen> {
             },
           );
         },
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showProviderForm(context),
-        label: Text(localizations.addProvider),
-        icon: const Icon(Icons.add),
       ),
     );
   }

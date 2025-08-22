@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:nameless_ai/data/models/api_provider.dart';
 import 'package:nameless_ai/data/models/chat_message.dart';
 import 'package:nameless_ai/data/providers/api_provider_manager.dart';
 import 'package:nameless_ai/data/providers/app_config_provider.dart';
@@ -28,8 +30,8 @@ class _ChatScreenState extends State<ChatScreen> {
   String? _currentSessionId;
   bool _userScrolledUp = false;
   final double _scrollThreshold = 50.0;
-  bool _showScrollUpFab = false;
-  bool _showScrollDownFab = false;
+  bool _showScrollUpButton = false;
+  bool _showScrollDownButton = false;
 
   @override
   void initState() {
@@ -45,13 +47,24 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void _chatUpdateListener() {
-    if (mounted) {
-      final manager = Provider.of<ChatSessionManager>(context, listen: false);
-      if (manager.isGenerating &&
-          manager.currentSession?.id == _currentSessionId) {
-        if (!_userScrolledUp) {
-          _scrollToBottom();
-        }
+    if (!mounted) return;
+
+    final manager = Provider.of<ChatSessionManager>(context, listen: false);
+
+    if (manager.currentSession?.id != _currentSessionId) {
+      _currentSessionId = manager.currentSession?.id;
+      _userScrolledUp = false;
+      setState(() {
+        _showScrollUpButton = false;
+        _showScrollDownButton = false;
+      });
+      _scrollToBottom(instant: true);
+    }
+
+    if (manager.isGenerating &&
+        manager.currentSession?.id == _currentSessionId) {
+      if (!_userScrolledUp) {
+        _scrollToBottom();
       }
     }
   }
@@ -83,11 +96,11 @@ class _ChatScreenState extends State<ChatScreen> {
     final shouldShowDown = position.pixels < position.maxScrollExtent - 200 &&
         position.maxScrollExtent > MediaQuery.of(context).size.height;
 
-    if (shouldShowUp != _showScrollUpFab ||
-        shouldShowDown != _showScrollDownFab) {
+    if (shouldShowUp != _showScrollUpButton ||
+        shouldShowDown != _showScrollDownButton) {
       setState(() {
-        _showScrollUpFab = shouldShowUp;
-        _showScrollDownFab = shouldShowDown;
+        _showScrollUpButton = shouldShowUp;
+        _showScrollDownButton = shouldShowDown;
       });
     }
   }
@@ -171,9 +184,11 @@ class _ChatScreenState extends State<ChatScreen> {
     }
 
     if (chatSessionManager.isNewSession && appConfig.useFirstSentenceAsTitle) {
-      String chatName = messageText.length > 40
-          ? '${messageText.substring(0, 37)}...'
-          : messageText;
+      const titleMaxLength = 25;
+      String chatName = messageText.split('\n').first;
+      if (chatName.length > titleMaxLength) {
+        chatName = '${chatName.substring(0, titleMaxLength)}...';
+      }
       await chatSessionManager.saveCurrentSession(chatName);
     }
 
@@ -376,18 +391,12 @@ class _ChatScreenState extends State<ChatScreen> {
     final localizations = AppLocalizations.of(context)!;
     return Consumer<ChatSessionManager>(
       builder: (context, manager, child) {
-        if (manager.currentSession?.id != _currentSessionId) {
-          _currentSessionId = manager.currentSession?.id;
-          _userScrolledUp = false;
-          SchedulerBinding.instance
-              .addPostFrameCallback((_) => _scrollToBottom(instant: true));
-        }
-
         final messages = manager.activeMessages;
         return Scaffold(
           appBar: AppBar(
             title: Text(manager.currentSession?.name ?? localizations.newChat),
             actions: [
+              _buildAppBarModelSelector(localizations),
               IconButton(
                 icon: const Icon(Icons.add_circle_outline),
                 tooltip: localizations.newChat,
@@ -415,8 +424,6 @@ class _ChatScreenState extends State<ChatScreen> {
                         }
                         return ListView.builder(
                           controller: _scrollController,
-                          physics: const BouncingScrollPhysics(
-                              parent: AlwaysScrollableScrollPhysics()),
                           itemCount: messages.length,
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           itemBuilder: (context, index) {
@@ -468,43 +475,65 @@ class _ChatScreenState extends State<ChatScreen> {
                   _buildInputArea(localizations, manager.isGenerating),
                 ],
               ),
-              if (_showScrollUpFab)
-                Positioned(
-                  top: 16,
-                  right: 16,
-                  child: AnimatedOpacity(
-                    opacity: _showScrollUpFab ? 1.0 : 0.0,
-                    duration: const Duration(milliseconds: 200),
-                    child: FloatingActionButton.small(
-                      onPressed: _scrollToTop,
-                      tooltip: 'Scroll to top',
-                      child: const Icon(Icons.arrow_upward),
-                    ),
-                  ),
+              Positioned(
+                bottom: 80,
+                right: 16,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (_showScrollUpButton)
+                      _buildScrollButton(
+                        icon: Icons.arrow_upward,
+                        onPressed: _scrollToTop,
+                        tooltip: localizations.scrollToTop,
+                      ),
+                    if (_showScrollDownButton)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: _buildScrollButton(
+                          icon: Icons.arrow_downward,
+                          onPressed: () {
+                            setState(() {
+                              _userScrolledUp = false;
+                            });
+                            _scrollToBottom();
+                          },
+                          tooltip: localizations.scrollToBottom,
+                        ),
+                      ),
+                  ],
                 ),
-              if (_showScrollDownFab)
-                Positioned(
-                  bottom: 90,
-                  right: 16,
-                  child: AnimatedOpacity(
-                    opacity: _showScrollDownFab ? 1.0 : 0.0,
-                    duration: const Duration(milliseconds: 200),
-                    child: FloatingActionButton.small(
-                      onPressed: () {
-                        setState(() {
-                          _userScrolledUp = false;
-                        });
-                        _scrollToBottom();
-                      },
-                      tooltip: 'Scroll to bottom',
-                      child: const Icon(Icons.arrow_downward),
-                    ),
-                  ),
-                ),
+              ),
             ],
           ),
         );
       },
+    );
+  }
+
+  Widget _buildScrollButton({
+    required IconData icon,
+    required VoidCallback onPressed,
+    required String tooltip,
+  }) {
+    return AnimatedOpacity(
+      opacity: 1.0,
+      duration: const Duration(milliseconds: 200),
+      child: Material(
+        color: Theme.of(context).colorScheme.surfaceContainer.withOpacity(0.8),
+        borderRadius: BorderRadius.circular(24),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(24),
+          onTap: onPressed,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Icon(
+              icon,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -557,46 +586,153 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
               ),
               const SizedBox(width: 8),
-              SizedBox(
-                width: 48,
-                height: 48,
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 200),
-                  transitionBuilder: (child, animation) {
-                    return ScaleTransition(scale: animation, child: child);
-                  },
-                  child: isLoading
-                      ? FilledButton(
-                          key: const ValueKey('stop_button'),
-                          onPressed: () {
-                            if (_chatSessionManager.currentSession != null) {
-                              _chatSessionManager.cancelGeneration(
-                                  _chatSessionManager.currentSession!.id);
-                            }
-                          },
-                          style: FilledButton.styleFrom(
-                            backgroundColor:
-                                Theme.of(context).colorScheme.errorContainer,
-                            foregroundColor:
-                                Theme.of(context).colorScheme.onErrorContainer,
-                            shape: const CircleBorder(),
-                            padding: EdgeInsets.zero,
-                          ),
-                          child: const Icon(Icons.stop),
-                        )
-                      : FilledButton(
-                          key: const ValueKey('send_button'),
-                          onPressed: _sendMessage,
-                          style: FilledButton.styleFrom(
-                            shape: const CircleBorder(),
-                            padding: EdgeInsets.zero,
-                          ),
-                          child: const Icon(Icons.send),
-                        ),
-                ),
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                transitionBuilder: (child, animation) {
+                  return ScaleTransition(scale: animation, child: child);
+                },
+                child: isLoading
+                    ? _buildStopButton()
+                    : _buildSendButton(localizations),
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStopButton() {
+    return SizedBox(
+      key: const ValueKey('stop_button'),
+      width: 48,
+      height: 48,
+      child: FilledButton(
+        onPressed: () {
+          if (_chatSessionManager.currentSession != null) {
+            _chatSessionManager
+                .cancelGeneration(_chatSessionManager.currentSession!.id);
+          }
+        },
+        style: FilledButton.styleFrom(
+          backgroundColor: Theme.of(context).colorScheme.errorContainer,
+          foregroundColor: Theme.of(context).colorScheme.onErrorContainer,
+          shape: const CircleBorder(),
+          padding: EdgeInsets.zero,
+        ),
+        child: const Icon(Icons.stop),
+      ),
+    );
+  }
+
+  Widget _buildSendButton(AppLocalizations localizations) {
+    return SizedBox(
+      key: const ValueKey('send_button'),
+      width: 48,
+      height: 48,
+      child: FilledButton(
+        onPressed: _sendMessage,
+        style: FilledButton.styleFrom(
+          shape: const CircleBorder(),
+          padding: EdgeInsets.zero,
+        ),
+        child: const Icon(Icons.send),
+      ),
+    );
+  }
+
+  Widget _buildAppBarModelSelector(AppLocalizations localizations) {
+    final apiManager = Provider.of<APIProviderManager>(context);
+    final providers = apiManager.providers;
+
+    if (providers.isEmpty) {
+      return TextButton.icon(
+        onPressed: () {
+          context.go('/settings/api_providers');
+        },
+        icon: const Icon(Icons.warning_amber_rounded),
+        label: Text(localizations.addProvider),
+      );
+    }
+
+    return PopupMenuButton<dynamic>(
+      tooltip: localizations.modelSelection,
+      onSelected: (value) {
+        if (value is Model) {
+          APIProvider? providerOfSelectedModel;
+          for (var p in providers) {
+            if (p.models.any((m) => m.id == value.id)) {
+              providerOfSelectedModel = p;
+              break;
+            }
+          }
+          if (providerOfSelectedModel != null) {
+            apiManager.setSelectedProvider(providerOfSelectedModel);
+            apiManager.setSelectedModel(value);
+
+            final chatManager =
+                Provider.of<ChatSessionManager>(context, listen: false);
+            if (chatManager.currentSession != null) {
+              chatManager.updateCurrentSessionDetails(
+                providerId: providerOfSelectedModel.id,
+                modelId: value.id,
+              );
+            }
+          }
+        }
+      },
+      itemBuilder: (context) {
+        List<PopupMenuEntry<dynamic>> items = [];
+        for (var provider in providers) {
+          items.add(PopupMenuItem(
+            enabled: false,
+            child: Text(provider.name,
+                style: const TextStyle(fontWeight: FontWeight.bold)),
+          ));
+          for (var model in provider.models) {
+            items.add(PopupMenuItem(
+              value: model,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: Row(
+                  children: [
+                    if (apiManager.selectedModel?.id == model.id)
+                      Icon(Icons.check,
+                          color: Theme.of(context).colorScheme.primary)
+                    else
+                      const SizedBox(width: 24),
+                    const SizedBox(width: 12),
+                    Expanded(child: Text(model.name)),
+                  ],
+                ),
+              ),
+            ));
+          }
+          if (providers.indexOf(provider) < providers.length - 1) {
+            items.add(const PopupMenuDivider());
+          }
+        }
+        return items;
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12.0),
+        child: Row(
+          children: [
+            Icon(Icons.model_training_outlined,
+                color: Theme.of(context).colorScheme.onSurfaceVariant),
+            const SizedBox(width: 8),
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width * 0.2),
+              child: Text(
+                apiManager.selectedModel?.name ?? localizations.selectModel,
+                style: Theme.of(context).textTheme.bodyMedium,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            Icon(Icons.arrow_drop_down,
+                color: Theme.of(context).colorScheme.onSurfaceVariant),
+          ],
         ),
       ),
     );

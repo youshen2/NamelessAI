@@ -21,6 +21,13 @@ class _SystemPromptSettingsScreenState
     return Scaffold(
       appBar: AppBar(
         title: Text(localizations.systemPromptTemplates),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            tooltip: localizations.addTemplate,
+            onPressed: () => _showTemplateForm(context),
+          ),
+        ],
       ),
       body: Consumer<SystemPromptTemplateManager>(
         builder: (context, manager, child) {
@@ -30,8 +37,6 @@ class _SystemPromptSettingsScreenState
             );
           }
           return ListView.builder(
-            physics: const BouncingScrollPhysics(
-                parent: AlwaysScrollableScrollPhysics()),
             padding: const EdgeInsets.all(8),
             itemCount: manager.templates.length,
             itemBuilder: (context, index) {
@@ -85,11 +90,6 @@ class _SystemPromptSettingsScreenState
             },
           );
         },
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showTemplateForm(context),
-        label: Text(localizations.addTemplate),
-        icon: const Icon(Icons.add),
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_highlight/flutter_highlight.dart';
 import 'package:flutter_highlight/theme_map.dart';
 import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/providers/app_config_provider.dart';
@@ -32,6 +33,33 @@ class DisplaySettingsScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildCodeThemePreview(BuildContext context, String themeKey) {
+    final theme = themeMap[themeKey] ?? themeMap['github']!;
+    const codeSnippet = '''
+void main() {
+  print('Hello, NamelessAI!');
+}
+''';
+    return IgnorePointer(
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        decoration: BoxDecoration(
+          color: theme['root']?.backgroundColor,
+          borderRadius: BorderRadius.circular(8.0),
+          border: Border.all(
+              color: Theme.of(context).colorScheme.outline.withOpacity(0.5)),
+        ),
+        child: HighlightView(
+          codeSnippet,
+          language: 'dart',
+          theme: theme,
+          padding: const EdgeInsets.all(12.0),
+          textStyle: const TextStyle(fontFamily: 'monospace', fontSize: 12),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
@@ -43,8 +71,6 @@ class DisplaySettingsScreen extends StatelessWidget {
         title: Text(localizations.appearanceSettings),
       ),
       body: ListView(
-        physics: const BouncingScrollPhysics(
-            parent: AlwaysScrollableScrollPhysics()),
         padding: const EdgeInsets.all(16.0),
         children: [
           Card(
@@ -224,6 +250,7 @@ class DisplaySettingsScreen extends StatelessWidget {
                       },
                     ),
                   ),
+                  _buildCodeThemePreview(context, appConfig.codeTheme),
                   const SizedBox(height: 16),
                 ],
               ),

@@ -376,6 +376,7 @@ class ChatSessionManager extends ChangeNotifier {
     if (_generatingSessions.contains(sessionId)) {
       _cancelledSessions.add(sessionId);
       debugPrint("NamelessAI - Cancellation requested for session $sessionId");
+      notifyListeners();
     }
   }
 
@@ -407,7 +408,10 @@ class ChatSessionManager extends ChangeNotifier {
     int? firstChunkTimeMs;
     String fullResponseBuffer = '';
     api_models.Usage? usage;
-    const thinkTag = '</think>';
+    const thinkStartTag = '<think>';
+    const thinkEndTag = '</think>';
+    bool isThinkingResponse = false;
+    bool isFirstChunk = true;
     bool thinkingDone = false;
 
     try {
@@ -438,24 +442,38 @@ class ChatSessionManager extends ChangeNotifier {
                 messageToUpdate.thinkingStartTime = DateTime.now();
               }
             }
-            fullResponseBuffer += item;
 
             if (model.supportsThinking) {
-              if (!thinkingDone && fullResponseBuffer.contains(thinkTag)) {
-                thinkingDone = true;
-                final parts = fullResponseBuffer.split(thinkTag);
-                messageToUpdate.thinkingContent = parts[0];
-                messageToUpdate.content = parts.length > 1 ? parts[1] : '';
-                if (messageToUpdate.thinkingStartTime != null) {
-                  messageToUpdate.thinkingDurationMs = DateTime.now()
-                      .difference(messageToUpdate.thinkingStartTime!)
-                      .inMilliseconds;
+              if (isFirstChunk) {
+                isFirstChunk = false;
+                if (item.trim().startsWith(thinkStartTag)) {
+                  isThinkingResponse = true;
                 }
-              } else if (thinkingDone) {
+              }
+
+              if (isThinkingResponse) {
+                fullResponseBuffer += item;
+                if (!thinkingDone && fullResponseBuffer.contains(thinkEndTag)) {
+                  thinkingDone = true;
+                  final parts = fullResponseBuffer.split(thinkEndTag);
+                  messageToUpdate.thinkingContent =
+                      parts[0].substring(thinkStartTag.length);
+                  messageToUpdate.content = parts.length > 1 ? parts[1] : '';
+                  if (messageToUpdate.thinkingStartTime != null) {
+                    messageToUpdate.thinkingDurationMs = DateTime.now()
+                        .difference(messageToUpdate.thinkingStartTime!)
+                        .inMilliseconds;
+                  }
+                } else if (thinkingDone) {
+                  messageToUpdate.content =
+                      (messageToUpdate.content ?? '') + item;
+                } else {
+                  messageToUpdate.thinkingContent =
+                      fullResponseBuffer.substring(thinkStartTag.length);
+                }
+              } else {
                 messageToUpdate.content =
                     (messageToUpdate.content ?? '') + item;
-              } else {
-                messageToUpdate.thinkingContent = fullResponseBuffer;
               }
             } else {
               messageToUpdate.content = (messageToUpdate.content ?? '') + item;
@@ -484,10 +502,12 @@ class ChatSessionManager extends ChangeNotifier {
           messageToUpdate.content = fullResponseBuffer;
           messageToUpdate.thinkingDurationMs = stopwatch.elapsedMilliseconds;
         } else if (model.supportsThinking &&
-            fullResponseBuffer.contains(thinkTag)) {
+            fullResponseBuffer.trim().startsWith(thinkStartTag) &&
+            fullResponseBuffer.contains(thinkEndTag)) {
           thinkingDone = true;
-          final parts = fullResponseBuffer.split(thinkTag);
-          messageToUpdate.thinkingContent = parts[0];
+          final parts = fullResponseBuffer.split(thinkEndTag);
+          messageToUpdate.thinkingContent =
+              parts[0].substring(thinkStartTag.length);
           messageToUpdate.content = parts.length > 1 ? parts[1] : '';
           messageToUpdate.thinkingDurationMs = stopwatch.elapsedMilliseconds;
         } else {
@@ -515,6 +535,7 @@ class ChatSessionManager extends ChangeNotifier {
         }
 
         if (model.supportsThinking &&
+            isThinkingResponse &&
             !thinkingDone &&
             finalMessage.thinkingContent != null) {
           finalMessage.content = finalMessage.thinkingContent!;
@@ -530,11 +551,6 @@ class ChatSessionManager extends ChangeNotifier {
         }
 
         finalMessage.thinkingStartTime = null;
-
-        if (_cancelledSessions.contains(sessionId)) {
-          finalMessage.content =
-              (finalMessage.content ?? '') + "\n\n[Generation stopped by user]";
-        }
       }
 
       session.updatedAt = DateTime.now();
@@ -593,7 +609,6 @@ class ChatSessionManager extends ChangeNotifier {
   bool _removeMessageInSession(ChatSession session, String id) {
     bool _recursiveRemove(List<ChatMessage> list, Set<int> visited) {
       if (!visited.add(identityHashCode(list))) return false;
-
       final initialLength = list.length;
       list.removeWhere((msg) => msg.id == id);
       if (list.length < initialLength) return true;

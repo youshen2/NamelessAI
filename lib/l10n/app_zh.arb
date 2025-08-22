@@ -193,5 +193,7 @@
   "codeBlockTheme": "代码块主题",
   "showDebugButton": "显示调试按钮",
   "showDebugButtonHint": "在消息气泡上显示一个调试按钮以检查数据。",
-  "debugInfo": "调试信息"
+  "debugInfo": "调试信息",
+  "scrollToTop": "回到顶部",
+  "scrollToBottom": "回到底部"
 }

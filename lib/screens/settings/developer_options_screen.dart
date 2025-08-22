@@ -23,8 +23,6 @@ class _DeveloperOptionsScreenState extends State<DeveloperOptionsScreen> {
         title: Text(localizations.developerOptions),
       ),
       body: ListView(
-        physics: const BouncingScrollPhysics(
-            parent: AlwaysScrollableScrollPhysics()),
         padding: const EdgeInsets.all(16.0),
         children: [
           Card(

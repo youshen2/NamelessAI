@@ -193,5 +193,7 @@
   "codeBlockTheme": "Code Block Theme",
   "showDebugButton": "Show Debug Button",
   "showDebugButtonHint": "Show a debug button on message bubbles to inspect data.",
-  "debugInfo": "Debug Info"
+  "debugInfo": "Debug Info",
+  "scrollToTop": "Scroll to top",
+  "scrollToBottom": "Scroll to bottom"
 }
