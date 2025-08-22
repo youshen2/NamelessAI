@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/models/chat_session.dart';
 import 'package:nameless_ai/data/providers/api_provider_manager.dart';
@@ -22,6 +23,7 @@ class ChatSettingsSheet extends StatefulWidget {
 
 class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
   late TextEditingController _systemPromptController;
+  late TextEditingController _maxContextController;
   late double _temperature;
   late double _topP;
   late bool? _useStreaming;
@@ -33,6 +35,8 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
     super.initState();
     _systemPromptController =
         TextEditingController(text: widget.session.systemPrompt);
+    _maxContextController = TextEditingController(
+        text: widget.session.maxContextMessages?.toString() ?? '');
     _temperature = widget.session.temperature;
     _topP = widget.session.topP;
     _useStreaming = widget.session.useStreaming;
@@ -43,6 +47,7 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
   @override
   void dispose() {
     _systemPromptController.dispose();
+    _maxContextController.dispose();
     super.dispose();
   }
 
@@ -192,6 +197,18 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
                     });
                   },
                 ),
+                const SizedBox(height: 24),
+                Text(localizations.maxContextMessages,
+                    style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: _maxContextController,
+                  decoration: InputDecoration(
+                    hintText: localizations.maxContextMessagesHint,
+                  ),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                ),
               ],
             ),
           ),
@@ -207,6 +224,7 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
                 const SizedBox(width: 8),
                 FilledButton(
                   onPressed: () {
+                    final maxContext = int.tryParse(_maxContextController.text);
                     widget.onSave({
                       'providerId': _selectedProviderId,
                       'modelId': _selectedModelId,
@@ -214,6 +232,7 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
                       'temperature': _temperature,
                       'topP': _topP,
                       'useStreaming': _useStreaming,
+                      'maxContextMessages': maxContext == 0 ? null : maxContext,
                     });
                     Navigator.of(context).pop();
                   },

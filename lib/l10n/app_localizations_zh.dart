@@ -233,7 +233,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get chatSettings => '聊天设置';
 
   @override
-  String get temperature => '温度 (Temperature)';
+  String get temperature => 'Temperature';
 
   @override
   String get topP => 'Top P';
@@ -306,4 +306,23 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get showOutputCharacters => '显示输出字数';
+
+  @override
+  String thinking(String duration) {
+    return '正在思考... $duration';
+  }
+
+  @override
+  String thinkingTimeTaken(String duration) {
+    return '思考耗时: $duration';
+  }
+
+  @override
+  String get thinkingTitle => '思考';
+
+  @override
+  String get maxContextMessages => '最大上下文数量';
+
+  @override
+  String get maxContextMessagesHint => '要发送的最近消息数量 (0或留空则无限制)';
 }

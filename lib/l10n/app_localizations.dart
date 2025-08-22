@@ -691,6 +691,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Show Output Characters'**
   String get showOutputCharacters;
+
+  /// No description provided for @thinking.
+  ///
+  /// In en, this message translates to:
+  /// **'Thinking... {duration}'**
+  String thinking(String duration);
+
+  /// No description provided for @thinkingTimeTaken.
+  ///
+  /// In en, this message translates to:
+  /// **'Thinking time: {duration}'**
+  String thinkingTimeTaken(String duration);
+
+  /// No description provided for @thinkingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Thinking'**
+  String get thinkingTitle;
+
+  /// No description provided for @maxContextMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'Max Context Messages'**
+  String get maxContextMessages;
+
+  /// No description provided for @maxContextMessagesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of recent messages to send (0 or empty = unlimited)'**
+  String get maxContextMessagesHint;
 }
 
 class _AppLocalizationsDelegate

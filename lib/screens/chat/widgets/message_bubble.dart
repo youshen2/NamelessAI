@@ -199,6 +199,7 @@ class _MessageBubbleState extends State<MessageBubble>
   }
 
   Widget _buildThinkingContent(BuildContext context, Color textColor) {
+    final localizations = AppLocalizations.of(context)!;
     final markdownStyleSheet = MarkdownStyleSheet(
       p: TextStyle(
           color: textColor.withOpacity(0.8), fontSize: 14, height: 1.3),
@@ -212,6 +213,9 @@ class _MessageBubbleState extends State<MessageBubble>
     return Theme(
       data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
       child: ExpansionTile(
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+        collapsedBackgroundColor:
+            Theme.of(context).colorScheme.surfaceContainerHigh,
         tilePadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
         childrenPadding: const EdgeInsets.only(left: 12, right: 12, bottom: 10),
         leading:
@@ -330,28 +334,27 @@ class _MessageBubbleState extends State<MessageBubble>
             ),
           ),
           const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+          Wrap(
+            alignment: WrapAlignment.end,
+            spacing: 8.0,
+            runSpacing: 4.0,
             children: [
               TextButton(
                 onPressed: () => widget.onEdit(widget.message, false),
                 child: Text(localizations.cancel),
               ),
-              const SizedBox(width: 8),
               OutlinedButton(
                 onPressed: () =>
                     widget.onSave(widget.message, _editController.text),
                 child: Text(localizations.save),
               ),
-              if (isUser) ...[
-                const SizedBox(width: 8),
+              if (isUser)
                 FilledButton.icon(
                   icon: const Icon(Icons.send, size: 18),
                   onPressed: () =>
                       widget.onResubmit(widget.message, _editController.text),
                   label: Text(localizations.saveAndResubmit),
                 ),
-              ]
             ],
           ),
         ],
@@ -436,6 +439,9 @@ class _MessageBubbleState extends State<MessageBubble>
   }
 
   Widget _buildModelName(BuildContext context) {
+    if (widget.message.role == 'user') {
+      return const SizedBox.shrink();
+    }
     return Padding(
       padding: const EdgeInsets.only(top: 4.0, right: 8.0, left: 8.0),
       child: Text(
@@ -586,15 +592,16 @@ class _ThinkingTimerState extends State<_ThinkingTimer> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     String text;
 
     if (widget.durationMs != null) {
       final duration = Duration(milliseconds: widget.durationMs!);
-      text = "思考耗时: ${_formatDuration(duration)}";
+      text = localizations.thinkingTimeTaken(_formatDuration(duration));
     } else if (widget.startTime != null) {
-      text = "正在思考... ${_formatDuration(_elapsed)}";
+      text = localizations.thinking(_formatDuration(_elapsed));
     } else {
-      text = "思考";
+      text = localizations.thinkingTitle;
     }
 
     return Text(

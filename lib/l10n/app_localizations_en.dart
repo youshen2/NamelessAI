@@ -309,4 +309,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get showOutputCharacters => 'Show Output Characters';
+
+  @override
+  String thinking(String duration) {
+    return 'Thinking... $duration';
+  }
+
+  @override
+  String thinkingTimeTaken(String duration) {
+    return 'Thinking time: $duration';
+  }
+
+  @override
+  String get thinkingTitle => 'Thinking';
+
+  @override
+  String get maxContextMessages => 'Max Context Messages';
+
+  @override
+  String get maxContextMessagesHint =>
+      'Number of recent messages to send (0 or empty = unlimited)';
 }

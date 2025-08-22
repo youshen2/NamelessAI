@@ -45,6 +45,9 @@ class ChatSession extends HiveObject {
   @HiveField(12)
   bool? useStreaming;
 
+  @HiveField(13)
+  int? maxContextMessages;
+
   ChatSession({
     String? id,
     required this.name,
@@ -59,6 +62,7 @@ class ChatSession extends HiveObject {
     Map<String, List<List<ChatMessage>>>? branches,
     Map<String, int>? activeBranchSelections,
     this.useStreaming,
+    this.maxContextMessages,
   })  : id = id ?? const Uuid().v4(),
         messages = messages ?? [],
         createdAt = createdAt ?? DateTime.now(),
@@ -82,6 +86,7 @@ class ChatSession extends HiveObject {
     Map<String, List<List<ChatMessage>>>? branches,
     Map<String, int>? activeBranchSelections,
     bool? useStreaming,
+    int? maxContextMessages,
   }) {
     return ChatSession(
       id: id ?? this.id,
@@ -98,6 +103,7 @@ class ChatSession extends HiveObject {
       activeBranchSelections:
           activeBranchSelections ?? this.activeBranchSelections,
       useStreaming: useStreaming ?? this.useStreaming,
+      maxContextMessages: maxContextMessages ?? this.maxContextMessages,
     );
   }
 }

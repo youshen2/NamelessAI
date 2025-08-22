@@ -27,6 +27,7 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final appConfig = Provider.of<AppConfigProvider>(context);
+    final isDesktop = MediaQuery.of(context).size.width >= 600;
 
     return Scaffold(
       appBar: AppBar(
@@ -57,48 +58,49 @@ class SettingsScreen extends StatelessWidget {
               ],
             ),
           ),
-          Card(
-            margin: const EdgeInsets.only(bottom: 16),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(localizations.sendKeySettings,
-                      style: Theme.of(context).textTheme.titleMedium),
-                  RadioListTile<SendKeyOption>(
-                    title: Text(localizations.sendWithEnter),
-                    value: SendKeyOption.enter,
-                    groupValue: appConfig.sendKeyOption,
-                    onChanged: (value) => appConfig.setSendKeyOption(value!),
-                    activeColor: Theme.of(context).colorScheme.primary,
-                  ),
-                  RadioListTile<SendKeyOption>(
-                    title: Text(localizations.sendWithCtrlEnter),
-                    value: SendKeyOption.ctrlEnter,
-                    groupValue: appConfig.sendKeyOption,
-                    onChanged: (value) => appConfig.setSendKeyOption(value!),
-                    activeColor: Theme.of(context).colorScheme.primary,
-                  ),
-                  RadioListTile<SendKeyOption>(
-                    title: Text(localizations.sendWithShiftCtrlEnter),
-                    value: SendKeyOption.shiftCtrlEnter,
-                    groupValue: appConfig.sendKeyOption,
-                    onChanged: (value) => appConfig.setSendKeyOption(value!),
-                    activeColor: Theme.of(context).colorScheme.primary,
-                  ),
-                  const Divider(),
-                  SwitchListTile(
-                    title: Text(localizations.shortcutInEditMode),
-                    value: appConfig.useSendKeyInEditMode,
-                    onChanged: (value) =>
-                        appConfig.setUseSendKeyInEditMode(value),
-                    activeColor: Theme.of(context).colorScheme.primary,
-                  ),
-                ],
+          if (isDesktop)
+            Card(
+              margin: const EdgeInsets.only(bottom: 16),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(localizations.sendKeySettings,
+                        style: Theme.of(context).textTheme.titleMedium),
+                    RadioListTile<SendKeyOption>(
+                      title: Text(localizations.sendWithEnter),
+                      value: SendKeyOption.enter,
+                      groupValue: appConfig.sendKeyOption,
+                      onChanged: (value) => appConfig.setSendKeyOption(value!),
+                      activeColor: Theme.of(context).colorScheme.primary,
+                    ),
+                    RadioListTile<SendKeyOption>(
+                      title: Text(localizations.sendWithCtrlEnter),
+                      value: SendKeyOption.ctrlEnter,
+                      groupValue: appConfig.sendKeyOption,
+                      onChanged: (value) => appConfig.setSendKeyOption(value!),
+                      activeColor: Theme.of(context).colorScheme.primary,
+                    ),
+                    RadioListTile<SendKeyOption>(
+                      title: Text(localizations.sendWithShiftCtrlEnter),
+                      value: SendKeyOption.shiftCtrlEnter,
+                      groupValue: appConfig.sendKeyOption,
+                      onChanged: (value) => appConfig.setSendKeyOption(value!),
+                      activeColor: Theme.of(context).colorScheme.primary,
+                    ),
+                    const Divider(),
+                    SwitchListTile(
+                      title: Text(localizations.shortcutInEditMode),
+                      value: appConfig.useSendKeyInEditMode,
+                      onChanged: (value) =>
+                          appConfig.setUseSendKeyInEditMode(value),
+                      activeColor: Theme.of(context).colorScheme.primary,
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
           Card(
             margin: const EdgeInsets.only(bottom: 16),
             child: Padding(

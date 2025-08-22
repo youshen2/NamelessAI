@@ -98,5 +98,24 @@
   "showTotalTime": "Show Total Time",
   "showFirstChunkTime": "Show Time to First Chunk",
   "showTokenUsage": "Show Token Usage",
-  "showOutputCharacters": "Show Output Characters"
+  "showOutputCharacters": "Show Output Characters",
+  "thinking": "Thinking... {duration}",
+  "@thinking": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "thinkingTimeTaken": "Thinking time: {duration}",
+  "@thinkingTimeTaken": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "thinkingTitle": "Thinking",
+  "maxContextMessages": "Max Context Messages",
+  "maxContextMessagesHint": "Number of recent messages to send (0 or empty = unlimited)"
 }

@@ -74,7 +74,7 @@
   "sendWithShiftCtrlEnter": "Shift+Ctrl+Enter",
   "shortcutInEditMode": "在编辑模式下使用快捷键",
   "chatSettings": "聊天设置",
-  "temperature": "温度 (Temperature)",
+  "temperature": "Temperature",
   "topP": "Top P",
   "useStreaming": "使用流式输出",
   "overrideModelSettings": "覆盖模型默认设置",
@@ -98,5 +98,24 @@
   "showTotalTime": "显示总耗时",
   "showFirstChunkTime": "显示首字耗时",
   "showTokenUsage": "显示令牌用量",
-  "showOutputCharacters": "显示输出字数"
+  "showOutputCharacters": "显示输出字数",
+  "thinking": "正在思考... {duration}",
+  "@thinking": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "thinkingTimeTaken": "思考耗时: {duration}",
+  "@thinkingTimeTaken": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "thinkingTitle": "思考",
+  "maxContextMessages": "最大上下文数量",
+  "maxContextMessagesHint": "要发送的最近消息数量 (0或留空则无限制)"
 }

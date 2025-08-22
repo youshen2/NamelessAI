@@ -15,7 +15,7 @@ class ChatSessionManager extends ChangeNotifier {
   List<ChatSession> _sessions = [];
   ChatSession? _currentSession;
   bool _isNewSession = true;
-  bool _isGenerating = false;
+  final Set<String> _generatingSessions = {};
 
   ChatSessionManager() {
     _loadSessions();
@@ -24,7 +24,10 @@ class ChatSessionManager extends ChangeNotifier {
   List<ChatSession> get sessions => _sessions;
   ChatSession? get currentSession => _currentSession;
   bool get isNewSession => _isNewSession;
-  bool get isGenerating => _isGenerating;
+  bool get isGenerating =>
+      _currentSession != null &&
+      _generatingSessions.contains(_currentSession!.id);
+  Set<String> get generatingSessions => _generatingSessions;
 
   List<ChatMessage> get activeMessages {
     if (_currentSession == null) return [];
@@ -120,17 +123,22 @@ class ChatSessionManager extends ChangeNotifier {
     double? temperature,
     double? topP,
     bool? useStreaming,
+    int? maxContextMessages,
   }) async {
     if (_currentSession == null) return;
 
-    final updatedSession = _currentSession!.copyWith(
-      providerId: providerId ?? _currentSession!.providerId,
-      modelId: modelId ?? _currentSession!.modelId,
-      systemPrompt: systemPrompt ?? _currentSession!.systemPrompt,
-      temperature: temperature ?? _currentSession!.temperature,
-      topP: topP ?? _currentSession!.topP,
-      useStreaming: useStreaming,
+    final sessionToUpdate = _currentSession!;
+    var updatedSession = sessionToUpdate.copyWith(
+      providerId: providerId,
+      modelId: modelId,
+      systemPrompt: systemPrompt,
+      temperature: temperature,
+      topP: topP,
     );
+
+    updatedSession.useStreaming = useStreaming;
+    updatedSession.maxContextMessages = maxContextMessages;
+
     await updateCurrentSession(updatedSession);
   }
 
@@ -146,7 +154,7 @@ class ChatSessionManager extends ChangeNotifier {
 
   void toggleMessageEditing(String messageId, bool isEditing) {
     if (_currentSession == null) return;
-    final message = _findMessageById(messageId);
+    final message = _findMessageInSession(_currentSession!, messageId);
     if (message != null) {
       message.isEditing = isEditing;
       notifyListeners();
@@ -155,7 +163,7 @@ class ChatSessionManager extends ChangeNotifier {
 
   void updateMessageInCurrentSession(String messageId, String newContent) {
     if (_currentSession == null) return;
-    final message = _findMessageById(messageId);
+    final message = _findMessageInSession(_currentSession!, messageId);
     if (message != null) {
       message.content = newContent;
       message.isEditing = false;
@@ -165,7 +173,7 @@ class ChatSessionManager extends ChangeNotifier {
 
   void deleteMessageFromCurrentSession(String messageId) {
     if (_currentSession == null) return;
-    bool removed = _removeMessageById(messageId);
+    bool removed = _removeMessageInSession(_currentSession!, messageId);
     if (removed) {
       updateCurrentSession(_currentSession!);
     }
@@ -173,7 +181,7 @@ class ChatSessionManager extends ChangeNotifier {
 
   Future<void> sendMessage(
       String text, APIProvider provider, Model model) async {
-    if (_isGenerating) return;
+    if (isGenerating) return;
 
     if (_currentSession == null) {
       startNewSession(providerId: provider.id, modelId: model.id);
@@ -183,12 +191,14 @@ class ChatSessionManager extends ChangeNotifier {
       await saveCurrentSession(_currentSession!.name);
     }
 
+    final sessionId = _currentSession!.id;
+
     final userMessage = ChatMessage(
       role: 'user',
       content: text,
       modelName: model.name,
     );
-    _addMessageToActivePath(userMessage);
+    _addMessageToActivePath(_currentSession!, userMessage);
 
     final assistantMessage = ChatMessage(
       role: 'assistant',
@@ -196,15 +206,16 @@ class ChatSessionManager extends ChangeNotifier {
       isLoading: true,
       modelName: model.name,
     );
-    _addMessageToActivePath(assistantMessage);
+    _addMessageToActivePath(_currentSession!, assistantMessage);
+
+    _generatingSessions.add(sessionId);
     notifyListeners();
 
-    await _performGeneration(assistantMessage.id, provider, model);
+    _performGeneration(sessionId, assistantMessage.id, provider, model);
   }
 
-  (List<ChatMessage>, int)? _findMessageAndParentList(String messageId) {
-    if (_currentSession == null) return null;
-
+  (List<ChatMessage>, int)? _findMessageAndParentListInSession(
+      ChatSession session, String messageId) {
     (List<ChatMessage>, int)? _recursiveSearch(
         List<ChatMessage> list, Set<int> visited) {
       if (!visited.add(identityHashCode(list))) return null;
@@ -214,9 +225,8 @@ class ChatSessionManager extends ChangeNotifier {
         if (msg.id == messageId) {
           return (list, i);
         }
-        if (msg.role == 'user' &&
-            _currentSession!.branches.containsKey(msg.id)) {
-          for (var branch in _currentSession!.branches[msg.id]!) {
+        if (msg.role == 'user' && session.branches.containsKey(msg.id)) {
+          for (var branch in session.branches[msg.id]!) {
             final result = _recursiveSearch(branch, visited);
             if (result != null) {
               return result;
@@ -227,15 +237,15 @@ class ChatSessionManager extends ChangeNotifier {
       return null;
     }
 
-    return _recursiveSearch(_currentSession!.messages, {});
+    return _recursiveSearch(session.messages, {});
   }
 
   Future<void> resubmitMessage(String messageId, String newContent,
       APIProvider provider, Model model) async {
-    if (_isGenerating || _currentSession == null) return;
+    if (_currentSession == null || isGenerating) return;
 
     final session = _currentSession!;
-    final findResult = _findMessageAndParentList(messageId);
+    final findResult = _findMessageAndParentListInSession(session, messageId);
 
     if (findResult == null) {
       debugPrint("NamelessAI - Could not find message to resubmit: $messageId");
@@ -279,13 +289,14 @@ class ChatSessionManager extends ChangeNotifier {
       }
     }
 
+    _generatingSessions.add(session.id);
     await updateCurrentSession(session);
-    await _performGeneration(newAssistantMessage.id, provider, model);
+    _performGeneration(session.id, newAssistantMessage.id, provider, model);
   }
 
   Future<void> regenerateResponse(
       String aiMessageId, APIProvider provider, Model model) async {
-    if (_isGenerating || _currentSession == null) return;
+    if (_currentSession == null || isGenerating) return;
 
     final session = _currentSession!;
     String? userMessageId;
@@ -301,7 +312,8 @@ class ChatSessionManager extends ChangeNotifier {
     }
 
     if (userMessageId == null) {
-      final findResult = _findMessageAndParentList(aiMessageId);
+      final findResult =
+          _findMessageAndParentListInSession(session, aiMessageId);
       if (findResult != null) {
         final (parentList, aiMessageIndex) = findResult;
         if (aiMessageIndex > 0 &&
@@ -317,7 +329,7 @@ class ChatSessionManager extends ChangeNotifier {
       return;
     }
 
-    final userMessage = _findMessageById(userMessageId);
+    final userMessage = _findMessageInSession(session, userMessageId);
     if (userMessage == null) {
       debugPrint(
           "NamelessAI - Could not find user message object for regen: $userMessageId");
@@ -337,16 +349,27 @@ class ChatSessionManager extends ChangeNotifier {
     }
   }
 
-  Future<void> _performGeneration(
-      String assistantMessageId, APIProvider provider, Model model) async {
-    _isGenerating = true;
-    notifyListeners();
+  Future<void> _performGeneration(String sessionId, String assistantMessageId,
+      APIProvider provider, Model model) async {
+    final session = AppDatabase.chatSessionsBox.get(sessionId);
+    if (session == null) {
+      _generatingSessions.remove(sessionId);
+      notifyListeners();
+      return;
+    }
 
-    final session = _currentSession!;
     final chatService = ChatService(provider: provider, model: model);
 
-    final messagesForApi =
-        activeMessages.where((m) => m.id != assistantMessageId).toList();
+    var messagesForApi = session.activeMessages
+        .where((m) => m.id != assistantMessageId)
+        .toList();
+
+    if (session.maxContextMessages != null && session.maxContextMessages! > 0) {
+      if (messagesForApi.length > session.maxContextMessages!) {
+        messagesForApi = messagesForApi
+            .sublist(messagesForApi.length - session.maxContextMessages!);
+      }
+    }
 
     final stopwatch = Stopwatch()..start();
     int? firstChunkTimeMs;
@@ -357,7 +380,8 @@ class ChatSessionManager extends ChangeNotifier {
 
     try {
       final useStreaming = session.useStreaming ?? model.isStreamable;
-      final messageToUpdate = _findMessageById(assistantMessageId);
+      final messageToUpdate =
+          _findMessageInSession(session, assistantMessageId);
       if (messageToUpdate == null) return;
 
       if (useStreaming) {
@@ -389,6 +413,7 @@ class ChatSessionManager extends ChangeNotifier {
             } else {
               messageToUpdate.content = (messageToUpdate.content ?? '') + item;
             }
+            await session.save();
             notifyListeners();
           } else if (item is api_models.Usage) {
             usage = item;
@@ -413,14 +438,15 @@ class ChatSessionManager extends ChangeNotifier {
         }
       }
     } catch (e) {
-      final messageToUpdate = _findMessageById(assistantMessageId);
+      final messageToUpdate =
+          _findMessageInSession(session, assistantMessageId);
       if (messageToUpdate != null) {
         messageToUpdate.content = "Error: ${e.toString()}";
         messageToUpdate.isError = true;
       }
     } finally {
       stopwatch.stop();
-      final finalMessage = _findMessageById(assistantMessageId);
+      final finalMessage = _findMessageInSession(session, assistantMessageId);
       if (finalMessage != null) {
         finalMessage.isLoading = false;
         finalMessage.completionTimeMs = stopwatch.elapsedMilliseconds;
@@ -432,14 +458,18 @@ class ChatSessionManager extends ChangeNotifier {
         }
         finalMessage.thinkingStartTime = null;
       }
-      _isGenerating = false;
-      await updateCurrentSession(session);
+      _generatingSessions.remove(sessionId);
+      session.updatedAt = DateTime.now();
+      await AppDatabase.chatSessionsBox.put(session.id, session);
+      _loadSessions();
+      if (_currentSession?.id == session.id) {
+        _currentSession = session;
+      }
+      notifyListeners();
     }
   }
 
-  void _addMessageToActivePath(ChatMessage message) {
-    if (_currentSession == null) return;
-    final session = _currentSession!;
+  void _addMessageToActivePath(ChatSession session, ChatMessage message) {
     if (session.messages.isEmpty) {
       session.messages.add(message);
       return;
@@ -460,17 +490,14 @@ class ChatSessionManager extends ChangeNotifier {
     targetList.add(message);
   }
 
-  ChatMessage? _findMessageById(String id) {
-    if (_currentSession == null) return null;
-
+  ChatMessage? _findMessageInSession(ChatSession session, String id) {
     ChatMessage? _recursiveFind(List<ChatMessage> list, Set<int> visited) {
       if (!visited.add(identityHashCode(list))) return null;
 
       for (var msg in list) {
         if (msg.id == id) return msg;
-        if (msg.role == 'user' &&
-            _currentSession!.branches.containsKey(msg.id)) {
-          for (var branch in _currentSession!.branches[msg.id]!) {
+        if (msg.role == 'user' && session.branches.containsKey(msg.id)) {
+          for (var branch in session.branches[msg.id]!) {
             final found = _recursiveFind(branch, visited);
             if (found != null) return found;
           }
@@ -479,12 +506,10 @@ class ChatSessionManager extends ChangeNotifier {
       return null;
     }
 
-    return _recursiveFind(_currentSession!.messages, {});
+    return _recursiveFind(session.messages, {});
   }
 
-  bool _removeMessageById(String id) {
-    if (_currentSession == null) return false;
-
+  bool _removeMessageInSession(ChatSession session, String id) {
     bool _recursiveRemove(List<ChatMessage> list, Set<int> visited) {
       if (!visited.add(identityHashCode(list))) return false;
 
@@ -493,9 +518,8 @@ class ChatSessionManager extends ChangeNotifier {
       if (list.length < initialLength) return true;
 
       for (var msg in list) {
-        if (msg.role == 'user' &&
-            _currentSession!.branches.containsKey(msg.id)) {
-          for (var branch in _currentSession!.branches[msg.id]!) {
+        if (msg.role == 'user' && session.branches.containsKey(msg.id)) {
+          for (var branch in session.branches[msg.id]!) {
             if (_recursiveRemove(branch, visited)) return true;
           }
         }
@@ -503,6 +527,6 @@ class ChatSessionManager extends ChangeNotifier {
       return false;
     }
 
-    return _recursiveRemove(_currentSession!.messages, {});
+    return _recursiveRemove(session.messages, {});
   }
 }
