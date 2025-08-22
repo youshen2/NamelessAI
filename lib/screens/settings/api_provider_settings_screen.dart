@@ -59,7 +59,7 @@ class _APIProviderSettingsScreenState extends State<APIProviderSettingsScreen> {
                     ...provider.models.map((model) => Padding(
                           padding: const EdgeInsets.only(left: 8.0, top: 4.0),
                           child: Text(
-                              '- ${model.name} (Max Tokens: ${model.maxTokens ?? 'N/A'}, Streamable: ${model.isStreamable ? 'Yes' : 'No'})'),
+                              '- ${model.name} (Stream: ${model.isStreamable ? '✓' : '✗'}, Thinking: ${model.supportsThinking ? '✓' : '✗'})'),
                         )),
                     const SizedBox(height: 16),
                     Row(
@@ -170,6 +170,7 @@ class _APIProviderFormState extends State<APIProviderForm> {
     final TextEditingController maxTokensController =
         TextEditingController(text: model?.maxTokens?.toString() ?? '');
     bool isStreamable = model?.isStreamable ?? true;
+    bool supportsThinking = model?.supportsThinking ?? false;
 
     showDialog(
       context: context,
@@ -180,30 +181,49 @@ class _APIProviderFormState extends State<APIProviderForm> {
               title: Text(model == null
                   ? localizations.addModel
                   : localizations.editProvider),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextField(
-                    controller: modelNameController,
-                    decoration:
-                        InputDecoration(labelText: localizations.modelName),
-                  ),
-                  TextField(
-                    controller: maxTokensController,
-                    decoration:
-                        InputDecoration(labelText: localizations.maxTokens),
-                    keyboardType: TextInputType.number,
-                  ),
-                  SwitchListTile(
-                    title: Text(localizations.isStreamable),
-                    value: isStreamable,
-                    onChanged: (value) {
-                      setDialogState(() {
-                        isStreamable = value;
-                      });
-                    },
-                  ),
-                ],
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: modelNameController,
+                      decoration:
+                          InputDecoration(labelText: localizations.modelName),
+                    ),
+                    TextField(
+                      controller: maxTokensController,
+                      decoration:
+                          InputDecoration(labelText: localizations.maxTokens),
+                      keyboardType: TextInputType.number,
+                    ),
+                    SwitchListTile(
+                      title: Text(localizations.isStreamable),
+                      value: isStreamable,
+                      onChanged: (value) {
+                        setDialogState(() {
+                          isStreamable = value;
+                        });
+                      },
+                    ),
+                    SwitchListTile(
+                      title: Text(localizations.supportsThinking),
+                      value: supportsThinking,
+                      onChanged: (value) {
+                        setDialogState(() {
+                          supportsThinking = value;
+                        });
+                      },
+                    ),
+                    Padding(
+                      padding:
+                          const EdgeInsets.only(top: 8.0, left: 16, right: 16),
+                      child: Text(
+                        localizations.supportsThinkingHint,
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ),
+                  ],
+                ),
               ),
               actions: [
                 TextButton(
@@ -221,6 +241,7 @@ class _APIProviderFormState extends State<APIProviderForm> {
                       name: modelNameController.text,
                       maxTokens: int.tryParse(maxTokensController.text),
                       isStreamable: isStreamable,
+                      supportsThinking: supportsThinking,
                       id: model?.id,
                     );
                     setState(() {

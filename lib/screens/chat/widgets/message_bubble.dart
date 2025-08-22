@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_math_fork/flutter_math.dart';
 import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/models/chat_message.dart';
 import 'package:nameless_ai/data/providers/app_config_provider.dart';
@@ -9,6 +10,60 @@ import 'package:nameless_ai/screens/chat/widgets/markdown_code_block.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
 import 'package:nameless_ai/screens/chat/widgets/typing_indicator.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:markdown/markdown.dart' as md;
+
+class MathBuilder extends MarkdownElementBuilder {
+  final BuildContext context;
+  final double fontSize;
+
+  MathBuilder({required this.context, required this.fontSize});
+
+  @override
+  Widget? visitElementAfter(md.Element element, TextStyle? preferredStyle) {
+    final text = element.textContent;
+    final isDisplayMode = element.tag == 'math_display';
+
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: isDisplayMode ? 8.0 : 2.0),
+      child: Math.tex(
+        text,
+        mathStyle: isDisplayMode ? MathStyle.display : MathStyle.text,
+        textStyle: preferredStyle?.copyWith(
+          fontSize: fontSize,
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
+        onErrorFallback: (err) => SelectableText(
+          isDisplayMode ? '\$\$${text}\$\$' : '\$${text}\$',
+          style: preferredStyle?.copyWith(
+            color: Theme.of(context).colorScheme.error,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class MathInlineSyntax extends md.InlineSyntax {
+  MathInlineSyntax() : super(r'\$((?:\\.|[^$])+)\$');
+
+  @override
+  bool onMatch(md.InlineParser parser, Match match) {
+    final md.Element el = md.Element.text('math_inline', match[1]!);
+    parser.addNode(el);
+    return true;
+  }
+}
+
+class MathDisplaySyntax extends md.InlineSyntax {
+  MathDisplaySyntax() : super(r'\$\$((?:\\.|[^$])+)\$\$');
+
+  @override
+  bool onMatch(md.InlineParser parser, Match match) {
+    final md.Element el = md.Element.text('math_display', match[1]!);
+    parser.addNode(el);
+    return true;
+  }
+}
 
 class MessageBubble extends StatefulWidget {
   final ChatMessage message;
@@ -122,9 +177,19 @@ class _MessageBubbleState extends State<MessageBubble>
 
   @override
   Widget build(BuildContext context) {
+    final appConfig = Provider.of<AppConfigProvider>(context);
     final isUser = widget.message.role == 'user';
-    final alignment =
-        isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start;
+
+    CrossAxisAlignment alignment;
+    switch (appConfig.chatBubbleAlignment) {
+      case ChatBubbleAlignment.center:
+        alignment = CrossAxisAlignment.center;
+        break;
+      case ChatBubbleAlignment.normal:
+      default:
+        alignment = isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start;
+        break;
+    }
 
     return FadeTransition(
       opacity: _fadeAnimation,
@@ -134,13 +199,14 @@ class _MessageBubbleState extends State<MessageBubble>
           onEnter: (_) => setState(() => _isHovering = true),
           onExit: (_) => setState(() => _isHovering = false),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+            padding: EdgeInsets.symmetric(
+                horizontal: 8.0, vertical: appConfig.compactMode ? 2.0 : 4.0),
             child: Column(
               crossAxisAlignment: alignment,
               children: [
                 _buildMessageContent(context),
-                if (widget.message.modelName != null) _buildModelName(context),
                 if (!widget.isReadOnly) _buildStatistics(context),
+                if (!widget.isReadOnly) _buildMetaInfo(context),
                 if (!widget.isReadOnly && !widget.message.isEditing)
                   _buildActionBar(context),
                 if (widget.branchCount > 1) _buildBranchNavigator(context),
@@ -153,6 +219,7 @@ class _MessageBubbleState extends State<MessageBubble>
   }
 
   Widget _buildMessageContent(BuildContext context) {
+    final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
     final isUser = widget.message.role == 'user';
     final isError = widget.message.isError;
 
@@ -169,7 +236,7 @@ class _MessageBubbleState extends State<MessageBubble>
 
     return ConstrainedBox(
       constraints: BoxConstraints(
-        maxWidth: MediaQuery.of(context).size.width * 0.8,
+        maxWidth: MediaQuery.of(context).size.width * appConfig.chatBubbleWidth,
       ),
       child: Card(
         color: bubbleColor,
@@ -187,7 +254,8 @@ class _MessageBubbleState extends State<MessageBubble>
             Padding(
               padding: widget.message.isEditing
                   ? const EdgeInsets.all(8.0)
-                  : const EdgeInsets.fromLTRB(12, 10, 12, 10),
+                  : EdgeInsets.fromLTRB(
+                      12, 10, 12, appConfig.compactMode ? 6 : 10),
               child: widget.message.isEditing
                   ? _buildEditModeContent(context, textColor)
                   : _buildDisplayModeContent(context, textColor, isError),
@@ -252,6 +320,21 @@ class _MessageBubbleState extends State<MessageBubble>
 
   Widget _buildDisplayModeContent(
       BuildContext context, Color textColor, bool isError) {
+    final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
+    double fontSize;
+    switch (appConfig.fontSize) {
+      case FontSize.small:
+        fontSize = 13;
+        break;
+      case FontSize.large:
+        fontSize = 17;
+        break;
+      case FontSize.medium:
+      default:
+        fontSize = 15;
+        break;
+    }
+
     if (widget.message.isLoading && widget.message.content.isEmpty) {
       return const Padding(
         padding: EdgeInsets.symmetric(vertical: 8.0),
@@ -260,7 +343,7 @@ class _MessageBubbleState extends State<MessageBubble>
     }
 
     final markdownStyleSheet = MarkdownStyleSheet(
-      p: TextStyle(color: textColor, fontSize: 15, height: 1.4),
+      p: TextStyle(color: textColor, fontSize: fontSize, height: 1.4),
       code: TextStyle(
         backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
         color: Theme.of(context).colorScheme.onSurface,
@@ -272,8 +355,18 @@ class _MessageBubbleState extends State<MessageBubble>
     final markdownContent = MarkdownBody(
       data: widget.message.content,
       styleSheet: markdownStyleSheet,
+      extensionSet: md.ExtensionSet(
+        md.ExtensionSet.gitHubWeb.blockSyntaxes,
+        [
+          ...md.ExtensionSet.gitHubWeb.inlineSyntaxes,
+          MathInlineSyntax(),
+          MathDisplaySyntax(),
+        ],
+      ),
       builders: {
         'code': MarkdownCodeBlockBuilder(context: context),
+        'math_inline': MathBuilder(context: context, fontSize: fontSize),
+        'math_display': MathBuilder(context: context, fontSize: fontSize),
       },
       onTapLink: (text, href, title) {
         if (href != null) {
@@ -438,17 +531,41 @@ class _MessageBubbleState extends State<MessageBubble>
     );
   }
 
-  Widget _buildModelName(BuildContext context) {
-    if (widget.message.role == 'user') {
-      return const SizedBox.shrink();
-    }
+  Widget _buildMetaInfo(BuildContext context) {
+    final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
+    final showName = appConfig.showModelName &&
+        widget.message.modelName != null &&
+        widget.message.role == 'assistant';
+    final showTime = appConfig.showTimestamps;
+
+    if (!showName && !showTime) return const SizedBox.shrink();
+
+    final textStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
+          color:
+              Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.8),
+        );
+
     return Padding(
       padding: const EdgeInsets.only(top: 4.0, right: 8.0, left: 8.0),
-      child: Text(
-        widget.message.modelName!,
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (showName)
+            Text(
+              widget.message.modelName!,
+              style: textStyle,
             ),
+          if (showName && showTime)
+            Text(
+              ' · ',
+              style: textStyle,
+            ),
+          if (showTime)
+            Text(
+              '${widget.message.timestamp.hour.toString().padLeft(2, '0')}:${widget.message.timestamp.minute.toString().padLeft(2, '0')}',
+              style: textStyle,
+            ),
+        ],
       ),
     );
   }

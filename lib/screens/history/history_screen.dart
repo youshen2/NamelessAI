@@ -17,6 +17,8 @@ class HistoryScreen extends StatefulWidget {
 
 class _HistoryScreenState extends State<HistoryScreen> {
   ChatSession? _selectedSessionForPreview;
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
 
   @override
   void initState() {
@@ -32,6 +34,19 @@ class _HistoryScreenState extends State<HistoryScreen> {
         });
       }
     });
+    _searchController.addListener(() {
+      if (mounted) {
+        setState(() {
+          _searchQuery = _searchController.text.toLowerCase();
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   Future<void> _editSessionName(
@@ -73,12 +88,28 @@ class _HistoryScreenState extends State<HistoryScreen> {
             );
           }
 
+          final filteredSessions = manager.sessions.where((session) {
+            if (_searchQuery.isEmpty) return true;
+            final nameMatch = session.name.toLowerCase().contains(_searchQuery);
+            final contentMatch = session.messages
+                .any((msg) => msg.content.toLowerCase().contains(_searchQuery));
+            return nameMatch || contentMatch;
+          }).toList();
+
           if (isDesktop) {
             return Row(
               children: [
                 SizedBox(
                   width: 300,
-                  child: _buildSessionList(manager, localizations),
+                  child: Column(
+                    children: [
+                      _buildSearchBar(localizations),
+                      Expanded(
+                        child:
+                            _buildSessionList(filteredSessions, localizations),
+                      ),
+                    ],
+                  ),
                 ),
                 VerticalDivider(
                     thickness: 1,
@@ -93,19 +124,49 @@ class _HistoryScreenState extends State<HistoryScreen> {
               ],
             );
           } else {
-            return _buildSessionList(manager, localizations);
+            return Column(
+              children: [
+                _buildSearchBar(localizations),
+                Expanded(
+                    child: _buildSessionList(filteredSessions, localizations)),
+              ],
+            );
           }
         },
       ),
     );
   }
 
+  Widget _buildSearchBar(AppLocalizations localizations) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      child: TextField(
+        controller: _searchController,
+        decoration: InputDecoration(
+          hintText: "${localizations.search}...",
+          prefixIcon: const Icon(Icons.search),
+          suffixIcon: _searchQuery.isNotEmpty
+              ? IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: () {
+                    _searchController.clear();
+                  },
+                )
+              : null,
+        ),
+      ),
+    );
+  }
+
   Widget _buildSessionList(
-      ChatSessionManager manager, AppLocalizations localizations) {
+      List<ChatSession> sessions, AppLocalizations localizations) {
+    if (sessions.isEmpty) {
+      return Center(child: Text(localizations.noResultsFound));
+    }
     return ListView.builder(
-      itemCount: manager.sessions.length,
+      itemCount: sessions.length,
       itemBuilder: (context, index) {
-        final session = manager.sessions[index];
+        final session = sessions[index];
         final isSelected = _selectedSessionForPreview?.id == session.id;
         return Card(
           margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -139,6 +200,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     final confirmed =
                         await showConfirmDialog(context, localizations.chat);
                     if (confirmed == true) {
+                      final manager = Provider.of<ChatSessionManager>(context,
+                          listen: false);
                       await manager.deleteSession(session.id);
                       showSnackBar(
                           context, '${session.name} ${localizations.delete}d');
@@ -158,7 +221,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 _selectedSessionForPreview = freshSession;
               });
               if (MediaQuery.of(context).size.width < 600) {
-                manager.loadSession(session.id);
+                Provider.of<ChatSessionManager>(context, listen: false)
+                    .loadSession(session.id);
                 context.go('/');
               }
             },

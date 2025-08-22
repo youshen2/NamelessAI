@@ -70,13 +70,14 @@ class ModelAdapter extends TypeAdapter<Model> {
       name: fields[1] as String,
       maxTokens: fields[2] as int?,
       isStreamable: fields[3] as bool,
+      supportsThinking: fields[4] == null ? false : fields[4] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, Model obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -84,7 +85,9 @@ class ModelAdapter extends TypeAdapter<Model> {
       ..writeByte(2)
       ..write(obj.maxTokens)
       ..writeByte(3)
-      ..write(obj.isStreamable);
+      ..write(obj.isStreamable)
+      ..writeByte(4)
+      ..write(obj.supportsThinking);
   }
 
   @override

@@ -67,11 +67,15 @@ class Model extends HiveObject {
   @HiveField(3)
   bool isStreamable;
 
+  @HiveField(4, defaultValue: false)
+  bool supportsThinking;
+
   Model({
     String? id,
     required this.name,
     this.maxTokens,
     required this.isStreamable,
+    this.supportsThinking = false,
   }) : id = id ?? const Uuid().v4();
 
   Model copyWith({
@@ -79,12 +83,14 @@ class Model extends HiveObject {
     String? name,
     int? maxTokens,
     bool? isStreamable,
+    bool? supportsThinking,
   }) {
     return Model(
       id: id ?? this.id,
       name: name ?? this.name,
       maxTokens: maxTokens ?? this.maxTokens,
       isStreamable: isStreamable ?? this.isStreamable,
+      supportsThinking: supportsThinking ?? this.supportsThinking,
     );
   }
 }

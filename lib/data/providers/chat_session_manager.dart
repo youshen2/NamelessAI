@@ -16,6 +16,7 @@ class ChatSessionManager extends ChangeNotifier {
   ChatSession? _currentSession;
   bool _isNewSession = true;
   final Set<String> _generatingSessions = {};
+  final Set<String> _cancelledSessions = {};
 
   ChatSessionManager() {
     _loadSessions();
@@ -371,6 +372,13 @@ class ChatSessionManager extends ChangeNotifier {
     }
   }
 
+  void cancelGeneration(String sessionId) {
+    if (_generatingSessions.contains(sessionId)) {
+      _cancelledSessions.add(sessionId);
+      debugPrint("NamelessAI - Cancellation requested for session $sessionId");
+    }
+  }
+
   Future<void> _performGeneration(String sessionId, String assistantMessageId,
       APIProvider provider, Model model) async {
     final session = AppDatabase.chatSessionsBox.get(sessionId);
@@ -379,6 +387,8 @@ class ChatSessionManager extends ChangeNotifier {
       notifyListeners();
       return;
     }
+
+    _cancelledSessions.remove(sessionId);
 
     final chatService = ChatService(provider: provider, model: model);
 
@@ -415,6 +425,12 @@ class ChatSessionManager extends ChangeNotifier {
         );
 
         await for (final item in stream) {
+          if (_cancelledSessions.contains(sessionId)) {
+            debugPrint(
+                "NamelessAI - Generation cancelled for session $sessionId");
+            break;
+          }
+
           if (item is String) {
             if (firstChunkTimeMs == null) {
               firstChunkTimeMs = stopwatch.elapsedMilliseconds;
@@ -430,12 +446,11 @@ class ChatSessionManager extends ChangeNotifier {
               messageToUpdate.thinkingDurationMs = DateTime.now()
                   .difference(messageToUpdate.thinkingStartTime!)
                   .inMilliseconds;
-            } else if (!thinkingDone) {
-              messageToUpdate.thinkingContent = fullResponseBuffer;
-            } else {
+            } else if (thinkingDone) {
               messageToUpdate.content = (messageToUpdate.content ?? '') + item;
+            } else {
+              messageToUpdate.thinkingContent = fullResponseBuffer;
             }
-            await session.save();
             notifyListeners();
           } else if (item is api_models.Usage) {
             usage = item;
@@ -470,6 +485,17 @@ class ChatSessionManager extends ChangeNotifier {
       stopwatch.stop();
       final finalMessage = _findMessageInSession(session, assistantMessageId);
       if (finalMessage != null) {
+        final bool shouldMergeThinking =
+            (!thinkingDone || !model.supportsThinking) &&
+                finalMessage.thinkingContent != null;
+
+        if (shouldMergeThinking) {
+          finalMessage.content = (finalMessage.thinkingContent ?? '') +
+              (finalMessage.content ?? '');
+          finalMessage.thinkingContent = null;
+          finalMessage.thinkingDurationMs = null;
+        }
+
         finalMessage.isLoading = false;
         finalMessage.completionTimeMs = stopwatch.elapsedMilliseconds;
         finalMessage.firstChunkTimeMs = firstChunkTimeMs;
@@ -479,13 +505,18 @@ class ChatSessionManager extends ChangeNotifier {
           finalMessage.completionTokens = usage.completionTokens;
         }
         finalMessage.thinkingStartTime = null;
+
+        if (_cancelledSessions.contains(sessionId)) {
+          finalMessage.content =
+              (finalMessage.content ?? '') + "\n\n[Generation stopped by user]";
+        }
       }
 
       session.updatedAt = DateTime.now();
       await session.save();
-      notifyListeners();
 
       _generatingSessions.remove(sessionId);
+      _cancelledSessions.remove(sessionId);
       _loadSessions();
       if (_currentSession?.id == session.id) {
         _currentSession = session;

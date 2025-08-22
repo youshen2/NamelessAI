@@ -3,7 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/models/chat_session.dart';
 import 'package:nameless_ai/data/providers/api_provider_manager.dart';
+import 'package:nameless_ai/data/providers/system_prompt_template_manager.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
+import 'package:nameless_ai/utils/helpers.dart';
 
 class ChatSettingsSheet extends StatefulWidget {
   final ChatSession session;
@@ -49,6 +51,53 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
     _systemPromptController.dispose();
     _maxContextController.dispose();
     super.dispose();
+  }
+
+  void _showTemplateSelection() {
+    final manager =
+        Provider.of<SystemPromptTemplateManager>(context, listen: false);
+    final localizations = AppLocalizations.of(context)!;
+
+    if (manager.templates.isEmpty) {
+      showSnackBar(context, localizations.noSystemPromptTemplates);
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(localizations.systemPromptTemplates),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: manager.templates.length,
+              itemBuilder: (context, index) {
+                final template = manager.templates[index];
+                return ListTile(
+                  title: Text(template.name),
+                  subtitle: Text(template.prompt,
+                      maxLines: 1, overflow: TextOverflow.ellipsis),
+                  onTap: () {
+                    setState(() {
+                      _systemPromptController.text = template.prompt;
+                    });
+                    Navigator.of(context).pop();
+                  },
+                );
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(localizations.cancel),
+            )
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -127,8 +176,19 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
                     decoration: const InputDecoration(),
                   ),
                 const SizedBox(height: 24),
-                Text(localizations.systemPrompt,
-                    style: Theme.of(context).textTheme.titleMedium),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(localizations.systemPrompt,
+                        style: Theme.of(context).textTheme.titleMedium),
+                    TextButton.icon(
+                      onPressed: _showTemplateSelection,
+                      icon: const Icon(Icons.library_books_outlined, size: 18),
+                      label: Text(localizations.systemPromptTemplates),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 8),
                 TextField(
                   controller: _systemPromptController,

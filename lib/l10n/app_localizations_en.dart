@@ -344,4 +344,63 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get resumeAutoScrollOnBottom => 'Resume auto-scroll when at bottom';
+
+  @override
+  String get search => 'Search';
+
+  @override
+  String get noResultsFound => 'No results found.';
+
+  @override
+  String get stopGenerating => 'Stop Generating';
+
+  @override
+  String get chatDisplay => 'Chat Display';
+
+  @override
+  String get fontSize => 'Font Size';
+
+  @override
+  String get small => 'Small';
+
+  @override
+  String get medium => 'Medium';
+
+  @override
+  String get large => 'Large';
+
+  @override
+  String get chatBubbleAlignment => 'Chat Bubble Alignment';
+
+  @override
+  String get normal => 'Normal';
+
+  @override
+  String get center => 'Center';
+
+  @override
+  String get showTimestamps => 'Show Timestamps';
+
+  @override
+  String get supportsThinking => 'Supports Thinking';
+
+  @override
+  String get supportsThinkingHint =>
+      'If not supported, streaming content is shown as thinking and merged into the main body on completion.';
+
+  @override
+  String get chatBubbleWidth => 'Chat Bubble Width';
+
+  @override
+  String get compactMode => 'Compact Mode';
+
+  @override
+  String get compactModeHint => 'Reduces padding and margins for a denser UI.';
+
+  @override
+  String get showModelName => 'Show Model Name';
+
+  @override
+  String get showModelNameHint =>
+      'Display the model name under each AI response.';
 }

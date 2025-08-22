@@ -751,6 +751,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Resume auto-scroll when at bottom'**
   String get resumeAutoScrollOnBottom;
+
+  /// No description provided for @search.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get search;
+
+  /// No description provided for @noResultsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No results found.'**
+  String get noResultsFound;
+
+  /// No description provided for @stopGenerating.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop Generating'**
+  String get stopGenerating;
+
+  /// No description provided for @chatDisplay.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat Display'**
+  String get chatDisplay;
+
+  /// No description provided for @fontSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Font Size'**
+  String get fontSize;
+
+  /// No description provided for @small.
+  ///
+  /// In en, this message translates to:
+  /// **'Small'**
+  String get small;
+
+  /// No description provided for @medium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get medium;
+
+  /// No description provided for @large.
+  ///
+  /// In en, this message translates to:
+  /// **'Large'**
+  String get large;
+
+  /// No description provided for @chatBubbleAlignment.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat Bubble Alignment'**
+  String get chatBubbleAlignment;
+
+  /// No description provided for @normal.
+  ///
+  /// In en, this message translates to:
+  /// **'Normal'**
+  String get normal;
+
+  /// No description provided for @center.
+  ///
+  /// In en, this message translates to:
+  /// **'Center'**
+  String get center;
+
+  /// No description provided for @showTimestamps.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Timestamps'**
+  String get showTimestamps;
+
+  /// No description provided for @supportsThinking.
+  ///
+  /// In en, this message translates to:
+  /// **'Supports Thinking'**
+  String get supportsThinking;
+
+  /// No description provided for @supportsThinkingHint.
+  ///
+  /// In en, this message translates to:
+  /// **'If not supported, streaming content is shown as thinking and merged into the main body on completion.'**
+  String get supportsThinkingHint;
+
+  /// No description provided for @chatBubbleWidth.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat Bubble Width'**
+  String get chatBubbleWidth;
+
+  /// No description provided for @compactMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Compact Mode'**
+  String get compactMode;
+
+  /// No description provided for @compactModeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Reduces padding and margins for a denser UI.'**
+  String get compactModeHint;
+
+  /// No description provided for @showModelName.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Model Name'**
+  String get showModelName;
+
+  /// No description provided for @showModelNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Display the model name under each AI response.'**
+  String get showModelNameHint;
 }
 
 class _AppLocalizationsDelegate

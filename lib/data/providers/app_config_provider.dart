@@ -3,6 +3,10 @@ import 'package:nameless_ai/data/app_database.dart';
 
 enum SendKeyOption { enter, ctrlEnter, shiftCtrlEnter }
 
+enum ChatBubbleAlignment { normal, center }
+
+enum FontSize { small, medium, large }
+
 class AppConfigProvider extends ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.system;
   Locale? _locale;
@@ -17,6 +21,13 @@ class AppConfigProvider extends ChangeNotifier {
 
   bool _disableAutoScrollOnUp = true;
   bool _resumeAutoScrollOnBottom = true;
+
+  ChatBubbleAlignment _chatBubbleAlignment = ChatBubbleAlignment.normal;
+  FontSize _fontSize = FontSize.medium;
+  bool _showTimestamps = true;
+  bool _showModelName = true;
+  bool _compactMode = false;
+  double _chatBubbleWidth = 0.8;
 
   AppConfigProvider() {
     _loadConfig();
@@ -36,129 +47,169 @@ class AppConfigProvider extends ChangeNotifier {
   bool get disableAutoScrollOnUp => _disableAutoScrollOnUp;
   bool get resumeAutoScrollOnBottom => _resumeAutoScrollOnBottom;
 
-  void _loadConfig() {
-    final themeModeIndex = AppDatabase.appConfigBox
-        .get('themeMode', defaultValue: ThemeMode.system.index);
-    _themeMode = ThemeMode.values[themeModeIndex];
+  ChatBubbleAlignment get chatBubbleAlignment => _chatBubbleAlignment;
+  FontSize get fontSize => _fontSize;
+  bool get showTimestamps => _showTimestamps;
+  bool get showModelName => _showModelName;
+  bool get compactMode => _compactMode;
+  double get chatBubbleWidth => _chatBubbleWidth;
 
-    final localeCode =
-        AppDatabase.appConfigBox.get('locale', defaultValue: null);
+  void _loadConfig() {
+    final box = AppDatabase.appConfigBox;
+    _themeMode = ThemeMode
+        .values[box.get('themeMode', defaultValue: ThemeMode.system.index)];
+    final localeCode = box.get('locale');
     if (localeCode != null) {
       _locale = Locale(localeCode);
     }
+    _enableMonet = box.get('enableMonet', defaultValue: true);
+    _sendKeyOption = SendKeyOption.values[
+        box.get('sendKeyOption', defaultValue: SendKeyOption.ctrlEnter.index)];
+    _useSendKeyInEditMode =
+        box.get('useSendKeyInEditMode', defaultValue: false);
+    _showTotalTime = box.get('showTotalTime', defaultValue: false);
+    _showFirstChunkTime = box.get('showFirstChunkTime', defaultValue: false);
+    _showTokenUsage = box.get('showTokenUsage', defaultValue: false);
+    _showOutputCharacters =
+        box.get('showOutputCharacters', defaultValue: false);
+    _disableAutoScrollOnUp =
+        box.get('disableAutoScrollOnUp', defaultValue: true);
+    _resumeAutoScrollOnBottom =
+        box.get('resumeAutoScrollOnBottom', defaultValue: true);
+    _chatBubbleAlignment = ChatBubbleAlignment.values[box.get(
+        'chatBubbleAlignment',
+        defaultValue: ChatBubbleAlignment.normal.index)];
+    _fontSize = FontSize
+        .values[box.get('fontSize', defaultValue: FontSize.medium.index)];
+    _showTimestamps = box.get('showTimestamps', defaultValue: true);
+    _showModelName = box.get('showModelName', defaultValue: true);
+    _compactMode = box.get('compactMode', defaultValue: false);
+    _chatBubbleWidth = box.get('chatBubbleWidth', defaultValue: 0.8);
 
-    _enableMonet =
-        AppDatabase.appConfigBox.get('enableMonet', defaultValue: true);
+    notifyListeners();
+  }
 
-    final sendKeyIndex = AppDatabase.appConfigBox
-        .get('sendKeyOption', defaultValue: SendKeyOption.ctrlEnter.index);
-    _sendKeyOption = SendKeyOption.values[sendKeyIndex];
-
-    _useSendKeyInEditMode = AppDatabase.appConfigBox
-        .get('useSendKeyInEditMode', defaultValue: false);
-
-    _showTotalTime =
-        AppDatabase.appConfigBox.get('showTotalTime', defaultValue: false);
-    _showFirstChunkTime =
-        AppDatabase.appConfigBox.get('showFirstChunkTime', defaultValue: false);
-    _showTokenUsage =
-        AppDatabase.appConfigBox.get('showTokenUsage', defaultValue: false);
-    _showOutputCharacters = AppDatabase.appConfigBox
-        .get('showOutputCharacters', defaultValue: false);
-
-    _disableAutoScrollOnUp = AppDatabase.appConfigBox
-        .get('disableAutoScrollOnUp', defaultValue: true);
-    _resumeAutoScrollOnBottom = AppDatabase.appConfigBox
-        .get('resumeAutoScrollOnBottom', defaultValue: true);
-
+  Future<void> _updateValue(String key, dynamic value) async {
+    await AppDatabase.appConfigBox.put(key, value);
     notifyListeners();
   }
 
   void setThemeMode(ThemeMode mode) {
     if (_themeMode != mode) {
       _themeMode = mode;
-      AppDatabase.appConfigBox.put('themeMode', mode.index);
-      notifyListeners();
+      _updateValue('themeMode', mode.index);
     }
   }
 
   void setLocale(Locale? newLocale) {
     if (_locale != newLocale) {
       _locale = newLocale;
-      AppDatabase.appConfigBox.put('locale', newLocale?.languageCode);
-      notifyListeners();
+      _updateValue('locale', newLocale?.languageCode);
     }
   }
 
   void setEnableMonet(bool enable) {
     if (_enableMonet != enable) {
       _enableMonet = enable;
-      AppDatabase.appConfigBox.put('enableMonet', enable);
-      notifyListeners();
+      _updateValue('enableMonet', enable);
     }
   }
 
   void setSendKeyOption(SendKeyOption option) {
     if (_sendKeyOption != option) {
       _sendKeyOption = option;
-      AppDatabase.appConfigBox.put('sendKeyOption', option.index);
-      notifyListeners();
+      _updateValue('sendKeyOption', option.index);
     }
   }
 
   void setUseSendKeyInEditMode(bool use) {
     if (_useSendKeyInEditMode != use) {
       _useSendKeyInEditMode = use;
-      AppDatabase.appConfigBox.put('useSendKeyInEditMode', use);
-      notifyListeners();
+      _updateValue('useSendKeyInEditMode', use);
     }
   }
 
   void setShowTotalTime(bool show) {
     if (_showTotalTime != show) {
       _showTotalTime = show;
-      AppDatabase.appConfigBox.put('showTotalTime', show);
-      notifyListeners();
+      _updateValue('showTotalTime', show);
     }
   }
 
   void setShowFirstChunkTime(bool show) {
     if (_showFirstChunkTime != show) {
       _showFirstChunkTime = show;
-      AppDatabase.appConfigBox.put('showFirstChunkTime', show);
-      notifyListeners();
+      _updateValue('showFirstChunkTime', show);
     }
   }
 
   void setShowTokenUsage(bool show) {
     if (_showTokenUsage != show) {
       _showTokenUsage = show;
-      AppDatabase.appConfigBox.put('showTokenUsage', show);
-      notifyListeners();
+      _updateValue('showTokenUsage', show);
     }
   }
 
   void setShowOutputCharacters(bool show) {
     if (_showOutputCharacters != show) {
       _showOutputCharacters = show;
-      AppDatabase.appConfigBox.put('showOutputCharacters', show);
-      notifyListeners();
+      _updateValue('showOutputCharacters', show);
     }
   }
 
   void setDisableAutoScrollOnUp(bool value) {
     if (_disableAutoScrollOnUp != value) {
       _disableAutoScrollOnUp = value;
-      AppDatabase.appConfigBox.put('disableAutoScrollOnUp', value);
-      notifyListeners();
+      _updateValue('disableAutoScrollOnUp', value);
     }
   }
 
   void setResumeAutoScrollOnBottom(bool value) {
     if (_resumeAutoScrollOnBottom != value) {
       _resumeAutoScrollOnBottom = value;
-      AppDatabase.appConfigBox.put('resumeAutoScrollOnBottom', value);
-      notifyListeners();
+      _updateValue('resumeAutoScrollOnBottom', value);
+    }
+  }
+
+  void setChatBubbleAlignment(ChatBubbleAlignment alignment) {
+    if (_chatBubbleAlignment != alignment) {
+      _chatBubbleAlignment = alignment;
+      _updateValue('chatBubbleAlignment', alignment.index);
+    }
+  }
+
+  void setFontSize(FontSize size) {
+    if (_fontSize != size) {
+      _fontSize = size;
+      _updateValue('fontSize', size.index);
+    }
+  }
+
+  void setShowTimestamps(bool show) {
+    if (_showTimestamps != show) {
+      _showTimestamps = show;
+      _updateValue('showTimestamps', show);
+    }
+  }
+
+  void setShowModelName(bool show) {
+    if (_showModelName != show) {
+      _showModelName = show;
+      _updateValue('showModelName', show);
+    }
+  }
+
+  void setCompactMode(bool isCompact) {
+    if (_compactMode != isCompact) {
+      _compactMode = isCompact;
+      _updateValue('compactMode', isCompact);
+    }
+  }
+
+  void setChatBubbleWidth(double width) {
+    if (_chatBubbleWidth != width) {
+      _chatBubbleWidth = width;
+      _updateValue('chatBubbleWidth', width);
     }
   }
 }

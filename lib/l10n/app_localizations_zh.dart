@@ -340,4 +340,61 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get resumeAutoScrollOnBottom => '滚动到底部时恢复自动滚动';
+
+  @override
+  String get search => '搜索';
+
+  @override
+  String get noResultsFound => '未找到结果。';
+
+  @override
+  String get stopGenerating => '停止生成';
+
+  @override
+  String get chatDisplay => '聊天显示';
+
+  @override
+  String get fontSize => '字号';
+
+  @override
+  String get small => '小';
+
+  @override
+  String get medium => '中';
+
+  @override
+  String get large => '大';
+
+  @override
+  String get chatBubbleAlignment => '聊天气泡对齐';
+
+  @override
+  String get normal => '常规';
+
+  @override
+  String get center => '居中';
+
+  @override
+  String get showTimestamps => '显示时间戳';
+
+  @override
+  String get supportsThinking => '支持思考';
+
+  @override
+  String get supportsThinkingHint => '若实际不支持思考，流式输出过程中会作为思考内容，结束后会归类为正文。';
+
+  @override
+  String get chatBubbleWidth => '聊天气泡宽度';
+
+  @override
+  String get compactMode => '紧凑模式';
+
+  @override
+  String get compactModeHint => '减少边距与间距，使界面更紧凑。';
+
+  @override
+  String get showModelName => '显示模型名称';
+
+  @override
+  String get showModelNameHint => '在每条AI回复下方显示模型名称。';
 }

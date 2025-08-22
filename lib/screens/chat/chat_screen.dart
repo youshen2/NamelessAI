@@ -490,13 +490,23 @@ class _ChatScreenState extends State<ChatScreen> {
                     return ScaleTransition(scale: animation, child: child);
                   },
                   child: isLoading
-                      ? Padding(
-                          key: const ValueKey('loader'),
-                          padding: const EdgeInsets.all(12.0),
-                          child: CircularProgressIndicator(
-                            strokeWidth: 3,
-                            color: Theme.of(context).colorScheme.primary,
+                      ? FilledButton(
+                          key: const ValueKey('stop_button'),
+                          onPressed: () {
+                            if (_chatSessionManager.currentSession != null) {
+                              _chatSessionManager.cancelGeneration(
+                                  _chatSessionManager.currentSession!.id);
+                            }
+                          },
+                          style: FilledButton.styleFrom(
+                            backgroundColor:
+                                Theme.of(context).colorScheme.errorContainer,
+                            foregroundColor:
+                                Theme.of(context).colorScheme.onErrorContainer,
+                            shape: const CircleBorder(),
+                            padding: EdgeInsets.zero,
                           ),
+                          child: const Icon(Icons.stop),
                         )
                       : FilledButton(
                           key: const ValueKey('send_button'),
