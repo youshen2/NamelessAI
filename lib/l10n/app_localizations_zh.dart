@@ -506,4 +506,38 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get pageUp => '向上翻页';
+
+  @override
+  String get checkForUpdates => '检查更新';
+
+  @override
+  String get checkForUpdatesOnStartup => '启动时检查更新';
+
+  @override
+  String updateAvailable(String version) {
+    return '发现新版本: v$version';
+  }
+
+  @override
+  String get newVersionMessage => 'NamelessAI 有一个新版本可用。';
+
+  @override
+  String get releaseNotes => '更新日志:';
+
+  @override
+  String get later => '稍后';
+
+  @override
+  String get update => '更新';
+
+  @override
+  String get noUpdates => '没有更新';
+
+  @override
+  String get latestVersionMessage => '您正在使用最新版本。';
+
+  @override
+  String updateCheckFailed(String error) {
+    return '检查更新失败: $error';
+  }
 }

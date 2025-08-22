@@ -1069,6 +1069,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Page Up'**
   String get pageUp;
+
+  /// No description provided for @checkForUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'Check for Updates'**
+  String get checkForUpdates;
+
+  /// No description provided for @checkForUpdatesOnStartup.
+  ///
+  /// In en, this message translates to:
+  /// **'Check for updates on startup'**
+  String get checkForUpdatesOnStartup;
+
+  /// No description provided for @updateAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Available: v{version}'**
+  String updateAvailable(String version);
+
+  /// No description provided for @newVersionMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'A new version of NamelessAI is available.'**
+  String get newVersionMessage;
+
+  /// No description provided for @releaseNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Release Notes:'**
+  String get releaseNotes;
+
+  /// No description provided for @later.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get later;
+
+  /// No description provided for @update.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get update;
+
+  /// No description provided for @noUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'No Updates'**
+  String get noUpdates;
+
+  /// No description provided for @latestVersionMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You are using the latest version.'**
+  String get latestVersionMessage;
+
+  /// No description provided for @updateCheckFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to check for updates: {error}'**
+  String updateCheckFailed(String error);
 }
 
 class _AppLocalizationsDelegate

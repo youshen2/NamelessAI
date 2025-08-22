@@ -1,12 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:nameless_ai/data/providers/app_config_provider.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
+import 'package:nameless_ai/services/update_service.dart';
 import 'package:nameless_ai/widgets/responsive_layout.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   final Widget child;
 
   const HomePage({super.key, required this.child});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkForUpdate();
+    });
+  }
+
+  void _checkForUpdate() {
+    if (!mounted) return;
+    final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
+    if (appConfig.checkForUpdatesOnStartup) {
+      UpdateService().check(context);
+    }
+  }
 
   int _calculateSelectedIndex(BuildContext context) {
     final String location = GoRouterState.of(context).uri.toString();
@@ -40,7 +64,7 @@ class HomePage extends StatelessWidget {
 
     return ResponsiveLayout(
       mobileBody: Scaffold(
-        body: child,
+        body: widget.child,
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: selectedIndex,
           onTap: (index) => _onItemTapped(index, context),
@@ -83,7 +107,7 @@ class HomePage extends StatelessWidget {
               ],
             ),
             const VerticalDivider(thickness: 1, width: 1),
-            Expanded(child: child),
+            Expanded(child: widget.child),
           ],
         ),
       ),

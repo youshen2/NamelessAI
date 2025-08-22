@@ -33,6 +33,7 @@ class AppConfigProvider extends ChangeNotifier {
   bool _useFirstSentenceAsTitle = true;
   String _codeTheme = 'github';
   bool _showDebugButton = false;
+  bool _checkForUpdatesOnStartup = true;
 
   AppConfigProvider() {
     _loadConfig();
@@ -63,6 +64,7 @@ class AppConfigProvider extends ChangeNotifier {
   bool get useFirstSentenceAsTitle => _useFirstSentenceAsTitle;
   String get codeTheme => _codeTheme;
   bool get showDebugButton => _showDebugButton;
+  bool get checkForUpdatesOnStartup => _checkForUpdatesOnStartup;
 
   void _loadConfig() {
     final box = AppDatabase.appConfigBox;
@@ -101,6 +103,8 @@ class AppConfigProvider extends ChangeNotifier {
         box.get('useFirstSentenceAsTitle', defaultValue: true);
     _codeTheme = box.get('codeTheme', defaultValue: 'github');
     _showDebugButton = box.get('showDebugButton', defaultValue: false);
+    _checkForUpdatesOnStartup =
+        box.get('checkForUpdatesOnStartup', defaultValue: true);
 
     notifyListeners();
   }
@@ -254,6 +258,13 @@ class AppConfigProvider extends ChangeNotifier {
     if (_showDebugButton != show) {
       _showDebugButton = show;
       _updateValue('showDebugButton', show);
+    }
+  }
+
+  void setCheckForUpdatesOnStartup(bool check) {
+    if (_checkForUpdatesOnStartup != check) {
+      _checkForUpdatesOnStartup = check;
+      _updateValue('checkForUpdatesOnStartup', check);
     }
   }
 }

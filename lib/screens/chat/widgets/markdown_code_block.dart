@@ -76,16 +76,14 @@ class MarkdownCodeBlockBuilder extends MarkdownElementBuilder {
                     .withOpacity(0.5)),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              child: SelectionArea(
-                child: HighlightView(
-                  code,
-                  language: language,
-                  theme: theme,
-                  padding: const EdgeInsets.all(12.0),
-                  textStyle: const TextStyle(
-                    fontFamily: 'monospace',
-                    fontSize: 14,
-                  ),
+              child: HighlightView(
+                code,
+                language: language,
+                theme: theme,
+                padding: const EdgeInsets.all(12.0),
+                textStyle: const TextStyle(
+                  fontFamily: 'monospace',
+                  fontSize: 14,
                 ),
               ),
             ),

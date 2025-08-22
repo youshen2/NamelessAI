@@ -518,4 +518,38 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pageUp => 'Page Up';
+
+  @override
+  String get checkForUpdates => 'Check for Updates';
+
+  @override
+  String get checkForUpdatesOnStartup => 'Check for updates on startup';
+
+  @override
+  String updateAvailable(String version) {
+    return 'Update Available: v$version';
+  }
+
+  @override
+  String get newVersionMessage => 'A new version of NamelessAI is available.';
+
+  @override
+  String get releaseNotes => 'Release Notes:';
+
+  @override
+  String get later => 'Later';
+
+  @override
+  String get update => 'Update';
+
+  @override
+  String get noUpdates => 'No Updates';
+
+  @override
+  String get latestVersionMessage => 'You are using the latest version.';
+
+  @override
+  String updateCheckFailed(String error) {
+    return 'Failed to check for updates: $error';
+  }
 }

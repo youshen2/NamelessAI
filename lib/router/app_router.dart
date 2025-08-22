@@ -4,6 +4,7 @@ import 'package:nameless_ai/screens/history/history_screen.dart';
 import 'package:nameless_ai/screens/home/home_page.dart';
 import 'package:nameless_ai/screens/settings/about_screen.dart';
 import 'package:nameless_ai/screens/settings/api_provider_settings_screen.dart';
+import 'package:nameless_ai/screens/settings/app_settings_screen.dart';
 import 'package:nameless_ai/screens/settings/developer_options_screen.dart';
 import 'package:nameless_ai/screens/settings/display_settings_screen.dart';
 import 'package:nameless_ai/screens/settings/general_settings_screen.dart';
@@ -61,6 +62,11 @@ class AppRouter {
                 path: 'general',
                 name: 'general_settings',
                 builder: (context, state) => const GeneralSettingsScreen(),
+              ),
+              GoRoute(
+                path: 'app',
+                name: 'app_settings',
+                builder: (context, state) => const AppSettingsScreen(),
               ),
             ],
           ),

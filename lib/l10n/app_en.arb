@@ -196,5 +196,29 @@
   "debugInfo": "Debug Info",
   "scrollToTop": "Scroll to top",
   "scrollToBottom": "Scroll to bottom",
-  "pageUp": "Page Up"
+  "pageUp": "Page Up",
+  "checkForUpdates": "Check for Updates",
+  "checkForUpdatesOnStartup": "Check for updates on startup",
+  "updateAvailable": "Update Available: v{version}",
+  "@updateAvailable": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "newVersionMessage": "A new version of NamelessAI is available.",
+  "releaseNotes": "Release Notes:",
+  "later": "Later",
+  "update": "Update",
+  "noUpdates": "No Updates",
+  "latestVersionMessage": "You are using the latest version.",
+  "updateCheckFailed": "Failed to check for updates: {error}",
+  "@updateCheckFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

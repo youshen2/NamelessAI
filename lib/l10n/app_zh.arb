@@ -196,5 +196,29 @@
   "debugInfo": "调试信息",
   "scrollToTop": "回到顶部",
   "scrollToBottom": "回到底部",
-  "pageUp": "向上翻页"
+  "pageUp": "向上翻页",
+  "checkForUpdates": "检查更新",
+  "checkForUpdatesOnStartup": "启动时检查更新",
+  "updateAvailable": "发现新版本: v{version}",
+  "@updateAvailable": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "newVersionMessage": "NamelessAI 有一个新版本可用。",
+  "releaseNotes": "更新日志:",
+  "later": "稍后",
+  "update": "更新",
+  "noUpdates": "没有更新",
+  "latestVersionMessage": "您正在使用最新版本。",
+  "updateCheckFailed": "检查更新失败: {error}",
+  "@updateCheckFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

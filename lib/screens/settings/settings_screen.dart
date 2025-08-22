@@ -126,22 +126,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: Column(
                   children: [
                     ListTile(
-                      leading: const Icon(Icons.api),
-                      title: Text(localizations.apiProviderSettings),
-                      onTap: () => context.go('/settings/api_providers'),
+                      leading: const Icon(Icons.apps),
+                      title: Text(localizations.appSettings),
+                      onTap: () => context.go('/settings/app'),
                     ),
-                    ListTile(
-                      leading: const Icon(Icons.library_books),
-                      title: Text(localizations.systemPromptTemplates),
-                      onTap: () => context.go('/settings/system_prompts'),
-                    ),
-                  ],
-                ),
-              ),
-              Card(
-                margin: const EdgeInsets.only(bottom: 16),
-                child: Column(
-                  children: [
                     ListTile(
                       leading: const Icon(Icons.tune),
                       title: Text(localizations.generalSettings),
@@ -151,6 +139,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       leading: const Icon(Icons.palette_outlined),
                       title: Text(localizations.appearanceSettings),
                       onTap: () => context.go('/settings/display'),
+                    ),
+                  ],
+                ),
+              ),
+              Card(
+                margin: const EdgeInsets.only(bottom: 16),
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.api),
+                      title: Text(localizations.apiProviderSettings),
+                      onTap: () => context.go('/settings/api_providers'),
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.library_books),
+                      title: Text(localizations.systemPromptTemplates),
+                      onTap: () => context.go('/settings/system_prompts'),
                     ),
                   ],
                 ),

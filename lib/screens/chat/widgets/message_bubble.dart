@@ -44,19 +44,17 @@ class MathBuilder extends MarkdownElementBuilder {
 
     return Padding(
       padding: EdgeInsets.symmetric(vertical: isDisplayMode ? 8.0 : 2.0),
-      child: SelectionArea(
-        child: Math.tex(
-          text,
-          mathStyle: isDisplayMode ? MathStyle.display : MathStyle.text,
-          textStyle: preferredStyle?.copyWith(
-            fontSize: fontSize,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
-          onErrorFallback: (err) => SelectableText(
-            isDisplayMode ? '\$\$${text}\$\$' : '\$${text}\$',
-            style: preferredStyle?.copyWith(
-              color: Theme.of(context).colorScheme.error,
-            ),
+      child: Math.tex(
+        text,
+        mathStyle: isDisplayMode ? MathStyle.display : MathStyle.text,
+        textStyle: preferredStyle?.copyWith(
+          fontSize: fontSize,
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
+        onErrorFallback: (err) => SelectableText(
+          isDisplayMode ? '\$\$${text}\$\$' : '\$${text}\$',
+          style: preferredStyle?.copyWith(
+            color: Theme.of(context).colorScheme.error,
           ),
         ),
       ),
@@ -347,16 +345,15 @@ class _MessageBubbleState extends State<MessageBubble>
               endIndent: 0,
               indent: 0),
           const SizedBox(height: 8),
-          SelectionArea(
-            child: MarkdownBody(
-              data: widget.message.thinkingContent!,
-              styleSheet: markdownStyleSheet,
-              onTapLink: (text, href, title) {
-                if (href != null) {
-                  launchUrl(Uri.parse(href));
-                }
-              },
-            ),
+          MarkdownBody(
+            data: widget.message.thinkingContent!,
+            selectable: true,
+            styleSheet: markdownStyleSheet,
+            onTapLink: (text, href, title) {
+              if (href != null) {
+                launchUrl(Uri.parse(href));
+              }
+            },
           ),
         ],
       ),
@@ -399,6 +396,7 @@ class _MessageBubbleState extends State<MessageBubble>
 
     final markdownContent = MarkdownBody(
       data: widget.message.content,
+      selectable: true,
       styleSheet: markdownStyleSheet,
       extensionSet: md.ExtensionSet(
         md.ExtensionSet.gitHubWeb.blockSyntaxes,
@@ -421,28 +419,26 @@ class _MessageBubbleState extends State<MessageBubble>
       },
     );
 
-    return SelectionArea(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (isError)
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(Icons.error_outline, color: textColor, size: 20),
-                const SizedBox(width: 8),
-                Expanded(child: markdownContent),
-              ],
-            )
-          else
-            markdownContent,
-          if (widget.message.isLoading)
-            const Padding(
-              padding: EdgeInsets.only(top: 8.0),
-              child: TypingIndicator(isInline: true),
-            ),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (isError)
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(Icons.error_outline, color: textColor, size: 20),
+              const SizedBox(width: 8),
+              Expanded(child: markdownContent),
+            ],
+          )
+        else
+          markdownContent,
+        if (widget.message.isLoading)
+          const Padding(
+            padding: EdgeInsets.only(top: 8.0),
+            child: TypingIndicator(isInline: true),
+          ),
+      ],
     );
   }
 
