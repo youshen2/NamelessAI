@@ -75,7 +75,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get modelName => '模型名称';
 
   @override
-  String get maxTokens => '最大令牌数 (可选)';
+  String get maxTokens => '最大Token数 (可选)';
 
   @override
   String get isStreamable => '支持流式输出';
@@ -281,7 +281,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get firstChunkTime => '首字耗时';
 
   @override
-  String get tokens => '令牌';
+  String get tokens => 'Tokens';
 
   @override
   String get prompt => '输入';
@@ -302,7 +302,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get showFirstChunkTime => '显示首字耗时';
 
   @override
-  String get showTokenUsage => '显示令牌用量';
+  String get showTokenUsage => '显示Token用量';
 
   @override
   String get showOutputCharacters => '显示输出字数';
@@ -324,7 +324,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get maxContextMessages => '最大上下文数量';
 
   @override
-  String get maxContextMessagesHint => '要发送的最近消息数量 (0或留空则无限制)';
+  String get maxContextMessagesHint => '要发送的消息数量 (0或留空则无限制)';
 
   @override
   String get appearanceSettings => '外观设置';
@@ -336,7 +336,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scrollSettings => '滚动设置';
 
   @override
-  String get disableAutoScrollOnUp => '手动上滚时禁用自动滚动';
+  String get disableAutoScrollOnUp => '手动滚动时禁用自动滚动';
 
   @override
   String get resumeAutoScrollOnBottom => '滚动到底部时恢复自动滚动';
