@@ -183,11 +183,19 @@ class ChatSessionManager extends ChangeNotifier {
       await saveCurrentSession(_currentSession!.name);
     }
 
-    final userMessage = ChatMessage(role: 'user', content: text);
+    final userMessage = ChatMessage(
+      role: 'user',
+      content: text,
+      modelName: model.name,
+    );
     _addMessageToActivePath(userMessage);
 
-    final assistantMessage =
-        ChatMessage(role: 'assistant', content: '', isLoading: true);
+    final assistantMessage = ChatMessage(
+      role: 'assistant',
+      content: '',
+      isLoading: true,
+      modelName: model.name,
+    );
     _addMessageToActivePath(assistantMessage);
     notifyListeners();
 
@@ -239,9 +247,14 @@ class ChatSessionManager extends ChangeNotifier {
 
     userMessageToEdit.content = newContent;
     userMessageToEdit.isEditing = false;
+    userMessageToEdit.modelName = model.name;
 
-    final newAssistantMessage =
-        ChatMessage(role: 'assistant', content: '', isLoading: true);
+    final newAssistantMessage = ChatMessage(
+      role: 'assistant',
+      content: '',
+      isLoading: true,
+      modelName: model.name,
+    );
     final newBranch = [newAssistantMessage];
     final branchKey = userMessageToEdit.id;
 
@@ -337,11 +350,15 @@ class ChatSessionManager extends ChangeNotifier {
 
     final stopwatch = Stopwatch()..start();
     int? firstChunkTimeMs;
-    String fullResponse = '';
+    String fullResponseBuffer = '';
     api_models.Usage? usage;
+    const thinkTag = '</think>';
+    bool thinkingDone = false;
 
     try {
       final useStreaming = session.useStreaming ?? model.isStreamable;
+      final messageToUpdate = _findMessageById(assistantMessageId);
+      if (messageToUpdate == null) return;
 
       if (useStreaming) {
         final stream = chatService.getCompletionStream(
@@ -355,13 +372,24 @@ class ChatSessionManager extends ChangeNotifier {
           if (item is String) {
             if (firstChunkTimeMs == null) {
               firstChunkTimeMs = stopwatch.elapsedMilliseconds;
+              messageToUpdate.thinkingStartTime = DateTime.now();
             }
-            fullResponse += item;
-            final messageToUpdate = _findMessageById(assistantMessageId);
-            if (messageToUpdate != null) {
-              messageToUpdate.content = fullResponse;
-              notifyListeners();
+            fullResponseBuffer += item;
+
+            if (!thinkingDone && fullResponseBuffer.contains(thinkTag)) {
+              thinkingDone = true;
+              final parts = fullResponseBuffer.split(thinkTag);
+              messageToUpdate.thinkingContent = parts[0];
+              messageToUpdate.content = parts.length > 1 ? parts[1] : '';
+              messageToUpdate.thinkingDurationMs = DateTime.now()
+                  .difference(messageToUpdate.thinkingStartTime!)
+                  .inMilliseconds;
+            } else if (!thinkingDone) {
+              messageToUpdate.thinkingContent = fullResponseBuffer;
+            } else {
+              messageToUpdate.content = (messageToUpdate.content ?? '') + item;
             }
+            notifyListeners();
           } else if (item is api_models.Usage) {
             usage = item;
           }
@@ -373,11 +401,15 @@ class ChatSessionManager extends ChangeNotifier {
           session.temperature,
           session.topP,
         );
-        fullResponse = response.choices.first.message.content;
+        fullResponseBuffer = response.choices.first.message.content;
         usage = response.usage;
-        final messageToUpdate = _findMessageById(assistantMessageId);
-        if (messageToUpdate != null) {
-          messageToUpdate.content = fullResponse;
+
+        if (fullResponseBuffer.contains(thinkTag)) {
+          final parts = fullResponseBuffer.split(thinkTag);
+          messageToUpdate.thinkingContent = parts[0];
+          messageToUpdate.content = parts.length > 1 ? parts[1] : '';
+        } else {
+          messageToUpdate.content = fullResponseBuffer;
         }
       }
     } catch (e) {
@@ -393,11 +425,12 @@ class ChatSessionManager extends ChangeNotifier {
         finalMessage.isLoading = false;
         finalMessage.completionTimeMs = stopwatch.elapsedMilliseconds;
         finalMessage.firstChunkTimeMs = firstChunkTimeMs;
-        finalMessage.outputCharacters = fullResponse.length;
+        finalMessage.outputCharacters = (finalMessage.content ?? '').length;
         if (usage != null) {
           finalMessage.promptTokens = usage.promptTokens;
           finalMessage.completionTokens = usage.completionTokens;
         }
+        finalMessage.thinkingStartTime = null;
       }
       _isGenerating = false;
       await updateCurrentSession(session);

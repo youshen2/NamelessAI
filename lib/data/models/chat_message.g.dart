@@ -29,13 +29,16 @@ class ChatMessageAdapter extends TypeAdapter<ChatMessage> {
       firstChunkTimeMs: fields[9] as int?,
       outputCharacters: fields[10] as int?,
       isError: fields[11] == null ? false : fields[11] as bool,
+      modelName: fields[12] as String?,
+      thinkingContent: fields[13] as String?,
+      thinkingDurationMs: fields[14] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ChatMessage obj) {
     writer
-      ..writeByte(12)
+      ..writeByte(15)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -59,7 +62,13 @@ class ChatMessageAdapter extends TypeAdapter<ChatMessage> {
       ..writeByte(10)
       ..write(obj.outputCharacters)
       ..writeByte(11)
-      ..write(obj.isError);
+      ..write(obj.isError)
+      ..writeByte(12)
+      ..write(obj.modelName)
+      ..writeByte(13)
+      ..write(obj.thinkingContent)
+      ..writeByte(14)
+      ..write(obj.thinkingDurationMs);
   }
 
   @override

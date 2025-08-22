@@ -41,6 +41,17 @@ class ChatMessage extends HiveObject {
   @HiveField(11, defaultValue: false)
   bool isError;
 
+  @HiveField(12)
+  String? modelName;
+
+  @HiveField(13)
+  String? thinkingContent;
+
+  @HiveField(14)
+  int? thinkingDurationMs;
+
+  DateTime? thinkingStartTime;
+
   ChatMessage({
     String? id,
     required this.role,
@@ -54,6 +65,10 @@ class ChatMessage extends HiveObject {
     this.firstChunkTimeMs,
     this.outputCharacters,
     this.isError = false,
+    this.modelName,
+    this.thinkingContent,
+    this.thinkingDurationMs,
+    this.thinkingStartTime,
   })  : id = id ?? const Uuid().v4(),
         timestamp = timestamp ?? DateTime.now();
 
@@ -70,6 +85,10 @@ class ChatMessage extends HiveObject {
     int? firstChunkTimeMs,
     int? outputCharacters,
     bool? isError,
+    String? modelName,
+    String? thinkingContent,
+    int? thinkingDurationMs,
+    DateTime? thinkingStartTime,
   }) {
     return ChatMessage(
       id: id ?? this.id,
@@ -84,6 +103,10 @@ class ChatMessage extends HiveObject {
       firstChunkTimeMs: firstChunkTimeMs ?? this.firstChunkTimeMs,
       outputCharacters: outputCharacters ?? this.outputCharacters,
       isError: isError ?? this.isError,
+      modelName: modelName ?? this.modelName,
+      thinkingContent: thinkingContent ?? this.thinkingContent,
+      thinkingDurationMs: thinkingDurationMs ?? this.thinkingDurationMs,
+      thinkingStartTime: thinkingStartTime ?? this.thinkingStartTime,
     );
   }
 }

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -138,6 +139,7 @@ class _MessageBubbleState extends State<MessageBubble>
               crossAxisAlignment: alignment,
               children: [
                 _buildMessageContent(context),
+                if (widget.message.modelName != null) _buildModelName(context),
                 if (!widget.isReadOnly) _buildStatistics(context),
                 if (!widget.isReadOnly && !widget.message.isEditing)
                   _buildActionBar(context),
@@ -176,14 +178,70 @@ class _MessageBubbleState extends State<MessageBubble>
           borderRadius: BorderRadius.circular(16),
         ),
         clipBehavior: Clip.antiAlias,
-        child: Padding(
-          padding: widget.message.isEditing
-              ? const EdgeInsets.all(8.0)
-              : const EdgeInsets.fromLTRB(12, 10, 12, 10),
-          child: widget.message.isEditing
-              ? _buildEditModeContent(context, textColor)
-              : _buildDisplayModeContent(context, textColor, isError),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (widget.message.thinkingContent != null &&
+                widget.message.thinkingContent!.isNotEmpty)
+              _buildThinkingContent(context, textColor),
+            Padding(
+              padding: widget.message.isEditing
+                  ? const EdgeInsets.all(8.0)
+                  : const EdgeInsets.fromLTRB(12, 10, 12, 10),
+              child: widget.message.isEditing
+                  ? _buildEditModeContent(context, textColor)
+                  : _buildDisplayModeContent(context, textColor, isError),
+            ),
+          ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildThinkingContent(BuildContext context, Color textColor) {
+    final markdownStyleSheet = MarkdownStyleSheet(
+      p: TextStyle(
+          color: textColor.withOpacity(0.8), fontSize: 14, height: 1.3),
+      code: TextStyle(
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+        color: textColor.withOpacity(0.8),
+        fontFamily: 'monospace',
+      ),
+    );
+
+    return Theme(
+      data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+      child: ExpansionTile(
+        tilePadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+        childrenPadding: const EdgeInsets.only(left: 12, right: 12, bottom: 10),
+        leading:
+            Icon(Icons.psychology_outlined, color: textColor.withOpacity(0.8)),
+        title: _ThinkingTimer(
+          startTime: widget.message.thinkingStartTime,
+          durationMs: widget.message.thinkingDurationMs,
+          textColor: textColor.withOpacity(0.8),
+        ),
+        initiallyExpanded: widget.message.thinkingDurationMs == null,
+        children: [
+          Divider(
+              height: 1,
+              thickness: 0.5,
+              color: textColor.withOpacity(0.2),
+              endIndent: 0,
+              indent: 0),
+          const SizedBox(height: 8),
+          SelectionArea(
+            child: MarkdownBody(
+              data: widget.message.thinkingContent!,
+              styleSheet: markdownStyleSheet,
+              onTapLink: (text, href, title) {
+                if (href != null) {
+                  launchUrl(Uri.parse(href));
+                }
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -377,6 +435,18 @@ class _MessageBubbleState extends State<MessageBubble>
     );
   }
 
+  Widget _buildModelName(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 4.0, right: 8.0, left: 8.0),
+      child: Text(
+        widget.message.modelName!,
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+      ),
+    );
+  }
+
   Widget _buildStatistics(BuildContext context) {
     if (widget.isReadOnly) return const SizedBox.shrink();
 
@@ -455,6 +525,84 @@ class _StatItem extends StatelessWidget {
             style: style?.copyWith(fontWeight: FontWeight.bold),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ThinkingTimer extends StatefulWidget {
+  final DateTime? startTime;
+  final int? durationMs;
+  final Color textColor;
+
+  const _ThinkingTimer({
+    this.startTime,
+    this.durationMs,
+    required this.textColor,
+  });
+
+  @override
+  State<_ThinkingTimer> createState() => _ThinkingTimerState();
+}
+
+class _ThinkingTimerState extends State<_ThinkingTimer> {
+  Timer? _timer;
+  Duration _elapsed = Duration.zero;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.startTime != null && widget.durationMs == null) {
+      _elapsed = DateTime.now().difference(widget.startTime!);
+      _timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
+        if (!mounted) {
+          timer.cancel();
+          return;
+        }
+        setState(() {
+          _elapsed = DateTime.now().difference(widget.startTime!);
+        });
+      });
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant _ThinkingTimer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.durationMs != null) {
+      _timer?.cancel();
+    }
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  String _formatDuration(Duration d) {
+    return '${d.inSeconds}.${(d.inMilliseconds % 1000 ~/ 100)}s';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    String text;
+
+    if (widget.durationMs != null) {
+      final duration = Duration(milliseconds: widget.durationMs!);
+      text = "思考耗时: ${_formatDuration(duration)}";
+    } else if (widget.startTime != null) {
+      text = "正在思考... ${_formatDuration(_elapsed)}";
+    } else {
+      text = "思考";
+    }
+
+    return Text(
+      text,
+      style: TextStyle(
+        color: widget.textColor,
+        fontStyle: FontStyle.italic,
+        fontSize: 14,
       ),
     );
   }
