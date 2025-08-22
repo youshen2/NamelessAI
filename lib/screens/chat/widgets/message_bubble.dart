@@ -147,7 +147,9 @@ class _MessageBubbleState extends State<MessageBubble>
     _fadeAnimation =
         CurvedAnimation(parent: _animationController, curve: Curves.easeIn);
 
-    if (!widget.animatedMessageIds.contains(widget.message.id)) {
+    if (widget.isReadOnly) {
+      _animationController.value = 1.0;
+    } else if (!widget.animatedMessageIds.contains(widget.message.id)) {
       _animationController.forward();
       widget.animatedMessageIds.add(widget.message.id);
     } else {
@@ -345,15 +347,17 @@ class _MessageBubbleState extends State<MessageBubble>
               endIndent: 0,
               indent: 0),
           const SizedBox(height: 8),
-          MarkdownBody(
-            data: widget.message.thinkingContent!,
-            selectable: true,
-            styleSheet: markdownStyleSheet,
-            onTapLink: (text, href, title) {
-              if (href != null) {
-                launchUrl(Uri.parse(href));
-              }
-            },
+          SelectionArea(
+            child: MarkdownBody(
+              data: widget.message.thinkingContent!,
+              selectable: false,
+              styleSheet: markdownStyleSheet,
+              onTapLink: (text, href, title) {
+                if (href != null) {
+                  launchUrl(Uri.parse(href));
+                }
+              },
+            ),
           ),
         ],
       ),
@@ -394,29 +398,31 @@ class _MessageBubbleState extends State<MessageBubble>
       a: TextStyle(color: Theme.of(context).colorScheme.primary),
     );
 
-    final markdownContent = MarkdownBody(
-      data: widget.message.content,
-      selectable: true,
-      styleSheet: markdownStyleSheet,
-      extensionSet: md.ExtensionSet(
-        md.ExtensionSet.gitHubWeb.blockSyntaxes,
-        [
-          ...md.ExtensionSet.gitHubWeb.inlineSyntaxes,
-          MathInlineSyntax(),
-          MathDisplaySyntax(),
-        ],
+    final markdownContent = SelectionArea(
+      child: MarkdownBody(
+        data: widget.message.content,
+        selectable: false,
+        styleSheet: markdownStyleSheet,
+        extensionSet: md.ExtensionSet(
+          md.ExtensionSet.gitHubWeb.blockSyntaxes,
+          [
+            ...md.ExtensionSet.gitHubWeb.inlineSyntaxes,
+            MathInlineSyntax(),
+            MathDisplaySyntax(),
+          ],
+        ),
+        builders: {
+          'code': MarkdownCodeBlockBuilder(context: context),
+          'math_inline': MathBuilder(context: context, fontSize: fontSize),
+          'math_display': MathBuilder(context: context, fontSize: fontSize),
+          'hr': HrBuilder(context: context),
+        },
+        onTapLink: (text, href, title) {
+          if (href != null) {
+            launchUrl(Uri.parse(href));
+          }
+        },
       ),
-      builders: {
-        'code': MarkdownCodeBlockBuilder(context: context),
-        'math_inline': MathBuilder(context: context, fontSize: fontSize),
-        'math_display': MathBuilder(context: context, fontSize: fontSize),
-        'hr': HrBuilder(context: context),
-      },
-      onTapLink: (text, href, title) {
-        if (href != null) {
-          launchUrl(Uri.parse(href));
-        }
-      },
     );
 
     return Column(

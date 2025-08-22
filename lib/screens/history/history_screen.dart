@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/app_database.dart';
+import 'package:nameless_ai/data/models/chat_message.dart';
 import 'package:nameless_ai/data/models/chat_session.dart';
 import 'package:nameless_ai/data/providers/chat_session_manager.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
@@ -19,6 +20,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
   ChatSession? _selectedSessionForPreview;
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
+  Future<List<ChatMessage>>? _previewMessagesFuture;
 
   @override
   void initState() {
@@ -28,10 +30,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
           Provider.of<ChatSessionManager>(context, listen: false);
       if (chatSessionManager.currentSession != null &&
           !chatSessionManager.isNewSession) {
-        setState(() {
-          _selectedSessionForPreview = AppDatabase.chatSessionsBox
-              .get(chatSessionManager.currentSession!.id);
-        });
+        final initialSession = AppDatabase.chatSessionsBox
+            .get(chatSessionManager.currentSession!.id);
+        if (initialSession != null) {
+          _selectSessionForPreview(initialSession);
+        }
       }
     });
     _searchController.addListener(() {
@@ -49,6 +52,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
     super.dispose();
   }
 
+  void _selectSessionForPreview(ChatSession session) {
+    if (!mounted) return;
+    setState(() {
+      _selectedSessionForPreview = session;
+      _previewMessagesFuture = Future(() => session.activeMessages);
+    });
+  }
+
   Future<void> _editSessionName(
       ChatSession session, AppLocalizations localizations) async {
     final manager = Provider.of<ChatSessionManager>(context, listen: false);
@@ -61,12 +72,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
     if (newName != null && newName.isNotEmpty) {
       await manager.renameSession(session.id, newName);
-      showSnackBar(context, localizations.chatSaved);
+      if (mounted) {
+        showSnackBar(context, localizations.chatSaved);
+      }
       if (_selectedSessionForPreview?.id == session.id) {
         final freshSession = AppDatabase.chatSessionsBox.get(session.id);
-        setState(() {
-          _selectedSessionForPreview = freshSession;
-        });
+        if (freshSession != null) {
+          _selectSessionForPreview(freshSession);
+        }
       }
     }
   }
@@ -203,11 +216,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       final manager = Provider.of<ChatSessionManager>(context,
                           listen: false);
                       await manager.deleteSession(session.id);
-                      showSnackBar(
-                          context, '${localizations.delete} ${session.name}');
+                      if (mounted) {
+                        showSnackBar(
+                            context, '${localizations.delete} ${session.name}');
+                      }
                       if (_selectedSessionForPreview?.id == session.id) {
                         setState(() {
                           _selectedSessionForPreview = null;
+                          _previewMessagesFuture = null;
                         });
                       }
                     }
@@ -217,9 +233,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
             ),
             onTap: () {
               final freshSession = AppDatabase.chatSessionsBox.get(session.id);
-              setState(() {
-                _selectedSessionForPreview = freshSession;
-              });
+              if (freshSession != null) {
+                _selectSessionForPreview(freshSession);
+              }
               if (MediaQuery.of(context).size.width < 600) {
                 Provider.of<ChatSessionManager>(context, listen: false)
                     .loadSession(session.id);
@@ -234,13 +250,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   Widget _buildSessionPreview(AppLocalizations localizations) {
     if (_selectedSessionForPreview == null) {
-      return Center(
-        child: Text(localizations.selectModel),
-      );
-    }
-
-    final messages = _selectedSessionForPreview!.activeMessages;
-    if (messages.isEmpty) {
       return Center(
         child: Text(localizations.noChatHistory),
       );
@@ -285,23 +294,40 @@ class _HistoryScreenState extends State<HistoryScreen> {
             color:
                 Theme.of(context).colorScheme.outlineVariant.withOpacity(0.5)),
         Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            itemCount: messages.length,
-            itemBuilder: (context, index) {
-              final message = messages[index];
-              return MessageBubble(
-                message: message,
-                isReadOnly: true,
-                onEdit: (_, __) {},
-                onSave: (_, __) {},
-                onDelete: (_) {},
-                onResubmit: (_, __) {},
-                onRegenerate: (_) {},
-                onCopy: (_) {},
-                activeBranchIndex: 0,
-                onBranchChange: (_) {},
-                animatedMessageIds: {},
+          child: FutureBuilder<List<ChatMessage>>(
+            future: _previewMessagesFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (snapshot.hasError) {
+                return Center(
+                    child: Text('${localizations.error}: ${snapshot.error}'));
+              }
+              if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return Center(child: Text(localizations.noChatHistory));
+              }
+
+              final messages = snapshot.data!;
+              return ListView.builder(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                itemCount: messages.length,
+                itemBuilder: (context, index) {
+                  final message = messages[index];
+                  return MessageBubble(
+                    message: message,
+                    isReadOnly: true,
+                    onEdit: (_, __) {},
+                    onSave: (_, __) {},
+                    onDelete: (_) {},
+                    onResubmit: (_, __) {},
+                    onRegenerate: (_) {},
+                    onCopy: (_) {},
+                    activeBranchIndex: 0,
+                    onBranchChange: (_) {},
+                    animatedMessageIds: const {},
+                  );
+                },
               );
             },
           ),
