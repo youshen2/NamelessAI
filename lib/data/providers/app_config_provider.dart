@@ -31,6 +31,7 @@ class AppConfigProvider extends ChangeNotifier {
   double _chatBubbleWidth = 0.8;
 
   bool _useFirstSentenceAsTitle = true;
+  String _codeTheme = 'github';
 
   AppConfigProvider() {
     _loadConfig();
@@ -59,6 +60,7 @@ class AppConfigProvider extends ChangeNotifier {
   double get chatBubbleWidth => _chatBubbleWidth;
 
   bool get useFirstSentenceAsTitle => _useFirstSentenceAsTitle;
+  String get codeTheme => _codeTheme;
 
   void _loadConfig() {
     final box = AppDatabase.appConfigBox;
@@ -95,6 +97,7 @@ class AppConfigProvider extends ChangeNotifier {
     _chatBubbleWidth = box.get('chatBubbleWidth', defaultValue: 0.8);
     _useFirstSentenceAsTitle =
         box.get('useFirstSentenceAsTitle', defaultValue: true);
+    _codeTheme = box.get('codeTheme', defaultValue: 'github');
 
     notifyListeners();
   }
@@ -234,6 +237,13 @@ class AppConfigProvider extends ChangeNotifier {
     if (_useFirstSentenceAsTitle != value) {
       _useFirstSentenceAsTitle = value;
       _updateValue('useFirstSentenceAsTitle', value);
+    }
+  }
+
+  void setCodeTheme(String theme) {
+    if (_codeTheme != theme) {
+      _codeTheme = theme;
+      _updateValue('codeTheme', theme);
     }
   }
 }

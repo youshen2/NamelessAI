@@ -189,5 +189,6 @@
   "reverseBubbleAlignmentHint": "用户消息在左，AI消息在右",
   "exportSettings": "导出设置",
   "selectContentToExport": "选择要导出的内容",
-  "appSettings": "应用设置"
+  "appSettings": "应用设置",
+  "codeBlockTheme": "代码块主题"
 }

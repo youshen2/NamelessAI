@@ -189,5 +189,6 @@
   "reverseBubbleAlignmentHint": "User messages on the left, AI on the right",
   "exportSettings": "Export Settings",
   "selectContentToExport": "Select content to export",
-  "appSettings": "App Settings"
+  "appSettings": "App Settings",
+  "codeBlockTheme": "Code Block Theme"
 }

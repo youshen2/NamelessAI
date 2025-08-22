@@ -496,4 +496,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get appSettings => 'App Settings';
+
+  @override
+  String get codeBlockTheme => 'Code Block Theme';
 }

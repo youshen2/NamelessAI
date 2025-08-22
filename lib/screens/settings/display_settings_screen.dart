@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_highlight/theme_map.dart';
 import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/providers/app_config_provider.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
@@ -35,6 +36,7 @@ class DisplaySettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final appConfig = Provider.of<AppConfigProvider>(context);
+    final uniqueSortedThemeKeys = themeMap.keys.toSet().toList()..sort();
 
     return Scaffold(
       appBar: AppBar(
@@ -184,6 +186,43 @@ class DisplaySettingsScreen extends StatelessWidget {
                     label: '${(appConfig.chatBubbleWidth * 100).round()}%',
                     onChanged: appConfig.setChatBubbleWidth,
                   ),
+                ],
+              ),
+            ),
+          ),
+          Card(
+            margin: const EdgeInsets.only(bottom: 16),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                    child: Text(localizations.codeBlockTheme,
+                        style: Theme.of(context).textTheme.titleMedium),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: DropdownButtonFormField<String>(
+                      value: appConfig.codeTheme,
+                      decoration: InputDecoration(
+                        labelText: localizations.codeBlockTheme,
+                        contentPadding:
+                            const EdgeInsets.symmetric(horizontal: 12),
+                      ),
+                      items: uniqueSortedThemeKeys
+                          .map((String key) => DropdownMenuItem<String>(
+                                value: key,
+                                child: Text(key),
+                              ))
+                          .toList(),
+                      onChanged: (value) {
+                        if (value != null) appConfig.setCodeTheme(value);
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 16),
                 ],
               ),
             ),

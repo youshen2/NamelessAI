@@ -1027,6 +1027,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'App Settings'**
   String get appSettings;
+
+  /// No description provided for @codeBlockTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Code Block Theme'**
+  String get codeBlockTheme;
 }
 
 class _AppLocalizationsDelegate

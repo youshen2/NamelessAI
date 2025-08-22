@@ -485,4 +485,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get appSettings => '应用设置';
+
+  @override
+  String get codeBlockTheme => '代码块主题';
 }

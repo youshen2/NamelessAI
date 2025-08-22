@@ -33,7 +33,6 @@ class ApiService {
           "NamelessAI - Received Response: ${jsonEncode(response.data)}");
 
       if (response.data is String) {
-        // Handle non-compliant APIs that return a raw string
         return ChatCompletionResponse(
           id: 'non-compliant-${const Uuid().v4()}',
           object: 'chat.completion',
@@ -89,13 +88,11 @@ class ApiService {
             try {
               final Map<String, dynamic> json = jsonDecode(jsonStr);
 
-              // Handle chunks that might only contain usage data from some providers
               if (json.containsKey('usage') && json['usage'] != null) {
                 final usage = Usage.fromJson(json['usage']);
                 yield usage;
               }
 
-              // Handle regular stream chunks with choices
               if (json.containsKey('choices')) {
                 final ChatCompletionStreamResponse streamResponse =
                     ChatCompletionStreamResponse.fromJson(json);
