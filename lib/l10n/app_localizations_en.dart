@@ -244,7 +244,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get useStreaming => 'Use Streaming';
 
   @override
-  String get overrideModelSettings => 'Override model settings';
+  String get overrideModelSettings => 'Use default model settings';
 
   @override
   String get streamingDefault => 'Default';
@@ -480,4 +480,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get timeLabel => 'Time';
+
+  @override
+  String get reverseBubbleAlignment => 'Reverse Bubble Alignment';
+
+  @override
+  String get reverseBubbleAlignmentHint =>
+      'User messages on the left, AI on the right';
+
+  @override
+  String get exportSettings => 'Export Settings';
+
+  @override
+  String get selectContentToExport => 'Select content to export';
+
+  @override
+  String get appSettings => 'App Settings';
 }

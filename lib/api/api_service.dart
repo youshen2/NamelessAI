@@ -66,19 +66,25 @@ class ApiService {
             }
             try {
               final Map<String, dynamic> json = jsonDecode(jsonStr);
-              final ChatCompletionStreamResponse streamResponse =
-                  ChatCompletionStreamResponse.fromJson(json);
 
-              if (streamResponse.choices.isNotEmpty) {
-                final String? content =
-                    streamResponse.choices.first.delta.content;
-                if (content != null) {
-                  yield content;
-                }
+              // Handle chunks that might only contain usage data from some providers
+              if (json.containsKey('usage') && json['usage'] != null) {
+                final usage = Usage.fromJson(json['usage']);
+                yield usage;
               }
 
-              if (streamResponse.usage != null) {
-                yield streamResponse.usage;
+              // Handle regular stream chunks with choices
+              if (json.containsKey('choices')) {
+                final ChatCompletionStreamResponse streamResponse =
+                    ChatCompletionStreamResponse.fromJson(json);
+
+                if (streamResponse.choices.isNotEmpty) {
+                  final String? content =
+                      streamResponse.choices.first.delta.content;
+                  if (content != null) {
+                    yield content;
+                  }
+                }
               }
             } catch (e) {
               debugPrint('Error parsing stream chunk: $e, data: $jsonStr');

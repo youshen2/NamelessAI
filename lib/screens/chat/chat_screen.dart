@@ -262,6 +262,8 @@ class _ChatScreenState extends State<ChatScreen> {
       showSnackBar(context, localizations.selectModel, isError: true);
       return;
     }
+    // Unfocus to hide keyboard on mobile after resubmitting
+    FocusScope.of(context).unfocus();
     setState(() {
       _userScrolledUp = false;
     });

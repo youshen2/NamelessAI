@@ -184,5 +184,10 @@
   "useFirstSentenceAsTitleHint": "自动使用发送的第一条消息作为该聊天会话的标题。",
   "dataManagement": "数据管理",
   "modelLabel": "模型",
-  "timeLabel": "时间"
+  "timeLabel": "时间",
+  "reverseBubbleAlignment": "反转气泡对齐",
+  "reverseBubbleAlignmentHint": "用户消息在左，AI消息在右",
+  "exportSettings": "导出设置",
+  "selectContentToExport": "选择要导出的内容",
+  "appSettings": "应用设置"
 }

@@ -187,7 +187,13 @@ class _MessageBubbleState extends State<MessageBubble>
         break;
       case ChatBubbleAlignment.normal:
       default:
-        alignment = isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start;
+        if (appConfig.reverseBubbleAlignment) {
+          alignment =
+              isUser ? CrossAxisAlignment.start : CrossAxisAlignment.end;
+        } else {
+          alignment =
+              isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start;
+        }
         break;
     }
 
@@ -206,7 +212,9 @@ class _MessageBubbleState extends State<MessageBubble>
               children: [
                 _buildMessageContent(context),
                 if (!widget.isReadOnly) _buildMetaAndStats(context, alignment),
-                if (!widget.isReadOnly && !widget.message.isEditing)
+                if (!widget.isReadOnly &&
+                    !widget.message.isEditing &&
+                    !widget.message.isLoading)
                   _buildActionBar(context),
                 if (widget.branchCount > 1) _buildBranchNavigator(context),
               ],
@@ -253,8 +261,10 @@ class _MessageBubbleState extends State<MessageBubble>
             Padding(
               padding: widget.message.isEditing
                   ? const EdgeInsets.all(8.0)
-                  : EdgeInsets.fromLTRB(
-                      12, 10, 12, appConfig.compactMode ? 6 : 10),
+                  : EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: appConfig.compactMode ? 6 : 10,
+                    ),
               child: widget.message.isEditing
                   ? _buildEditModeContent(context, textColor)
                   : _buildDisplayModeContent(context, textColor, isError),
@@ -456,6 +466,7 @@ class _MessageBubbleState extends State<MessageBubble>
 
   Widget _buildActionBar(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+    final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
     final platform = Theme.of(context).platform;
     final isTouchDevice = platform == TargetPlatform.android ||
         platform == TargetPlatform.iOS ||
@@ -470,29 +481,41 @@ class _MessageBubbleState extends State<MessageBubble>
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _actionButton(Icons.copy_all_outlined, localizations.copyMessage,
-                () => widget.onCopy(widget.message.content)),
+            _actionButton(
+                Icons.copy_all_outlined,
+                localizations.copyMessage,
+                () => widget.onCopy(widget.message.content),
+                appConfig.compactMode),
             if (!isUser)
-              _actionButton(Icons.refresh, localizations.regenerateResponse,
-                  () => widget.onRegenerate(widget.message)),
-            _actionButton(Icons.edit_outlined, localizations.editMessage,
-                () => widget.onEdit(widget.message, true)),
+              _actionButton(
+                  Icons.refresh,
+                  localizations.regenerateResponse,
+                  () => widget.onRegenerate(widget.message),
+                  appConfig.compactMode),
+            _actionButton(
+                Icons.edit_outlined,
+                localizations.editMessage,
+                () => widget.onEdit(widget.message, true),
+                appConfig.compactMode),
             _actionButton(Icons.delete_outline, localizations.deleteMessage,
-                () => widget.onDelete(widget.message)),
+                () => widget.onDelete(widget.message), appConfig.compactMode),
           ],
         ),
       ),
     );
   }
 
-  Widget _actionButton(IconData icon, String tooltip, VoidCallback onPressed) {
+  Widget _actionButton(
+      IconData icon, String tooltip, VoidCallback onPressed, bool isCompact) {
+    final double iconSize = isCompact ? 16 : 18;
+    final double padding = isCompact ? 4 : 6;
     return IconButton(
-      icon: Icon(icon, size: 18),
+      icon: Icon(icon, size: iconSize),
       onPressed: onPressed,
       tooltip: tooltip,
       color: Theme.of(context).colorScheme.onSurfaceVariant,
       splashRadius: 18,
-      padding: const EdgeInsets.all(6),
+      padding: EdgeInsets.all(padding),
       constraints: const BoxConstraints(),
     );
   }
@@ -532,10 +555,12 @@ class _MessageBubbleState extends State<MessageBubble>
 
   Widget _buildMetaAndStats(
       BuildContext context, CrossAxisAlignment alignment) {
+    final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
     final meta = _buildMetaInfo(context);
-    final stats = _buildStatistics(context);
+    final stats = _buildPerformanceStats(context);
+    final tokens = _buildTokenStats(context);
 
-    if (meta.isEmpty && stats.isEmpty) {
+    if (meta.isEmpty && stats.isEmpty && tokens.isEmpty) {
       return const SizedBox.shrink();
     }
 
@@ -548,9 +573,10 @@ class _MessageBubbleState extends State<MessageBubble>
       children: [
         if (meta.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.only(top: 2.0, right: 8.0, left: 8.0),
+            padding: EdgeInsets.only(
+                top: appConfig.compactMode ? 1 : 2.0, right: 8.0, left: 8.0),
             child: Wrap(
-              spacing: 12.0,
+              spacing: appConfig.compactMode ? 8.0 : 12.0,
               runSpacing: 4.0,
               alignment: wrapAlignment,
               children: meta,
@@ -558,12 +584,24 @@ class _MessageBubbleState extends State<MessageBubble>
           ),
         if (stats.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.only(top: 4.0, right: 8.0, left: 8.0),
+            padding: EdgeInsets.only(
+                top: appConfig.compactMode ? 2 : 4.0, right: 8.0, left: 8.0),
             child: Wrap(
-              spacing: 12.0,
+              spacing: appConfig.compactMode ? 8.0 : 12.0,
               runSpacing: 4.0,
               alignment: wrapAlignment,
               children: stats,
+            ),
+          ),
+        if (tokens.isNotEmpty)
+          Padding(
+            padding: EdgeInsets.only(
+                top: appConfig.compactMode ? 2 : 4.0, right: 8.0, left: 8.0),
+            child: Wrap(
+              spacing: appConfig.compactMode ? 8.0 : 12.0,
+              runSpacing: 4.0,
+              alignment: wrapAlignment,
+              children: tokens,
             ),
           ),
       ],
@@ -584,6 +622,7 @@ class _MessageBubbleState extends State<MessageBubble>
       meta.add(_MetaItem(
         label: '${localizations.modelLabel}: ',
         value: widget.message.modelName!,
+        isCompact: appConfig.compactMode,
       ));
     }
     if (showTime) {
@@ -591,13 +630,14 @@ class _MessageBubbleState extends State<MessageBubble>
         label: '${localizations.timeLabel}: ',
         value:
             '${widget.message.timestamp.hour.toString().padLeft(2, '0')}:${widget.message.timestamp.minute.toString().padLeft(2, '0')}',
+        isCompact: appConfig.compactMode,
       ));
     }
 
     return meta;
   }
 
-  List<Widget> _buildStatistics(BuildContext context) {
+  List<Widget> _buildPerformanceStats(BuildContext context) {
     if (widget.isReadOnly) return [];
 
     final appConfig = Provider.of<AppConfigProvider>(context);
@@ -612,30 +652,50 @@ class _MessageBubbleState extends State<MessageBubble>
       stats.add(_StatItem(
           label: localizations.totalTime,
           value:
-              '${(widget.message.completionTimeMs! / 1000).toStringAsFixed(2)}s'));
+              '${(widget.message.completionTimeMs! / 1000).toStringAsFixed(2)}s',
+          isCompact: appConfig.compactMode));
     }
     if (appConfig.showFirstChunkTime &&
         widget.message.firstChunkTimeMs != null) {
       stats.add(_StatItem(
           label: localizations.firstChunkTime,
           value:
-              '${(widget.message.firstChunkTimeMs! / 1000).toStringAsFixed(2)}s'));
+              '${(widget.message.firstChunkTimeMs! / 1000).toStringAsFixed(2)}s',
+          isCompact: appConfig.compactMode));
     }
     if (appConfig.showOutputCharacters &&
         widget.message.outputCharacters != null) {
       stats.add(_StatItem(
           label: localizations.outputCharacters,
-          value: widget.message.outputCharacters.toString()));
+          value: widget.message.outputCharacters.toString(),
+          isCompact: appConfig.compactMode));
     }
-    if (appConfig.showTokenUsage &&
-        (widget.message.promptTokens != null ||
-            widget.message.completionTokens != null)) {
+
+    return stats;
+  }
+
+  List<Widget> _buildTokenStats(BuildContext context) {
+    if (widget.isReadOnly) return [];
+
+    final appConfig = Provider.of<AppConfigProvider>(context);
+    if (widget.message.role != 'assistant' ||
+        widget.message.isError ||
+        !appConfig.showTokenUsage) {
+      return [];
+    }
+
+    final localizations = AppLocalizations.of(context)!;
+    final stats = <Widget>[];
+
+    if (widget.message.promptTokens != null ||
+        widget.message.completionTokens != null) {
       final prompt = widget.message.promptTokens?.toString() ?? '-';
       final completion = widget.message.completionTokens?.toString() ?? '-';
       stats.add(_StatItem(
           label: localizations.tokens,
           value:
-              '${localizations.prompt}: $prompt / ${localizations.completion}: $completion'));
+              '${localizations.prompt}: $prompt / ${localizations.completion}: $completion',
+          isCompact: appConfig.compactMode));
     }
 
     return stats;
@@ -645,15 +705,16 @@ class _MessageBubbleState extends State<MessageBubble>
 class _MetaItem extends StatelessWidget {
   final String label;
   final String value;
+  final bool isCompact;
 
-  const _MetaItem({required this.label, required this.value});
+  const _MetaItem(
+      {required this.label, required this.value, this.isCompact = false});
 
   @override
   Widget build(BuildContext context) {
-    final style = Theme.of(context)
-        .textTheme
-        .bodySmall
-        ?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant);
+    final style = Theme.of(context).textTheme.bodySmall?.copyWith(
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+        fontSize: isCompact ? 10 : null);
 
     return RichText(
       text: TextSpan(
@@ -673,15 +734,16 @@ class _MetaItem extends StatelessWidget {
 class _StatItem extends StatelessWidget {
   final String label;
   final String value;
+  final bool isCompact;
 
-  const _StatItem({required this.label, required this.value});
+  const _StatItem(
+      {required this.label, required this.value, this.isCompact = false});
 
   @override
   Widget build(BuildContext context) {
-    final style = Theme.of(context)
-        .textTheme
-        .bodySmall
-        ?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant);
+    final style = Theme.of(context).textTheme.bodySmall?.copyWith(
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+        fontSize: isCompact ? 10 : null);
 
     return RichText(
       text: TextSpan(

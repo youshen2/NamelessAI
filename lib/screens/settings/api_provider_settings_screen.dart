@@ -142,6 +142,7 @@ class _APIProviderFormState extends State<APIProviderForm> {
   late TextEditingController _apiKeyController;
   late TextEditingController _chatPathController;
   List<Model> _models = [];
+  bool _isApiKeyObscured = true;
 
   @override
   void initState() {
@@ -348,8 +349,20 @@ class _APIProviderFormState extends State<APIProviderForm> {
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _apiKeyController,
-                      decoration:
-                          InputDecoration(labelText: localizations.apiKey),
+                      obscureText: _isApiKeyObscured,
+                      decoration: InputDecoration(
+                        labelText: localizations.apiKey,
+                        suffixIcon: IconButton(
+                          icon: Icon(_isApiKeyObscured
+                              ? Icons.visibility_off
+                              : Icons.visibility),
+                          onPressed: () {
+                            setState(() {
+                              _isApiKeyObscured = !_isApiKeyObscured;
+                            });
+                          },
+                        ),
+                      ),
                       validator: (value) =>
                           value!.isEmpty ? localizations.apiKeyRequired : null,
                     ),
@@ -362,48 +375,52 @@ class _APIProviderFormState extends State<APIProviderForm> {
                           ? localizations.chatPathRequired
                           : null,
                     ),
-                    const SizedBox(height: 24),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(localizations.models,
+                    const SizedBox(height: 16),
+                    ExpansionTile(
+                      title: Text(localizations.models,
                           style: Theme.of(context).textTheme.titleMedium),
-                    ),
-                    const SizedBox(height: 8),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: _models.length,
-                      itemBuilder: (context, index) {
-                        final model = _models[index];
-                        return ListTile(
-                          title: Text(model.name),
-                          subtitle: Text(
-                              '${localizations.maxTokens}: ${model.maxTokens ?? 'N/A'}, ${localizations.isStreamable}: ${model.isStreamable ? 'Yes' : 'No'}'),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.edit),
-                                onPressed: () =>
-                                    _addOrEditModel(model: model, index: index),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.delete),
-                                onPressed: () => _deleteModel(index),
-                              ),
-                            ],
+                      initiallyExpanded: true,
+                      children: [
+                        if (_models.isEmpty)
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Text(localizations.noModelsConfigured),
                           ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 8),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton.icon(
-                        onPressed: _addOrEditModel,
-                        icon: const Icon(Icons.add),
-                        label: Text(localizations.addModel),
-                      ),
+                        ..._models.asMap().entries.map((entry) {
+                          final index = entry.key;
+                          final model = entry.value;
+                          return Card(
+                            margin: const EdgeInsets.symmetric(vertical: 4),
+                            child: ListTile(
+                              title: Text(model.name),
+                              subtitle: Text(
+                                  'Stream: ${model.isStreamable ? '✓' : '✗'}, Thinking: ${model.supportsThinking ? '✓' : '✗'}'),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.edit),
+                                    onPressed: () => _addOrEditModel(
+                                        model: model, index: index),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.delete),
+                                    onPressed: () => _deleteModel(index),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton.icon(
+                            onPressed: _addOrEditModel,
+                            icon: const Icon(Icons.add),
+                            label: Text(localizations.addModel),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

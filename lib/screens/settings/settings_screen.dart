@@ -16,10 +16,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _isWorking = false;
 
   Future<void> _exportData() async {
-    setState(() => _isWorking = true);
     final localizations = AppLocalizations.of(context)!;
+    final exportOptions = await showDialog<Map<String, bool>>(
+      context: context,
+      builder: (context) => const _ExportOptionsDialog(),
+    );
+
+    if (exportOptions == null) return;
+
+    setState(() => _isWorking = true);
     try {
-      await _backupService.exportData(context);
+      await _backupService.exportData(context, options: exportOptions);
       if (mounted) {
         showSnackBar(context, localizations.exportSuccess);
       }
@@ -173,6 +180,69 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
         ],
       ),
+    );
+  }
+}
+
+class _ExportOptionsDialog extends StatefulWidget {
+  const _ExportOptionsDialog();
+
+  @override
+  State<_ExportOptionsDialog> createState() => _ExportOptionsDialogState();
+}
+
+class _ExportOptionsDialogState extends State<_ExportOptionsDialog> {
+  final Map<String, bool> _options = {
+    'apiProviders': true,
+    'chatSessions': true,
+    'systemPromptTemplates': true,
+    'appConfig': true,
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    return AlertDialog(
+      title: Text(localizations.exportSettings),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(localizations.selectContentToExport),
+          const SizedBox(height: 16),
+          CheckboxListTile(
+            title: Text(localizations.apiProviderSettings),
+            value: _options['apiProviders'],
+            onChanged: (val) => setState(() => _options['apiProviders'] = val!),
+          ),
+          CheckboxListTile(
+            title: Text(localizations.history),
+            value: _options['chatSessions'],
+            onChanged: (val) => setState(() => _options['chatSessions'] = val!),
+          ),
+          CheckboxListTile(
+            title: Text(localizations.systemPromptTemplates),
+            value: _options['systemPromptTemplates'],
+            onChanged: (val) =>
+                setState(() => _options['systemPromptTemplates'] = val!),
+          ),
+          CheckboxListTile(
+            title: Text(localizations.appSettings),
+            value: _options['appConfig'],
+            onChanged: (val) => setState(() => _options['appConfig'] = val!),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(localizations.cancel),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.of(context).pop(_options),
+          child: Text(localizations.exportData),
+        ),
+      ],
     );
   }
 }

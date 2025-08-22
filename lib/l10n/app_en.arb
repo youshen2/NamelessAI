@@ -77,7 +77,7 @@
   "temperature": "Temperature",
   "topP": "Top P",
   "useStreaming": "Use Streaming",
-  "overrideModelSettings": "Override model settings",
+  "overrideModelSettings": "Use default model settings",
   "streamingDefault": "Default",
   "streamingOn": "On",
   "streamingOff": "Off",
@@ -184,5 +184,10 @@
   "useFirstSentenceAsTitleHint": "Automatically use the first sent message as the chat title.",
   "dataManagement": "Data Management",
   "modelLabel": "Model",
-  "timeLabel": "Time"
+  "timeLabel": "Time",
+  "reverseBubbleAlignment": "Reverse Bubble Alignment",
+  "reverseBubbleAlignmentHint": "User messages on the left, AI on the right",
+  "exportSettings": "Export Settings",
+  "selectContentToExport": "Select content to export",
+  "appSettings": "App Settings"
 }

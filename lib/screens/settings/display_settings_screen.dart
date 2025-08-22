@@ -145,6 +145,13 @@ class DisplaySettingsScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   SwitchListTile(
+                    title: Text(localizations.reverseBubbleAlignment),
+                    subtitle: Text(localizations.reverseBubbleAlignmentHint),
+                    value: appConfig.reverseBubbleAlignment,
+                    onChanged: appConfig.setReverseBubbleAlignment,
+                    activeColor: Theme.of(context).colorScheme.primary,
+                  ),
+                  SwitchListTile(
                     title: Text(localizations.showTimestamps),
                     value: appConfig.showTimestamps,
                     onChanged: appConfig.setShowTimestamps,

@@ -23,28 +23,34 @@ class BackupService {
     return true;
   }
 
-  Future<void> exportData(BuildContext context) async {
+  Future<void> exportData(BuildContext context,
+      {required Map<String, bool> options}) async {
     if (!await _requestPermissions()) {
       throw Exception("Storage permission not granted");
     }
 
-    final providers =
-        AppDatabase.apiProvidersBox.values.map((p) => p.toJson()).toList();
-    final sessions =
-        AppDatabase.chatSessionsBox.values.map((s) => s.toJson()).toList();
-    final templates = AppDatabase.systemPromptTemplatesBox.values
-        .map((t) => t.toJson())
-        .toList();
-    final config = AppDatabase.appConfigBox.toMap();
-
     final backupData = {
-      'apiProviders': providers,
-      'chatSessions': sessions,
-      'systemPromptTemplates': templates,
-      'appConfig': config,
       'version': 1,
       'createdAt': DateTime.now().toIso8601String(),
     };
+
+    if (options['apiProviders'] ?? false) {
+      backupData['apiProviders'] =
+          AppDatabase.apiProvidersBox.values.map((p) => p.toJson()).toList();
+    }
+    if (options['chatSessions'] ?? false) {
+      backupData['chatSessions'] =
+          AppDatabase.chatSessionsBox.values.map((s) => s.toJson()).toList();
+    }
+    if (options['systemPromptTemplates'] ?? false) {
+      backupData['systemPromptTemplates'] = AppDatabase
+          .systemPromptTemplatesBox.values
+          .map((t) => t.toJson())
+          .toList();
+    }
+    if (options['appConfig'] ?? false) {
+      backupData['appConfig'] = AppDatabase.appConfigBox.toMap();
+    }
 
     final jsonString = const JsonEncoder.withIndent('  ').convert(backupData);
     final tempDir = await getTemporaryDirectory();

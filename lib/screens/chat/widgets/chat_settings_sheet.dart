@@ -7,6 +7,7 @@ import 'package:nameless_ai/data/providers/api_provider_manager.dart';
 import 'package:nameless_ai/data/providers/system_prompt_template_manager.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
 import 'package:nameless_ai/utils/helpers.dart';
+import 'package:nameless_ai/widgets/responsive_layout.dart';
 
 class ChatSettingsSheet extends StatefulWidget {
   final ChatSession session;
@@ -54,7 +55,7 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
     super.dispose();
   }
 
-  void _showTemplateSelection() {
+  void _showTemplateSelection() async {
     final manager =
         Provider.of<SystemPromptTemplateManager>(context, listen: false);
     final localizations = AppLocalizations.of(context)!;
@@ -64,17 +65,25 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
       return;
     }
 
-    showDialog(
+    final selectedPrompt = await showModalBottomSheet<String>(
       context: context,
-      builder: (context) => _TemplateSelectionDialog(
-        onSelect: (prompt) {
-          setState(() {
-            _systemPromptController.text = prompt;
-          });
-          Navigator.of(context).pop();
-        },
+      isScrollControlled: true,
+      builder: (context) => DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.8,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        builder: (context, scrollController) => _TemplateSelectionScreen(
+          scrollController: scrollController,
+        ),
       ),
     );
+
+    if (selectedPrompt != null) {
+      setState(() {
+        _systemPromptController.text = selectedPrompt;
+      });
+    }
   }
 
   @override
@@ -162,7 +171,7 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
                     TextButton.icon(
                       onPressed: _showTemplateSelection,
                       icon: const Icon(Icons.library_books_outlined, size: 18),
-                      label: Text(localizations.systemPromptTemplates),
+                      label: Text(localizations.selectTemplate),
                     ),
                   ],
                 ),
@@ -284,17 +293,16 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
   }
 }
 
-class _TemplateSelectionDialog extends StatefulWidget {
-  final ValueChanged<String> onSelect;
-
-  const _TemplateSelectionDialog({required this.onSelect});
+class _TemplateSelectionScreen extends StatefulWidget {
+  final ScrollController scrollController;
+  const _TemplateSelectionScreen({required this.scrollController});
 
   @override
-  State<_TemplateSelectionDialog> createState() =>
-      __TemplateSelectionDialogState();
+  State<_TemplateSelectionScreen> createState() =>
+      __TemplateSelectionScreenState();
 }
 
-class __TemplateSelectionDialogState extends State<_TemplateSelectionDialog> {
+class __TemplateSelectionScreenState extends State<_TemplateSelectionScreen> {
   final TextEditingController _searchController = TextEditingController();
   List<SystemPromptTemplate> _filteredTemplates = [];
 
@@ -329,53 +337,64 @@ class __TemplateSelectionDialogState extends State<_TemplateSelectionDialog> {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    return AlertDialog(
-      title: Text(localizations.selectTemplate),
-      content: SizedBox(
-        width: double.maxFinite,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
+    return Material(
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    localizations.selectTemplate,
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => Navigator.of(context).pop(),
+                )
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
                 hintText: localizations.searchTemplates,
                 prefixIcon: const Icon(Icons.search),
               ),
             ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: _filteredTemplates.isEmpty
-                  ? Center(child: Text(localizations.noTemplatesFound))
-                  : ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: _filteredTemplates.length,
-                      itemBuilder: (context, index) {
-                        final template = _filteredTemplates[index];
-                        return Card(
-                          margin: const EdgeInsets.symmetric(vertical: 4),
-                          child: ListTile(
-                            title: Text(template.name),
-                            subtitle: Text(
-                              template.prompt,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            onTap: () => widget.onSelect(template.prompt),
+          ),
+          const SizedBox(height: 16),
+          Expanded(
+            child: _filteredTemplates.isEmpty
+                ? Center(child: Text(localizations.noTemplatesFound))
+                : ListView.builder(
+                    controller: widget.scrollController,
+                    itemCount: _filteredTemplates.length,
+                    itemBuilder: (context, index) {
+                      final template = _filteredTemplates[index];
+                      return Card(
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 6),
+                        child: ListTile(
+                          title: Text(template.name),
+                          subtitle: Text(
+                            template.prompt,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                        );
-                      },
-                    ),
-            ),
-          ],
-        ),
+                          onTap: () =>
+                              Navigator.of(context).pop(template.prompt),
+                        ),
+                      );
+                    },
+                  ),
+          ),
+        ],
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(localizations.cancel),
-        )
-      ],
     );
   }
 }

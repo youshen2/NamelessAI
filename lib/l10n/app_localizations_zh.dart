@@ -470,4 +470,19 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get timeLabel => '时间';
+
+  @override
+  String get reverseBubbleAlignment => '反转气泡对齐';
+
+  @override
+  String get reverseBubbleAlignmentHint => '用户消息在左，AI消息在右';
+
+  @override
+  String get exportSettings => '导出设置';
+
+  @override
+  String get selectContentToExport => '选择要导出的内容';
+
+  @override
+  String get appSettings => '应用设置';
 }

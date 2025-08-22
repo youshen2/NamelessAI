@@ -563,7 +563,7 @@ abstract class AppLocalizations {
   /// No description provided for @overrideModelSettings.
   ///
   /// In en, this message translates to:
-  /// **'Override model settings'**
+  /// **'Use default model settings'**
   String get overrideModelSettings;
 
   /// No description provided for @streamingDefault.
@@ -997,6 +997,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Time'**
   String get timeLabel;
+
+  /// No description provided for @reverseBubbleAlignment.
+  ///
+  /// In en, this message translates to:
+  /// **'Reverse Bubble Alignment'**
+  String get reverseBubbleAlignment;
+
+  /// No description provided for @reverseBubbleAlignmentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'User messages on the left, AI on the right'**
+  String get reverseBubbleAlignmentHint;
+
+  /// No description provided for @exportSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Settings'**
+  String get exportSettings;
+
+  /// No description provided for @selectContentToExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Select content to export'**
+  String get selectContentToExport;
+
+  /// No description provided for @appSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'App Settings'**
+  String get appSettings;
 }
 
 class _AppLocalizationsDelegate

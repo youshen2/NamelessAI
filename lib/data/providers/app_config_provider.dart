@@ -23,6 +23,7 @@ class AppConfigProvider extends ChangeNotifier {
   bool _resumeAutoScrollOnBottom = true;
 
   ChatBubbleAlignment _chatBubbleAlignment = ChatBubbleAlignment.normal;
+  bool _reverseBubbleAlignment = false;
   FontSize _fontSize = FontSize.medium;
   bool _showTimestamps = true;
   bool _showModelName = true;
@@ -50,6 +51,7 @@ class AppConfigProvider extends ChangeNotifier {
   bool get resumeAutoScrollOnBottom => _resumeAutoScrollOnBottom;
 
   ChatBubbleAlignment get chatBubbleAlignment => _chatBubbleAlignment;
+  bool get reverseBubbleAlignment => _reverseBubbleAlignment;
   FontSize get fontSize => _fontSize;
   bool get showTimestamps => _showTimestamps;
   bool get showModelName => _showModelName;
@@ -83,6 +85,8 @@ class AppConfigProvider extends ChangeNotifier {
     _chatBubbleAlignment = ChatBubbleAlignment.values[box.get(
         'chatBubbleAlignment',
         defaultValue: ChatBubbleAlignment.normal.index)];
+    _reverseBubbleAlignment =
+        box.get('reverseBubbleAlignment', defaultValue: false);
     _fontSize = FontSize
         .values[box.get('fontSize', defaultValue: FontSize.medium.index)];
     _showTimestamps = box.get('showTimestamps', defaultValue: true);
@@ -181,6 +185,13 @@ class AppConfigProvider extends ChangeNotifier {
     if (_chatBubbleAlignment != alignment) {
       _chatBubbleAlignment = alignment;
       _updateValue('chatBubbleAlignment', alignment.index);
+    }
+  }
+
+  void setReverseBubbleAlignment(bool reverse) {
+    if (_reverseBubbleAlignment != reverse) {
+      _reverseBubbleAlignment = reverse;
+      _updateValue('reverseBubbleAlignment', reverse);
     }
   }
 
