@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -296,6 +297,8 @@ class _MessageBubbleState extends State<MessageBubble>
     return Theme(
       data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
       child: ExpansionTile(
+        key: ValueKey(
+            'thinking_tile_${widget.message.id}_${widget.message.thinkingDurationMs != null}'),
         backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
         collapsedBackgroundColor:
             Theme.of(context).colorScheme.surfaceContainerHigh,
@@ -303,10 +306,13 @@ class _MessageBubbleState extends State<MessageBubble>
         childrenPadding: const EdgeInsets.only(left: 12, right: 12, bottom: 10),
         leading:
             Icon(Icons.psychology_outlined, color: textColor.withOpacity(0.8)),
-        title: _ThinkingTimer(
-          startTime: widget.message.thinkingStartTime,
-          durationMs: widget.message.thinkingDurationMs,
-          textColor: textColor.withOpacity(0.8),
+        title: Align(
+          alignment: Alignment.centerLeft,
+          child: _ThinkingTimer(
+            startTime: widget.message.thinkingStartTime,
+            durationMs: widget.message.thinkingDurationMs,
+            textColor: textColor.withOpacity(0.8),
+          ),
         ),
         initiallyExpanded: widget.message.thinkingDurationMs == null,
         children: [
@@ -471,6 +477,27 @@ class _MessageBubbleState extends State<MessageBubble>
     );
   }
 
+  void _showDebugInfo() {
+    final localizations = AppLocalizations.of(context)!;
+    final jsonString =
+        const JsonEncoder.withIndent('  ').convert(widget.message.toJson());
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(localizations.debugInfo),
+        content: SingleChildScrollView(
+          child: SelectableText(jsonString),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildActionBar(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
@@ -506,6 +533,9 @@ class _MessageBubbleState extends State<MessageBubble>
                 appConfig.compactMode),
             _actionButton(Icons.delete_outline, localizations.deleteMessage,
                 () => widget.onDelete(widget.message), appConfig.compactMode),
+            if (appConfig.showDebugButton)
+              _actionButton(Icons.bug_report_outlined, localizations.debugInfo,
+                  _showDebugInfo, appConfig.compactMode),
           ],
         ),
       ),
@@ -796,9 +826,13 @@ class _ThinkingTimerState extends State<_ThinkingTimer> {
           timer.cancel();
           return;
         }
-        setState(() {
-          _elapsed = DateTime.now().difference(widget.startTime!);
-        });
+        if (widget.startTime != null) {
+          setState(() {
+            _elapsed = DateTime.now().difference(widget.startTime!);
+          });
+        } else {
+          timer.cancel();
+        }
       });
     }
   }
@@ -839,8 +873,8 @@ class _ThinkingTimerState extends State<_ThinkingTimer> {
       text,
       style: TextStyle(
         color: widget.textColor,
-        fontStyle: FontStyle.italic,
         fontSize: 14,
+        fontStyle: FontStyle.italic,
       ),
     );
   }

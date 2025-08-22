@@ -488,4 +488,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get codeBlockTheme => '代码块主题';
+
+  @override
+  String get showDebugButton => '显示调试按钮';
+
+  @override
+  String get showDebugButtonHint => '在消息气泡上显示一个调试按钮以检查数据。';
+
+  @override
+  String get debugInfo => '调试信息';
 }

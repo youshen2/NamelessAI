@@ -190,5 +190,8 @@
   "exportSettings": "导出设置",
   "selectContentToExport": "选择要导出的内容",
   "appSettings": "应用设置",
-  "codeBlockTheme": "代码块主题"
+  "codeBlockTheme": "代码块主题",
+  "showDebugButton": "显示调试按钮",
+  "showDebugButtonHint": "在消息气泡上显示一个调试按钮以检查数据。",
+  "debugInfo": "调试信息"
 }

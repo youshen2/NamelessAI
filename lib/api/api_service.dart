@@ -33,22 +33,27 @@ class ApiService {
           "NamelessAI - Received Response: ${jsonEncode(response.data)}");
 
       if (response.data is String) {
-        return ChatCompletionResponse(
-          id: 'non-compliant-${const Uuid().v4()}',
-          object: 'chat.completion',
-          created: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-          model: request.model,
-          choices: [
-            ChatChoice(
-              index: 0,
-              message: ChatMessageResponse(
-                role: 'assistant',
-                content: response.data as String,
+        try {
+          final jsonData = jsonDecode(response.data as String);
+          return ChatCompletionResponse.fromJson(jsonData);
+        } catch (e) {
+          return ChatCompletionResponse(
+            id: 'non-compliant-${const Uuid().v4()}',
+            object: 'chat.completion',
+            created: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+            model: request.model,
+            choices: [
+              ChatChoice(
+                index: 0,
+                message: ChatMessageResponse(
+                  role: 'assistant',
+                  content: response.data as String,
+                ),
+                finishReason: 'stop',
               ),
-              finishReason: 'stop',
-            ),
-          ],
-        );
+            ],
+          );
+        }
       }
 
       return ChatCompletionResponse.fromJson(response.data);
@@ -75,15 +80,22 @@ class ApiService {
         ),
       );
 
+      String buffer = '';
       await for (final chunk in response.data!.stream!) {
-        final String data = utf8.decode(chunk);
-        final List<String> lines = data.split('\n');
+        buffer += utf8.decode(chunk);
 
-        for (final line in lines) {
+        int lineEndIndex;
+        while ((lineEndIndex = buffer.indexOf('\n')) != -1) {
+          final line = buffer.substring(0, lineEndIndex).trim();
+          buffer = buffer.substring(lineEndIndex + 1);
+
           if (line.startsWith('data: ')) {
             final String jsonStr = line.substring(6).trim();
             if (jsonStr == '[DONE]') {
-              break;
+              return; // End of stream
+            }
+            if (jsonStr.isEmpty) {
+              continue; // Skip empty data lines
             }
             try {
               final Map<String, dynamic> json = jsonDecode(jsonStr);
@@ -107,6 +119,39 @@ class ApiService {
               }
             } catch (e) {
               debugPrint('Error parsing stream chunk: $e, data: $jsonStr');
+            }
+          }
+        }
+      }
+
+      if (buffer.isNotEmpty) {
+        final line = buffer.trim();
+        if (line.startsWith('data: ')) {
+          final String jsonStr = line.substring(6).trim();
+          if (jsonStr.isNotEmpty && jsonStr != '[DONE]') {
+            try {
+              final Map<String, dynamic> json = jsonDecode(jsonStr);
+
+              if (json.containsKey('usage') && json['usage'] != null) {
+                final usage = Usage.fromJson(json['usage']);
+                yield usage;
+              }
+
+              if (json.containsKey('choices')) {
+                final ChatCompletionStreamResponse streamResponse =
+                    ChatCompletionStreamResponse.fromJson(json);
+
+                if (streamResponse.choices.isNotEmpty) {
+                  final String? content =
+                      streamResponse.choices.first.delta.content;
+                  if (content != null) {
+                    yield content;
+                  }
+                }
+              }
+            } catch (e) {
+              debugPrint(
+                  'Error parsing final stream buffer: $e, data: $jsonStr');
             }
           }
         }

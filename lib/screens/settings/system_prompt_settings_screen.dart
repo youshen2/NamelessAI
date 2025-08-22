@@ -30,6 +30,8 @@ class _SystemPromptSettingsScreenState
             );
           }
           return ListView.builder(
+            physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics()),
             padding: const EdgeInsets.all(8),
             itemCount: manager.templates.length,
             itemBuilder: (context, index) {

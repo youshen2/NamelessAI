@@ -190,5 +190,8 @@
   "exportSettings": "Export Settings",
   "selectContentToExport": "Select content to export",
   "appSettings": "App Settings",
-  "codeBlockTheme": "Code Block Theme"
+  "codeBlockTheme": "Code Block Theme",
+  "showDebugButton": "Show Debug Button",
+  "showDebugButtonHint": "Show a debug button on message bubbles to inspect data.",
+  "debugInfo": "Debug Info"
 }

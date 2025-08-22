@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/app_database.dart';
+import 'package:nameless_ai/data/providers/app_config_provider.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
 import 'package:nameless_ai/utils/helpers.dart';
 
@@ -14,14 +16,28 @@ class _DeveloperOptionsScreenState extends State<DeveloperOptionsScreen> {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+    final appConfig = Provider.of<AppConfigProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(localizations.developerOptions),
       ),
       body: ListView(
+        physics: const BouncingScrollPhysics(
+            parent: AlwaysScrollableScrollPhysics()),
         padding: const EdgeInsets.all(16.0),
         children: [
+          Card(
+            child: SwitchListTile(
+              title: Text(localizations.showDebugButton),
+              subtitle: Text(localizations.showDebugButtonHint),
+              value: appConfig.showDebugButton,
+              onChanged: (value) {
+                appConfig.setShowDebugButton(value);
+              },
+            ),
+          ),
+          const SizedBox(height: 16),
           Card(
             color: Theme.of(context).colorScheme.errorContainer,
             child: Column(

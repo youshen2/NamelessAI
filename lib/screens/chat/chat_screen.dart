@@ -28,6 +28,8 @@ class _ChatScreenState extends State<ChatScreen> {
   String? _currentSessionId;
   bool _userScrolledUp = false;
   final double _scrollThreshold = 50.0;
+  bool _showScrollUpFab = false;
+  bool _showScrollDownFab = false;
 
   @override
   void initState() {
@@ -47,7 +49,9 @@ class _ChatScreenState extends State<ChatScreen> {
       final manager = Provider.of<ChatSessionManager>(context, listen: false);
       if (manager.isGenerating &&
           manager.currentSession?.id == _currentSessionId) {
-        _scrollToBottom();
+        if (!_userScrolledUp) {
+          _scrollToBottom();
+        }
       }
     }
   }
@@ -73,6 +77,18 @@ class _ChatScreenState extends State<ChatScreen> {
           _userScrolledUp = false;
         });
       }
+    }
+
+    final shouldShowUp = position.pixels > 200;
+    final shouldShowDown = position.pixels < position.maxScrollExtent - 200 &&
+        position.maxScrollExtent > MediaQuery.of(context).size.height;
+
+    if (shouldShowUp != _showScrollUpFab ||
+        shouldShowDown != _showScrollDownFab) {
+      setState(() {
+        _showScrollUpFab = shouldShowUp;
+        _showScrollDownFab = shouldShowDown;
+      });
     }
   }
 
@@ -109,8 +125,16 @@ class _ChatScreenState extends State<ChatScreen> {
     _scrollToBottom(instant: true);
   }
 
+  void _scrollToTop() {
+    _scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeOutCubic,
+    );
+  }
+
   void _scrollToBottom({bool instant = false}) {
-    if (_userScrolledUp) return;
+    if (_userScrolledUp && !instant) return;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
@@ -377,66 +401,106 @@ class _ChatScreenState extends State<ChatScreen> {
               const SizedBox(width: 8),
             ],
           ),
-          body: Column(
+          body: Stack(
             children: [
-              Expanded(
-                child: Builder(
-                  builder: (context) {
-                    if (messages.isEmpty && !manager.isGenerating) {
-                      return Center(
-                        child: Text(localizations.noChatHistory),
-                      );
-                    }
-                    return ListView.builder(
-                      controller: _scrollController,
-                      itemCount: messages.length,
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      itemBuilder: (context, index) {
-                        final message = messages[index];
-                        final session = manager.currentSession;
-                        int branchCount = 0;
-                        int activeBranchIndex = 0;
-                        String? aiMessageIdForBranching;
-
-                        if (session != null &&
-                            message.role == 'assistant' &&
-                            index > 0 &&
-                            messages[index - 1].role == 'user' &&
-                            session.branches
-                                .containsKey(messages[index - 1].id)) {
-                          aiMessageIdForBranching = messages[index - 1].id;
-                          branchCount =
-                              session.branches[aiMessageIdForBranching]!.length;
-                          activeBranchIndex = session.activeBranchSelections[
-                                  aiMessageIdForBranching] ??
-                              0;
+              Column(
+                children: [
+                  Expanded(
+                    child: Builder(
+                      builder: (context) {
+                        if (messages.isEmpty && !manager.isGenerating) {
+                          return Center(
+                            child: Text(localizations.noChatHistory),
+                          );
                         }
+                        return ListView.builder(
+                          controller: _scrollController,
+                          physics: const BouncingScrollPhysics(
+                              parent: AlwaysScrollableScrollPhysics()),
+                          itemCount: messages.length,
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          itemBuilder: (context, index) {
+                            final message = messages[index];
+                            final session = manager.currentSession;
+                            int branchCount = 0;
+                            int activeBranchIndex = 0;
+                            String? aiMessageIdForBranching;
 
-                        return MessageBubble(
-                          key: ValueKey(message.id),
-                          message: message,
-                          onEdit: (msg, isEditing) =>
-                              _toggleEditing(msg.id, isEditing),
-                          onSave: _saveEditedMessage,
-                          onDelete: _deleteMessage,
-                          onResubmit: _resubmitMessage,
-                          onRegenerate: _regenerateResponse,
-                          onCopy: (text) => copyToClipboard(context, text),
-                          branchCount: branchCount,
-                          activeBranchIndex: activeBranchIndex,
-                          onBranchChange: (newIndex) {
-                            if (aiMessageIdForBranching != null) {
-                              _onBranchChange(
-                                  aiMessageIdForBranching, newIndex);
+                            if (session != null &&
+                                message.role == 'assistant' &&
+                                index > 0 &&
+                                messages[index - 1].role == 'user' &&
+                                session.branches
+                                    .containsKey(messages[index - 1].id)) {
+                              aiMessageIdForBranching = messages[index - 1].id;
+                              branchCount = session
+                                  .branches[aiMessageIdForBranching]!.length;
+                              activeBranchIndex =
+                                  session.activeBranchSelections[
+                                          aiMessageIdForBranching] ??
+                                      0;
                             }
+
+                            return MessageBubble(
+                              key: ValueKey(message.id),
+                              message: message,
+                              onEdit: (msg, isEditing) =>
+                                  _toggleEditing(msg.id, isEditing),
+                              onSave: _saveEditedMessage,
+                              onDelete: _deleteMessage,
+                              onResubmit: _resubmitMessage,
+                              onRegenerate: _regenerateResponse,
+                              onCopy: (text) => copyToClipboard(context, text),
+                              branchCount: branchCount,
+                              activeBranchIndex: activeBranchIndex,
+                              onBranchChange: (newIndex) {
+                                if (aiMessageIdForBranching != null) {
+                                  _onBranchChange(
+                                      aiMessageIdForBranching, newIndex);
+                                }
+                              },
+                            );
                           },
                         );
                       },
-                    );
-                  },
-                ),
+                    ),
+                  ),
+                  _buildInputArea(localizations, manager.isGenerating),
+                ],
               ),
-              _buildInputArea(localizations, manager.isGenerating),
+              if (_showScrollUpFab)
+                Positioned(
+                  top: 16,
+                  right: 16,
+                  child: AnimatedOpacity(
+                    opacity: _showScrollUpFab ? 1.0 : 0.0,
+                    duration: const Duration(milliseconds: 200),
+                    child: FloatingActionButton.small(
+                      onPressed: _scrollToTop,
+                      tooltip: 'Scroll to top',
+                      child: const Icon(Icons.arrow_upward),
+                    ),
+                  ),
+                ),
+              if (_showScrollDownFab)
+                Positioned(
+                  bottom: 90,
+                  right: 16,
+                  child: AnimatedOpacity(
+                    opacity: _showScrollDownFab ? 1.0 : 0.0,
+                    duration: const Duration(milliseconds: 200),
+                    child: FloatingActionButton.small(
+                      onPressed: () {
+                        setState(() {
+                          _userScrolledUp = false;
+                        });
+                        _scrollToBottom();
+                      },
+                      tooltip: 'Scroll to bottom',
+                      child: const Icon(Icons.arrow_downward),
+                    ),
+                  ),
+                ),
             ],
           ),
         );

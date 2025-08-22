@@ -85,16 +85,19 @@ class ChatChoice {
 class ChatMessageResponse {
   final String role;
   final String content;
+  final String? reasoningContent;
 
   ChatMessageResponse({
     required this.role,
     required this.content,
+    this.reasoningContent,
   });
 
   factory ChatMessageResponse.fromJson(Map<String, dynamic> json) {
     return ChatMessageResponse(
       role: json['role'],
       content: json['content'],
+      reasoningContent: json['reasoning_content'],
     );
   }
 }

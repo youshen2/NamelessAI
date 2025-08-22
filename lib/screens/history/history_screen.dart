@@ -164,6 +164,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
       return Center(child: Text(localizations.noResultsFound));
     }
     return ListView.builder(
+      physics:
+          const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
       itemCount: sessions.length,
       itemBuilder: (context, index) {
         final session = sessions[index];
@@ -286,6 +288,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 Theme.of(context).colorScheme.outlineVariant.withOpacity(0.5)),
         Expanded(
           child: ListView.builder(
+            physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics()),
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             itemCount: messages.length,
             itemBuilder: (context, index) {

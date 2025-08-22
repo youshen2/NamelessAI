@@ -499,4 +499,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get codeBlockTheme => 'Code Block Theme';
+
+  @override
+  String get showDebugButton => 'Show Debug Button';
+
+  @override
+  String get showDebugButtonHint =>
+      'Show a debug button on message bubbles to inspect data.';
+
+  @override
+  String get debugInfo => 'Debug Info';
 }

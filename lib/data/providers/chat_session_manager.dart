@@ -446,9 +446,11 @@ class ChatSessionManager extends ChangeNotifier {
                 final parts = fullResponseBuffer.split(thinkTag);
                 messageToUpdate.thinkingContent = parts[0];
                 messageToUpdate.content = parts.length > 1 ? parts[1] : '';
-                messageToUpdate.thinkingDurationMs = DateTime.now()
-                    .difference(messageToUpdate.thinkingStartTime!)
-                    .inMilliseconds;
+                if (messageToUpdate.thinkingStartTime != null) {
+                  messageToUpdate.thinkingDurationMs = DateTime.now()
+                      .difference(messageToUpdate.thinkingStartTime!)
+                      .inMilliseconds;
+                }
               } else if (thinkingDone) {
                 messageToUpdate.content =
                     (messageToUpdate.content ?? '') + item;
@@ -470,13 +472,24 @@ class ChatSessionManager extends ChangeNotifier {
           session.temperature,
           session.topP,
         );
-        fullResponseBuffer = response.choices.first.message.content;
+        final responseMessage = response.choices.first.message;
+        fullResponseBuffer = responseMessage.content;
         usage = response.usage;
 
-        if (model.supportsThinking && fullResponseBuffer.contains(thinkTag)) {
+        if (model.supportsThinking &&
+            responseMessage.reasoningContent != null &&
+            responseMessage.reasoningContent!.isNotEmpty) {
+          thinkingDone = true;
+          messageToUpdate.thinkingContent = responseMessage.reasoningContent;
+          messageToUpdate.content = fullResponseBuffer;
+          messageToUpdate.thinkingDurationMs = stopwatch.elapsedMilliseconds;
+        } else if (model.supportsThinking &&
+            fullResponseBuffer.contains(thinkTag)) {
+          thinkingDone = true;
           final parts = fullResponseBuffer.split(thinkTag);
           messageToUpdate.thinkingContent = parts[0];
           messageToUpdate.content = parts.length > 1 ? parts[1] : '';
+          messageToUpdate.thinkingDurationMs = stopwatch.elapsedMilliseconds;
         } else {
           messageToUpdate.content = fullResponseBuffer;
         }
@@ -492,17 +505,6 @@ class ChatSessionManager extends ChangeNotifier {
       stopwatch.stop();
       final finalMessage = _findMessageInSession(session, assistantMessageId);
       if (finalMessage != null) {
-        final bool shouldMergeThinking = model.supportsThinking &&
-            !thinkingDone &&
-            finalMessage.thinkingContent != null;
-
-        if (shouldMergeThinking) {
-          finalMessage.content = (finalMessage.thinkingContent ?? '') +
-              (finalMessage.content ?? '');
-          finalMessage.thinkingContent = null;
-          finalMessage.thinkingDurationMs = null;
-        }
-
         finalMessage.isLoading = false;
         finalMessage.completionTimeMs = stopwatch.elapsedMilliseconds;
         finalMessage.firstChunkTimeMs = firstChunkTimeMs;
@@ -511,6 +513,22 @@ class ChatSessionManager extends ChangeNotifier {
           finalMessage.promptTokens = usage.promptTokens;
           finalMessage.completionTokens = usage.completionTokens;
         }
+
+        if (model.supportsThinking &&
+            !thinkingDone &&
+            finalMessage.thinkingContent != null) {
+          finalMessage.content = finalMessage.thinkingContent!;
+          finalMessage.thinkingContent = null;
+          finalMessage.thinkingDurationMs = null;
+        } else if (model.supportsThinking && thinkingDone) {
+          if (finalMessage.thinkingStartTime != null &&
+              finalMessage.thinkingDurationMs == null) {
+            finalMessage.thinkingDurationMs = DateTime.now()
+                .difference(finalMessage.thinkingStartTime!)
+                .inMilliseconds;
+          }
+        }
+
         finalMessage.thinkingStartTime = null;
 
         if (_cancelledSessions.contains(sessionId)) {

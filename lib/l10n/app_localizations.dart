@@ -1033,6 +1033,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Code Block Theme'**
   String get codeBlockTheme;
+
+  /// No description provided for @showDebugButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Debug Button'**
+  String get showDebugButton;
+
+  /// No description provided for @showDebugButtonHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Show a debug button on message bubbles to inspect data.'**
+  String get showDebugButtonHint;
+
+  /// No description provided for @debugInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Debug Info'**
+  String get debugInfo;
 }
 
 class _AppLocalizationsDelegate
