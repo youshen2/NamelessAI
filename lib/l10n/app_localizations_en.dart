@@ -72,6 +72,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addModel => 'Add Model';
 
   @override
+  String get editModel => 'Edit Model';
+
+  @override
   String get modelName => 'Model Name';
 
   @override
@@ -558,4 +561,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String updateCheckFailed(String error) {
     return 'Failed to check for updates: $error';
   }
+
+  @override
+  String get sourceCode => 'Source Code';
+
+  @override
+  String get sourceCodeUrl => 'github.com/youshen2/NamelessAI';
+
+  @override
+  String get openSourceLicenses => 'Open-source Licenses';
+
+  @override
+  String get madeWith => 'Made with Flutter';
 }

@@ -434,7 +434,7 @@ class _ModelFormSheetState extends State<_ModelFormSheet> {
             Text(
               widget.model == null
                   ? localizations.addModel
-                  : localizations.editProvider,
+                  : localizations.editModel,
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: 24),

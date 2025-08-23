@@ -72,6 +72,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get addModel => '添加模型';
 
   @override
+  String get editModel => '编辑模型';
+
+  @override
   String get modelName => '模型名称';
 
   @override
@@ -522,7 +525,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get newVersionMessage => 'NamelessAI 有一个新版本可用。';
+  String get newVersionMessage => '发现 NamelessAI Box 的新版本。';
 
   @override
   String get releaseNotes => '更新日志:';
@@ -546,4 +549,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String updateCheckFailed(String error) {
     return '检查更新失败: $error';
   }
+
+  @override
+  String get sourceCode => '项目源代码';
+
+  @override
+  String get sourceCodeUrl => 'github.com/youshen2/NamelessAI';
+
+  @override
+  String get openSourceLicenses => '开源库许可';
+
+  @override
+  String get madeWith => '使用 Flutter 构建';
 }

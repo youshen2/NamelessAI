@@ -224,6 +224,12 @@ abstract class AppLocalizations {
   /// **'Add Model'**
   String get addModel;
 
+  /// No description provided for @editModel.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Model'**
+  String get editModel;
+
   /// No description provided for @modelName.
   ///
   /// In en, this message translates to:
@@ -1141,6 +1147,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to check for updates: {error}'**
   String updateCheckFailed(String error);
+
+  /// No description provided for @sourceCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Source Code'**
+  String get sourceCode;
+
+  /// No description provided for @sourceCodeUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'github.com/youshen2/NamelessAI'**
+  String get sourceCodeUrl;
+
+  /// No description provided for @openSourceLicenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Open-source Licenses'**
+  String get openSourceLicenses;
+
+  /// No description provided for @madeWith.
+  ///
+  /// In en, this message translates to:
+  /// **'Made with Flutter'**
+  String get madeWith;
 }
 
 class _AppLocalizationsDelegate

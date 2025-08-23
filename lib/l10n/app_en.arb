@@ -21,6 +21,7 @@
   "chatPath": "Chat Path",
   "models": "Models",
   "addModel": "Add Model",
+  "editModel": "Edit Model",
   "modelName": "Model Name",
   "maxTokens": "Max Tokens (Optional)",
   "isStreamable": "Supports Streaming",
@@ -222,5 +223,9 @@
         "type": "String"
       }
     }
-  }
+  },
+  "sourceCode": "Source Code",
+  "sourceCodeUrl": "github.com/youshen2/NamelessAI",
+  "openSourceLicenses": "Open-source Licenses",
+  "madeWith": "Made with Flutter"
 }

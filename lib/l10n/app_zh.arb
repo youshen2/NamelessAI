@@ -21,6 +21,7 @@
   "chatPath": "聊天路径",
   "models": "模型",
   "addModel": "添加模型",
+  "editModel": "编辑模型",
   "modelName": "模型名称",
   "maxTokens": "最大Token数 (可选)",
   "isStreamable": "支持流式输出",
@@ -208,7 +209,7 @@
       }
     }
   },
-  "newVersionMessage": "NamelessAI 有一个新版本可用。",
+  "newVersionMessage": "发现 NamelessAI Box 的新版本。",
   "releaseNotes": "更新日志:",
   "later": "稍后",
   "update": "更新",
@@ -222,5 +223,9 @@
         "type": "String"
       }
     }
-  }
+  },
+  "sourceCode": "项目源代码",
+  "sourceCodeUrl": "github.com/youshen2/NamelessAI",
+  "openSourceLicenses": "开源库许可",
+  "madeWith": "使用 Flutter 构建"
 }

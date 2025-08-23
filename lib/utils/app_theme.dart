@@ -38,7 +38,7 @@ class AppTheme {
         surfaceTintColor: colorScheme.surfaceTint,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           side: BorderSide(color: colorScheme.outlineVariant.withOpacity(0.5)),
         ),
       ),
@@ -151,7 +151,7 @@ class AppTheme {
         surfaceTintColor: colorScheme.surfaceTint,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           side: BorderSide(color: colorScheme.outlineVariant.withOpacity(0.5)),
         ),
       ),
