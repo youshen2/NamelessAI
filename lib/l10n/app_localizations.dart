@@ -350,6 +350,12 @@ abstract class AppLocalizations {
   /// **'Copy Code'**
   String get copyCode;
 
+  /// No description provided for @freeCopy.
+  ///
+  /// In en, this message translates to:
+  /// **'Free Copy'**
+  String get freeCopy;
+
   /// No description provided for @copiedToClipboard.
   ///
   /// In en, this message translates to:
@@ -1111,6 +1117,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Update'**
   String get update;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
 
   /// No description provided for @noUpdates.
   ///

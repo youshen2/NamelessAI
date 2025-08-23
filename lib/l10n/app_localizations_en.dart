@@ -139,6 +139,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get copyCode => 'Copy Code';
 
   @override
+  String get freeCopy => 'Free Copy';
+
+  @override
   String get copiedToClipboard => 'Copied to clipboard!';
 
   @override
@@ -541,6 +544,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get update => 'Update';
+
+  @override
+  String get close => 'Close';
 
   @override
   String get noUpdates => 'No Updates';

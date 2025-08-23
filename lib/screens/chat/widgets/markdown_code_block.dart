@@ -8,6 +8,25 @@ import 'package:nameless_ai/data/providers/app_config_provider.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
 import 'package:nameless_ai/utils/helpers.dart';
 
+void _showFreeCopyDialog(BuildContext context, String code) {
+  final localizations = AppLocalizations.of(context)!;
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text(localizations.copyCode),
+      content: SingleChildScrollView(
+        child: SelectableText(code),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(localizations.close),
+        ),
+      ],
+    ),
+  );
+}
+
 class MarkdownCodeBlockBuilder extends MarkdownElementBuilder {
   final BuildContext context;
 
@@ -52,18 +71,36 @@ class MarkdownCodeBlockBuilder extends MarkdownElementBuilder {
                       fontSize: 12,
                     ),
                   ),
-                  IconButton(
-                    icon: Icon(Icons.copy,
-                        size: 18,
-                        color: theme['root']?.color?.withOpacity(0.7) ??
-                            Theme.of(context).colorScheme.onSurfaceVariant),
-                    tooltip: AppLocalizations.of(context)!.copyCode,
-                    onPressed: () => copyToClipboard(context, code),
-                    style: IconButton.styleFrom(
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      minimumSize: Size.zero,
-                      padding: EdgeInsets.zero,
-                    ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.content_paste_go_outlined,
+                            size: 18,
+                            color: theme['root']?.color?.withOpacity(0.7) ??
+                                Theme.of(context).colorScheme.onSurfaceVariant),
+                        tooltip: AppLocalizations.of(context)!.freeCopy,
+                        onPressed: () => _showFreeCopyDialog(context, code),
+                        style: IconButton.styleFrom(
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          minimumSize: Size.zero,
+                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.copy,
+                            size: 18,
+                            color: theme['root']?.color?.withOpacity(0.7) ??
+                                Theme.of(context).colorScheme.onSurfaceVariant),
+                        tooltip: AppLocalizations.of(context)!.copyCode,
+                        onPressed: () => copyToClipboard(context, code),
+                        style: IconButton.styleFrom(
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          minimumSize: Size.zero,
+                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

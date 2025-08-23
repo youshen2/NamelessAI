@@ -137,6 +137,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get copyCode => '复制代码';
 
   @override
+  String get freeCopy => '自由复制';
+
+  @override
   String get copiedToClipboard => '已复制到剪贴板！';
 
   @override
@@ -529,6 +532,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get update => '更新';
+
+  @override
+  String get close => '关闭';
 
   @override
   String get noUpdates => '没有更新';
