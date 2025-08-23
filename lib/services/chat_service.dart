@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:nameless_ai/api/api_service.dart';
 import 'package:nameless_ai/api/models.dart';
@@ -23,7 +24,8 @@ class ChatService {
   }
 
   Future<ChatCompletionResponse> getCompletion(List<ChatMessage> messages,
-      String? systemPrompt, double temperature, double topP) async {
+      String? systemPrompt, double temperature, double topP,
+      [CancelToken? cancelToken]) async {
     final apiService = ApiService(provider);
     final request = ChatCompletionRequest(
       model: model.name,
@@ -35,7 +37,7 @@ class ChatService {
     );
 
     try {
-      final response = await apiService.getChatCompletion(request);
+      final response = await apiService.getChatCompletion(request, cancelToken);
       return response;
     } catch (e) {
       debugPrint('Error in getCompletion: $e');
@@ -44,7 +46,8 @@ class ChatService {
   }
 
   Stream<dynamic> getCompletionStream(List<ChatMessage> messages,
-      String? systemPrompt, double temperature, double topP) {
+      String? systemPrompt, double temperature, double topP,
+      [CancelToken? cancelToken]) {
     final apiService = ApiService(provider);
     final request = ChatCompletionRequest(
       model: model.name,
@@ -55,6 +58,6 @@ class ChatService {
       topP: topP,
     );
 
-    return apiService.getChatCompletionStream(request);
+    return apiService.getChatCompletionStream(request, cancelToken);
   }
 }

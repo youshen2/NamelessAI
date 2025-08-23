@@ -511,7 +511,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scrollToBottom => '回到底部';
 
   @override
-  String get pageUp => '向上翻页';
+  String get pageUp => '上一条消息';
 
   @override
   String get checkForUpdates => '检查更新';
@@ -561,4 +561,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get madeWith => '使用 Flutter 构建';
+
+  @override
+  String get collapse => '折叠';
+
+  @override
+  String get expand => '展开';
 }

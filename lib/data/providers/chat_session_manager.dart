@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:nameless_ai/api/models.dart' as api_models;
 import 'package:nameless_ai/data/app_database.dart';
@@ -17,6 +18,7 @@ class ChatSessionManager extends ChangeNotifier {
   bool _isNewSession = true;
   final Set<String> _generatingSessions = {};
   final Set<String> _cancelledSessions = {};
+  final Map<String, CancelToken> _cancelTokens = {};
 
   ChatSessionManager() {
     _loadSessions();
@@ -375,6 +377,7 @@ class ChatSessionManager extends ChangeNotifier {
   void cancelGeneration(String sessionId) {
     if (_generatingSessions.contains(sessionId)) {
       _cancelledSessions.add(sessionId);
+      _cancelTokens[sessionId]?.cancel("Operation cancelled by user.");
       debugPrint("NamelessAI - Cancellation requested for session $sessionId");
       notifyListeners();
     }
@@ -390,6 +393,9 @@ class ChatSessionManager extends ChangeNotifier {
     }
 
     _cancelledSessions.remove(sessionId);
+
+    final cancelToken = CancelToken();
+    _cancelTokens[sessionId] = cancelToken;
 
     final chatService = ChatService(provider: provider, model: model);
 
@@ -413,7 +419,6 @@ class ChatSessionManager extends ChangeNotifier {
     bool isThinkingResponse = false;
     bool isFirstChunk = true;
     bool thinkingDone = false;
-
     try {
       final useStreaming = session.useStreaming ?? model.isStreamable;
       final messageToUpdate =
@@ -426,6 +431,7 @@ class ChatSessionManager extends ChangeNotifier {
           session.systemPrompt,
           session.temperature,
           session.topP,
+          cancelToken,
         );
 
         await for (final item in stream) {
@@ -489,6 +495,7 @@ class ChatSessionManager extends ChangeNotifier {
           session.systemPrompt,
           session.temperature,
           session.topP,
+          cancelToken,
         );
         final responseMessage = response.choices.first.message;
         fullResponseBuffer = responseMessage.content;
@@ -512,6 +519,24 @@ class ChatSessionManager extends ChangeNotifier {
           messageToUpdate.thinkingDurationMs = stopwatch.elapsedMilliseconds;
         } else {
           messageToUpdate.content = fullResponseBuffer;
+        }
+      }
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.cancel) {
+        debugPrint(
+            "NamelessAI - Generation for session $sessionId was cancelled via token.");
+        final messageToUpdate =
+            _findMessageInSession(session, assistantMessageId);
+        if (messageToUpdate != null &&
+            (messageToUpdate.content ?? '').isEmpty) {
+          _removeMessageInSession(session, assistantMessageId);
+        }
+      } else {
+        final messageToUpdate =
+            _findMessageInSession(session, assistantMessageId);
+        if (messageToUpdate != null) {
+          messageToUpdate.content = "Error: ${e.message}";
+          messageToUpdate.isError = true;
         }
       }
     } catch (e) {
@@ -558,6 +583,7 @@ class ChatSessionManager extends ChangeNotifier {
 
       _generatingSessions.remove(sessionId);
       _cancelledSessions.remove(sessionId);
+      _cancelTokens.remove(sessionId);
       _loadSessions();
       if (_currentSession?.id == session.id) {
         _currentSession = session;
@@ -571,7 +597,6 @@ class ChatSessionManager extends ChangeNotifier {
       session.messages.add(message);
       return;
     }
-
     List<ChatMessage> findListToAppend(List<ChatMessage> currentList) {
       if (currentList.isEmpty) return currentList;
       final lastMsg = currentList.last;
@@ -590,7 +615,6 @@ class ChatSessionManager extends ChangeNotifier {
   ChatMessage? _findMessageInSession(ChatSession session, String id) {
     ChatMessage? _recursiveFind(List<ChatMessage> list, Set<int> visited) {
       if (!visited.add(identityHashCode(list))) return null;
-
       for (var msg in list) {
         if (msg.id == id) return msg;
         if (msg.role == 'user' && session.branches.containsKey(msg.id)) {
@@ -612,7 +636,6 @@ class ChatSessionManager extends ChangeNotifier {
       final initialLength = list.length;
       list.removeWhere((msg) => msg.id == id);
       if (list.length < initialLength) return true;
-
       for (var msg in list) {
         if (msg.role == 'user' && session.branches.containsKey(msg.id)) {
           for (var branch in session.branches[msg.id]!) {

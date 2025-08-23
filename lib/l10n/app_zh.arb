@@ -198,7 +198,7 @@
   "debugInfo": "调试信息",
   "scrollToTop": "回到顶部",
   "scrollToBottom": "回到底部",
-  "pageUp": "向上翻页",
+  "pageUp": "上一条消息",
   "checkForUpdates": "检查更新",
   "checkForUpdatesOnStartup": "启动时检查更新",
   "updateAvailable": "发现新版本: v{version}",
@@ -227,5 +227,7 @@
   "sourceCode": "项目源代码",
   "sourceCodeUrl": "github.com/youshen2/NamelessAI",
   "openSourceLicenses": "开源库许可",
-  "madeWith": "使用 Flutter 构建"
+  "madeWith": "使用 Flutter 构建",
+  "collapse": "折叠",
+  "expand": "展开"
 }

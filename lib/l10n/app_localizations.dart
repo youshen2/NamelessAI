@@ -1079,7 +1079,7 @@ abstract class AppLocalizations {
   /// No description provided for @pageUp.
   ///
   /// In en, this message translates to:
-  /// **'Page Up'**
+  /// **'Previous Message'**
   String get pageUp;
 
   /// No description provided for @checkForUpdates.
@@ -1171,6 +1171,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Made with Flutter'**
   String get madeWith;
+
+  /// No description provided for @collapse.
+  ///
+  /// In en, this message translates to:
+  /// **'Collapse'**
+  String get collapse;
+
+  /// No description provided for @expand.
+  ///
+  /// In en, this message translates to:
+  /// **'Expand'**
+  String get expand;
 }
 
 class _AppLocalizationsDelegate

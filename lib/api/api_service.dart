@@ -21,13 +21,15 @@ class ApiService {
         ));
 
   Future<ChatCompletionResponse> getChatCompletion(
-      ChatCompletionRequest request) async {
+      ChatCompletionRequest request,
+      [CancelToken? cancelToken]) async {
     try {
       debugPrint(
           "NamelessAI - Sending Request: ${jsonEncode(request.toJson())}");
       final response = await _dio.post(
         provider.chatCompletionPath,
         data: request.toJson(),
+        cancelToken: cancelToken,
       );
       debugPrint(
           "NamelessAI - Received Response: ${jsonEncode(response.data)}");
@@ -62,8 +64,8 @@ class ApiService {
     }
   }
 
-  Stream<dynamic> getChatCompletionStream(
-      ChatCompletionRequest request) async* {
+  Stream<dynamic> getChatCompletionStream(ChatCompletionRequest request,
+      [CancelToken? cancelToken]) async* {
     try {
       debugPrint(
           "NamelessAI - Sending Stream Request: ${jsonEncode(request.toJson())}");
@@ -78,6 +80,7 @@ class ApiService {
             'Connection': 'keep-alive',
           },
         ),
+        cancelToken: cancelToken,
       );
 
       String buffer = '';

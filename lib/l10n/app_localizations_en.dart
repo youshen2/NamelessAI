@@ -523,7 +523,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scrollToBottom => 'Scroll to bottom';
 
   @override
-  String get pageUp => 'Page Up';
+  String get pageUp => 'Previous Message';
 
   @override
   String get checkForUpdates => 'Check for Updates';
@@ -573,4 +573,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get madeWith => 'Made with Flutter';
+
+  @override
+  String get collapse => 'Collapse';
+
+  @override
+  String get expand => 'Expand';
 }

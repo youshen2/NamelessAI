@@ -198,7 +198,7 @@
   "debugInfo": "Debug Info",
   "scrollToTop": "Scroll to top",
   "scrollToBottom": "Scroll to bottom",
-  "pageUp": "Page Up",
+  "pageUp": "Previous Message",
   "checkForUpdates": "Check for Updates",
   "checkForUpdatesOnStartup": "Check for updates on startup",
   "updateAvailable": "Update Available: v{version}",
@@ -227,5 +227,7 @@
   "sourceCode": "Source Code",
   "sourceCodeUrl": "github.com/youshen2/NamelessAI",
   "openSourceLicenses": "Open-source Licenses",
-  "madeWith": "Made with Flutter"
+  "madeWith": "Made with Flutter",
+  "collapse": "Collapse",
+  "expand": "Expand"
 }
