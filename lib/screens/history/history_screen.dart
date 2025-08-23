@@ -56,7 +56,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
     if (!mounted) return;
     setState(() {
       _selectedSessionForPreview = session;
-      _previewMessagesFuture = Future(() => session.activeMessages);
+      _previewMessagesFuture =
+          Future.delayed(Duration.zero, () => session.activeMessages);
     });
   }
 

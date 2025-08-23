@@ -128,8 +128,6 @@ class _MessageBubbleState extends State<MessageBubble>
   late final Animation<Offset> _slideAnimation;
   late final Animation<double> _fadeAnimation;
 
-  bool _isContentLoaded = false;
-
   @override
   bool get wantKeepAlive => true;
 
@@ -151,22 +149,11 @@ class _MessageBubbleState extends State<MessageBubble>
 
     if (widget.isReadOnly) {
       _animationController.value = 1.0;
-      _isContentLoaded = true;
     } else if (!widget.animatedMessageIds.contains(widget.message.id)) {
       _animationController.forward();
       widget.animatedMessageIds.add(widget.message.id);
     } else {
       _animationController.value = 1.0;
-    }
-
-    if (!_isContentLoaded) {
-      Future.delayed(const Duration(milliseconds: 50), () {
-        if (mounted) {
-          setState(() {
-            _isContentLoaded = true;
-          });
-        }
-      });
     }
   }
 
@@ -398,29 +385,6 @@ class _MessageBubbleState extends State<MessageBubble>
       return const Padding(
         padding: EdgeInsets.symmetric(vertical: 8.0),
         child: TypingIndicator(isInline: true),
-      );
-    }
-
-    if (!_isContentLoaded) {
-      final estimatedLineCount =
-          '\n'.allMatches(widget.message.content).length + 1;
-      final estimatedCharLines = (widget.message.content.length / 45).ceil();
-      final totalLines = (estimatedLineCount + estimatedCharLines).clamp(1, 20);
-      final estimatedHeight = (totalLines * (fontSize + 5)).clamp(40.0, 400.0);
-
-      return SizedBox(
-        height: estimatedHeight,
-        width: double.infinity,
-        child: Center(
-          child: SizedBox(
-            width: 24,
-            height: 24,
-            child: CircularProgressIndicator(
-              strokeWidth: 2.0,
-              color: textColor.withOpacity(0.6),
-            ),
-          ),
-        ),
       );
     }
 
