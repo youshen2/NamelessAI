@@ -224,6 +224,9 @@ class GenerationService {
     final request = api_models.ImageGenerationRequest(
       prompt: userPrompt,
       model: model.name,
+      size: session.imageSize ?? '1024x1024',
+      quality: session.imageQuality,
+      style: session.imageStyle,
     );
     final response = await apiService.generateImage(request, cancelToken);
 

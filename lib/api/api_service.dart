@@ -16,9 +16,8 @@ class ApiService {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ${provider.apiKey}',
           },
-          connectTimeout: const Duration(seconds: 10),
-          // 将 receiveTimeout 修改为 10 分钟 (600 秒)
-          receiveTimeout: const Duration(minutes: 10), // 原来是 60 秒
+          connectTimeout: const Duration(seconds: 15),
+          receiveTimeout: const Duration(minutes: 10),
         ));
 
   Future<ChatCompletionResponse> getChatCompletion(

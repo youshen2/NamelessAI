@@ -388,6 +388,10 @@ class _ChatScreenState extends State<ChatScreen> {
                 temperature: settings['temperature'],
                 topP: settings['topP'],
                 useStreaming: settings['useStreaming'],
+                maxContextMessages: settings['maxContextMessages'],
+                imageSize: settings['imageSize'],
+                imageQuality: settings['imageQuality'],
+                imageStyle: settings['imageStyle'],
               );
               final apiManager =
                   Provider.of<APIProviderManager>(context, listen: false);

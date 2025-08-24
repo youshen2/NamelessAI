@@ -595,4 +595,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get modelTypeTts => 'TTS';
+
+  @override
+  String get imageSize => 'Image Size';
+
+  @override
+  String get imageQuality => 'Image Quality';
+
+  @override
+  String get imageStyle => 'Image Style';
+
+  @override
+  String get qualityStandard => 'Standard';
+
+  @override
+  String get qualityHD => 'HD';
+
+  @override
+  String get styleVivid => 'Vivid';
+
+  @override
+  String get styleNatural => 'Natural';
 }

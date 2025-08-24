@@ -234,5 +234,12 @@
   "modelTypeLanguage": "语言",
   "modelTypeImage": "图像",
   "modelTypeVideo": "视频",
-  "modelTypeTts": "语音合成"
+  "modelTypeTts": "语音合成",
+  "imageSize": "图像尺寸",
+  "imageQuality": "图像质量",
+  "imageStyle": "图像风格",
+  "qualityStandard": "标准",
+  "qualityHD": "高清",
+  "styleVivid": "鲜艳",
+  "styleNatural": "自然"
 }

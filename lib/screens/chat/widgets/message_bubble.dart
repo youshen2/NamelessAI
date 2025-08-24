@@ -303,7 +303,7 @@ class _MessageBubbleState extends State<MessageBubble>
         }
       }
     } catch (e) {
-      // Not a JSON or not the expected format, assume content is the URL.
+      // NULL
     }
 
     return Image.network(

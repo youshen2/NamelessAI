@@ -13,6 +13,9 @@ class ChatSessionManager extends ChangeNotifier {
   static const String _defaultSystemPrompt = "You are a helpful assistant.";
   static const double _defaultTemperature = 0.7;
   static const double _defaultTopP = 1.0;
+  static const String _defaultImageSize = '1024x1024';
+  static const String _defaultImageQuality = 'standard';
+  static const String _defaultImageStyle = 'vivid';
 
   List<ChatSession> _sessions = [];
   ChatSession? _currentSession;
@@ -52,6 +55,9 @@ class ChatSessionManager extends ChangeNotifier {
       systemPrompt: systemPrompt ?? _defaultSystemPrompt,
       temperature: _defaultTemperature,
       topP: _defaultTopP,
+      imageSize: _defaultImageSize,
+      imageQuality: _defaultImageQuality,
+      imageStyle: _defaultImageStyle,
     );
     _isNewSession = true;
     notifyListeners();
@@ -127,6 +133,9 @@ class ChatSessionManager extends ChangeNotifier {
     double? topP,
     bool? useStreaming,
     int? maxContextMessages,
+    String? imageSize,
+    String? imageQuality,
+    String? imageStyle,
   }) async {
     if (_currentSession == null) return;
 
@@ -137,6 +146,9 @@ class ChatSessionManager extends ChangeNotifier {
       systemPrompt: systemPrompt,
       temperature: temperature,
       topP: topP,
+      imageSize: imageSize,
+      imageQuality: imageQuality,
+      imageStyle: imageStyle,
     );
 
     updatedSession.useStreaming = useStreaming;

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:nameless_ai/data/models/api_provider.dart';
+import 'package:nameless_ai/data/models/model.dart';
 import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/models/chat_session.dart';
+import 'package:nameless_ai/data/models/model_type.dart';
 import 'package:nameless_ai/data/providers/api_provider_manager.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
 import 'package:nameless_ai/screens/chat/widgets/template_selection_sheet.dart';
@@ -35,6 +38,10 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
   late String? _selectedProviderId;
   late String? _selectedModelId;
 
+  late String _imageSize;
+  late String _imageQuality;
+  late String _imageStyle;
+
   @override
   void initState() {
     super.initState();
@@ -51,6 +58,10 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
     _temperatureController =
         TextEditingController(text: _temperature.toStringAsFixed(2));
     _topPController = TextEditingController(text: _topP.toStringAsFixed(2));
+
+    _imageSize = widget.session.imageSize ?? '1024x1024';
+    _imageQuality = widget.session.imageQuality ?? 'standard';
+    _imageStyle = widget.session.imageStyle ?? 'vivid';
   }
 
   @override
@@ -132,10 +143,41 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
     final localizations = AppLocalizations.of(context)!;
     final apiManager = Provider.of<APIProviderManager>(context);
 
-    final selectedProvider = _selectedProviderId != null
-        ? apiManager.providers.firstWhere((p) => p.id == _selectedProviderId,
-            orElse: () => apiManager.providers.first)
-        : null;
+    APIProvider? selectedProvider;
+    if (_selectedProviderId != null) {
+      try {
+        selectedProvider = apiManager.providers.firstWhere(
+          (p) => p.id == _selectedProviderId,
+        );
+      } catch (e) {
+        selectedProvider = null;
+        _selectedModelId = null;
+      }
+    }
+
+    if (selectedProvider == null && apiManager.providers.isNotEmpty) {
+      selectedProvider = apiManager.providers.first;
+      _selectedProviderId = selectedProvider.id;
+      _selectedModelId = null;
+    }
+
+    Model? selectedModel;
+    if (_selectedModelId != null && selectedProvider != null) {
+      try {
+        selectedModel = selectedProvider.models.firstWhere(
+          (m) => m.id == _selectedModelId,
+        );
+      } catch (e) {
+        selectedModel = null;
+      }
+    }
+
+    if (selectedModel == null &&
+        selectedProvider != null &&
+        selectedProvider.models.isNotEmpty) {
+      selectedModel = selectedProvider.models.first;
+      _selectedModelId = selectedModel.id;
+    }
 
     return Padding(
       padding: EdgeInsets.only(
@@ -203,106 +245,11 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
                     decoration: const InputDecoration(),
                   ),
                 const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(localizations.systemPrompt,
-                        style: Theme.of(context).textTheme.titleMedium),
-                    TextButton.icon(
-                      onPressed: _showTemplateSelection,
-                      icon: const Icon(Icons.library_books_outlined, size: 18),
-                      label: Text(localizations.selectTemplate),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: _systemPromptController,
-                  decoration: InputDecoration(
-                      hintText: localizations.enterSystemPrompt),
-                  maxLines: 4,
-                  minLines: 2,
-                ),
-                const SizedBox(height: 24),
-                _buildSliderWithTextField(
-                  label: localizations.temperature,
-                  value: _temperature,
-                  min: 0.0,
-                  max: 2.0,
-                  divisions: 200,
-                  controller: _temperatureController,
-                  onSliderChanged: (value) {
-                    setState(() {
-                      _temperature = value;
-                      _temperatureController.text = value.toStringAsFixed(2);
-                    });
-                  },
-                  onTextFieldSubmitted: (text) {
-                    final value = double.tryParse(text);
-                    if (value != null) {
-                      setState(() {
-                        _temperature = value.clamp(0.0, 2.0);
-                        _temperatureController.text =
-                            _temperature.toStringAsFixed(2);
-                      });
-                    }
-                  },
-                ),
-                const SizedBox(height: 24),
-                _buildSliderWithTextField(
-                  label: localizations.topP,
-                  value: _topP,
-                  min: 0.0,
-                  max: 1.0,
-                  divisions: 100,
-                  controller: _topPController,
-                  onSliderChanged: (value) {
-                    setState(() {
-                      _topP = value;
-                      _topPController.text = value.toStringAsFixed(2);
-                    });
-                  },
-                  onTextFieldSubmitted: (text) {
-                    final value = double.tryParse(text);
-                    if (value != null) {
-                      setState(() {
-                        _topP = value.clamp(0.0, 1.0);
-                        _topPController.text = _topP.toStringAsFixed(2);
-                      });
-                    }
-                  },
-                ),
-                const SizedBox(height: 24),
-                Text(localizations.useStreaming,
-                    style: Theme.of(context).textTheme.titleMedium),
-                DropdownButtonFormField<bool?>(
-                  value: _useStreaming,
-                  decoration: const InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 12),
-                  ),
-                  items: [
-                    DropdownMenuItem(
-                      value: null,
-                      child: Text(
-                          '${localizations.streamingDefault} (${localizations.overrideModelSettings})'),
-                    ),
-                    DropdownMenuItem(
-                      value: true,
-                      child: Text(localizations.streamingOn),
-                    ),
-                    DropdownMenuItem(
-                      value: false,
-                      child: Text(localizations.streamingOff),
-                    ),
-                  ],
-                  onChanged: (value) {
-                    setState(() {
-                      _useStreaming = value;
-                    });
-                  },
-                ),
-                const SizedBox(height: 24),
+                if (selectedModel?.modelType == ModelType.image)
+                  _buildImageSettings(localizations)
+                else
+                  _buildLanguageSettings(localizations),
+                const Divider(height: 32),
                 Text(localizations.maxContextMessages,
                     style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: 8),
@@ -331,15 +278,27 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
                 FilledButton(
                   onPressed: () {
                     final maxContext = int.tryParse(_maxContextController.text);
-                    widget.onSave({
+                    final settings = {
                       'providerId': _selectedProviderId,
                       'modelId': _selectedModelId,
-                      'systemPrompt': _systemPromptController.text,
-                      'temperature': _temperature,
-                      'topP': _topP,
-                      'useStreaming': _useStreaming,
                       'maxContextMessages': maxContext == 0 ? null : maxContext,
-                    });
+                    };
+
+                    if (selectedModel?.modelType == ModelType.image) {
+                      settings.addAll({
+                        'imageSize': _imageSize,
+                        'imageQuality': _imageQuality,
+                        'imageStyle': _imageStyle,
+                      });
+                    } else {
+                      settings.addAll({
+                        'systemPrompt': _systemPromptController.text,
+                        'temperature': _temperature,
+                        'topP': _topP,
+                        'useStreaming': _useStreaming,
+                      });
+                    }
+                    widget.onSave(settings);
                     Navigator.of(context).pop();
                   },
                   child: Text(localizations.save),
@@ -349,6 +308,166 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildLanguageSettings(AppLocalizations localizations) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(localizations.systemPrompt,
+                style: Theme.of(context).textTheme.titleMedium),
+            TextButton.icon(
+              onPressed: _showTemplateSelection,
+              icon: const Icon(Icons.library_books_outlined, size: 18),
+              label: Text(localizations.selectTemplate),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: _systemPromptController,
+          decoration:
+              InputDecoration(hintText: localizations.enterSystemPrompt),
+          maxLines: 4,
+          minLines: 2,
+        ),
+        const SizedBox(height: 24),
+        _buildSliderWithTextField(
+          label: localizations.temperature,
+          value: _temperature,
+          min: 0.0,
+          max: 2.0,
+          divisions: 200,
+          controller: _temperatureController,
+          onSliderChanged: (value) {
+            setState(() {
+              _temperature = value;
+              _temperatureController.text = value.toStringAsFixed(2);
+            });
+          },
+          onTextFieldSubmitted: (text) {
+            final value = double.tryParse(text);
+            if (value != null) {
+              setState(() {
+                _temperature = value.clamp(0.0, 2.0);
+                _temperatureController.text = _temperature.toStringAsFixed(2);
+              });
+            }
+          },
+        ),
+        const SizedBox(height: 24),
+        _buildSliderWithTextField(
+          label: localizations.topP,
+          value: _topP,
+          min: 0.0,
+          max: 1.0,
+          divisions: 100,
+          controller: _topPController,
+          onSliderChanged: (value) {
+            setState(() {
+              _topP = value;
+              _topPController.text = value.toStringAsFixed(2);
+            });
+          },
+          onTextFieldSubmitted: (text) {
+            final value = double.tryParse(text);
+            if (value != null) {
+              setState(() {
+                _topP = value.clamp(0.0, 1.0);
+                _topPController.text = _topP.toStringAsFixed(2);
+              });
+            }
+          },
+        ),
+        const SizedBox(height: 24),
+        Text(localizations.useStreaming,
+            style: Theme.of(context).textTheme.titleMedium),
+        DropdownButtonFormField<bool?>(
+          value: _useStreaming,
+          decoration: const InputDecoration(
+            contentPadding: EdgeInsets.symmetric(horizontal: 12),
+          ),
+          items: [
+            DropdownMenuItem(
+              value: null,
+              child: Text(
+                  '${localizations.streamingDefault} (${localizations.overrideModelSettings})'),
+            ),
+            DropdownMenuItem(
+              value: true,
+              child: Text(localizations.streamingOn),
+            ),
+            DropdownMenuItem(
+              value: false,
+              child: Text(localizations.streamingOff),
+            ),
+          ],
+          onChanged: (value) {
+            setState(() {
+              _useStreaming = value;
+            });
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildImageSettings(AppLocalizations localizations) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(localizations.imageSize,
+            style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: 8),
+        DropdownButtonFormField<String>(
+          value: _imageSize,
+          items: ['1024x1024', '1024x1792', '1792x1024']
+              .map((size) => DropdownMenuItem(value: size, child: Text(size)))
+              .toList(),
+          onChanged: (value) {
+            if (value != null) setState(() => _imageSize = value);
+          },
+          decoration: const InputDecoration(),
+        ),
+        const SizedBox(height: 16),
+        Text(localizations.imageQuality,
+            style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: 8),
+        DropdownButtonFormField<String>(
+          value: _imageQuality,
+          items: [
+            DropdownMenuItem(
+                value: 'standard', child: Text(localizations.qualityStandard)),
+            DropdownMenuItem(value: 'hd', child: Text(localizations.qualityHD)),
+          ],
+          onChanged: (value) {
+            if (value != null) setState(() => _imageQuality = value);
+          },
+          decoration: const InputDecoration(),
+        ),
+        const SizedBox(height: 16),
+        Text(localizations.imageStyle,
+            style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: 8),
+        DropdownButtonFormField<String>(
+          value: _imageStyle,
+          items: [
+            DropdownMenuItem(
+                value: 'vivid', child: Text(localizations.styleVivid)),
+            DropdownMenuItem(
+                value: 'natural', child: Text(localizations.styleNatural)),
+          ],
+          onChanged: (value) {
+            if (value != null) setState(() => _imageStyle = value);
+          },
+          decoration: const InputDecoration(),
+        ),
+      ],
     );
   }
 }

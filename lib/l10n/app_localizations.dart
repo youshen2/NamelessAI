@@ -1213,6 +1213,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'TTS'**
   String get modelTypeTts;
+
+  /// No description provided for @imageSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Image Size'**
+  String get imageSize;
+
+  /// No description provided for @imageQuality.
+  ///
+  /// In en, this message translates to:
+  /// **'Image Quality'**
+  String get imageQuality;
+
+  /// No description provided for @imageStyle.
+  ///
+  /// In en, this message translates to:
+  /// **'Image Style'**
+  String get imageStyle;
+
+  /// No description provided for @qualityStandard.
+  ///
+  /// In en, this message translates to:
+  /// **'Standard'**
+  String get qualityStandard;
+
+  /// No description provided for @qualityHD.
+  ///
+  /// In en, this message translates to:
+  /// **'HD'**
+  String get qualityHD;
+
+  /// No description provided for @styleVivid.
+  ///
+  /// In en, this message translates to:
+  /// **'Vivid'**
+  String get styleVivid;
+
+  /// No description provided for @styleNatural.
+  ///
+  /// In en, this message translates to:
+  /// **'Natural'**
+  String get styleNatural;
 }
 
 class _AppLocalizationsDelegate

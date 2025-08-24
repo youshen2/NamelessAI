@@ -582,4 +582,25 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get modelTypeTts => '语音合成';
+
+  @override
+  String get imageSize => '图像尺寸';
+
+  @override
+  String get imageQuality => '图像质量';
+
+  @override
+  String get imageStyle => '图像风格';
+
+  @override
+  String get qualityStandard => '标准';
+
+  @override
+  String get qualityHD => '高清';
+
+  @override
+  String get styleVivid => '鲜艳';
+
+  @override
+  String get styleNatural => '自然';
 }

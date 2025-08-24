@@ -35,13 +35,16 @@ class ChatSessionAdapter extends TypeAdapter<ChatSession> {
       activeBranchSelections: (fields[11] as Map?)?.cast<String, int>(),
       useStreaming: fields[12] as bool?,
       maxContextMessages: fields[13] as int?,
+      imageSize: fields[14] as String?,
+      imageQuality: fields[15] as String?,
+      imageStyle: fields[16] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ChatSession obj) {
     writer
-      ..writeByte(14)
+      ..writeByte(17)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -69,7 +72,13 @@ class ChatSessionAdapter extends TypeAdapter<ChatSession> {
       ..writeByte(12)
       ..write(obj.useStreaming)
       ..writeByte(13)
-      ..write(obj.maxContextMessages);
+      ..write(obj.maxContextMessages)
+      ..writeByte(14)
+      ..write(obj.imageSize)
+      ..writeByte(15)
+      ..write(obj.imageQuality)
+      ..writeByte(16)
+      ..write(obj.imageStyle);
   }
 
   @override

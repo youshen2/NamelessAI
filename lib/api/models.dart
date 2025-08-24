@@ -193,12 +193,16 @@ class ImageGenerationRequest {
   final String? model;
   final int? n;
   final String? size;
+  final String? quality;
+  final String? style;
 
   ImageGenerationRequest({
     required this.prompt,
     this.model,
     this.n = 1,
     this.size = '1024x1024',
+    this.quality,
+    this.style,
   });
 
   Map<String, dynamic> toJson() {
@@ -209,6 +213,12 @@ class ImageGenerationRequest {
     };
     if (model != null) {
       data['model'] = model;
+    }
+    if (quality != null) {
+      data['quality'] = quality;
+    }
+    if (style != null) {
+      data['style'] = style;
     }
     return data;
   }

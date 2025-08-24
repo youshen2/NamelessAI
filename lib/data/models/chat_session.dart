@@ -48,6 +48,15 @@ class ChatSession extends HiveObject {
   @HiveField(13)
   int? maxContextMessages;
 
+  @HiveField(14)
+  String? imageSize;
+
+  @HiveField(15)
+  String? imageQuality;
+
+  @HiveField(16)
+  String? imageStyle;
+
   ChatSession({
     String? id,
     required this.name,
@@ -63,6 +72,9 @@ class ChatSession extends HiveObject {
     Map<String, int>? activeBranchSelections,
     this.useStreaming,
     this.maxContextMessages,
+    this.imageSize,
+    this.imageQuality,
+    this.imageStyle,
   })  : id = id ?? const Uuid().v4(),
         messages = messages ?? [],
         createdAt = createdAt ?? DateTime.now(),
@@ -87,6 +99,9 @@ class ChatSession extends HiveObject {
     Map<String, int>? activeBranchSelections,
     bool? useStreaming,
     int? maxContextMessages,
+    String? imageSize,
+    String? imageQuality,
+    String? imageStyle,
   }) {
     return ChatSession(
       id: id ?? this.id,
@@ -104,6 +119,9 @@ class ChatSession extends HiveObject {
           activeBranchSelections ?? this.activeBranchSelections,
       useStreaming: useStreaming ?? this.useStreaming,
       maxContextMessages: maxContextMessages ?? this.maxContextMessages,
+      imageSize: imageSize ?? this.imageSize,
+      imageQuality: imageQuality ?? this.imageQuality,
+      imageStyle: imageStyle ?? this.imageStyle,
     );
   }
 
@@ -126,6 +144,9 @@ class ChatSession extends HiveObject {
         'activeBranchSelections': activeBranchSelections,
         'useStreaming': useStreaming,
         'maxContextMessages': maxContextMessages,
+        'imageSize': imageSize,
+        'imageQuality': imageQuality,
+        'imageStyle': imageStyle,
       };
 
   factory ChatSession.fromJson(Map<String, dynamic> json) => ChatSession(
@@ -155,6 +176,9 @@ class ChatSession extends HiveObject {
             Map<String, int>.from(json['activeBranchSelections']),
         useStreaming: json['useStreaming'],
         maxContextMessages: json['maxContextMessages'],
+        imageSize: json['imageSize'],
+        imageQuality: json['imageQuality'],
+        imageStyle: json['imageStyle'],
       );
 }
 

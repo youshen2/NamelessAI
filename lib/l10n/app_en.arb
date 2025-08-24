@@ -234,5 +234,12 @@
   "modelTypeLanguage": "Language",
   "modelTypeImage": "Image",
   "modelTypeVideo": "Video",
-  "modelTypeTts": "TTS"
+  "modelTypeTts": "TTS",
+  "imageSize": "Image Size",
+  "imageQuality": "Image Quality",
+  "imageStyle": "Image Style",
+  "qualityStandard": "Standard",
+  "qualityHD": "HD",
+  "styleVivid": "Vivid",
+  "styleNatural": "Natural"
 }
