@@ -717,7 +717,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get next => '下一步';
 
   @override
-  String get welcomeMessage => '一个简洁且强大的跨平台AI聊天客户端。';
+  String get welcomeMessage => '一个简洁且强大的跨平台 AI 客户端。';
 
   @override
   String get quickSettings => '快速设置';

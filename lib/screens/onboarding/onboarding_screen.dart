@@ -45,24 +45,26 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final pages = _buildPages(context, localizations);
 
     return Scaffold(
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 600),
-          child: Column(
-            children: [
-              Expanded(
-                child: PageView(
-                  controller: _pageController,
-                  onPageChanged: (index) {
-                    setState(() {
-                      _currentPage = index;
-                    });
-                  },
-                  children: pages,
+      body: SafeArea(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 600),
+            child: Column(
+              children: [
+                Expanded(
+                  child: PageView(
+                    controller: _pageController,
+                    onPageChanged: (index) {
+                      setState(() {
+                        _currentPage = index;
+                      });
+                    },
+                    children: pages,
+                  ),
                 ),
-              ),
-              _buildBottomBar(context, localizations, pages.length),
-            ],
+                _buildBottomBar(context, localizations, pages.length),
+              ],
+            ),
           ),
         ),
       ),

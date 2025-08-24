@@ -1475,7 +1475,7 @@ abstract class AppLocalizations {
   /// No description provided for @welcomeMessage.
   ///
   /// In en, this message translates to:
-  /// **'A concise and powerful cross-platform AI chat client.'**
+  /// **'A concise and powerful cross-platform AI client.'**
   String get welcomeMessage;
 
   /// No description provided for @quickSettings.

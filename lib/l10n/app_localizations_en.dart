@@ -734,7 +734,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get welcomeMessage =>
-      'A concise and powerful cross-platform AI chat client.';
+      'A concise and powerful cross-platform AI client.';
 
   @override
   String get quickSettings => 'Quick Settings';

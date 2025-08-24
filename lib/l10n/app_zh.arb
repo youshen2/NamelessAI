@@ -292,7 +292,7 @@
   "clearHistoryConfirmation": "您确定要删除所有聊天记录吗？此操作无法撤销。",
   "jsonDebugViewer": "JSON 查看器",
   "next": "下一步",
-  "welcomeMessage": "一个简洁且强大的跨平台AI聊天客户端。",
+  "welcomeMessage": "一个简洁且强大的跨平台 AI 客户端。",
   "quickSettings": "快速设置",
   "readyToGo": "准备就绪",
   "readyToGoMessage": "一切已准备就绪。\n请记得在“设置”页面添加您的API提供商，以便正常使用。",

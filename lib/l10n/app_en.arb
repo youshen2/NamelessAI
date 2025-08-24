@@ -292,7 +292,7 @@
   "clearHistoryConfirmation": "Are you sure you want to delete all chat history? This action cannot be undone.",
   "jsonDebugViewer": "JSON Viewer",
   "next": "Next",
-  "welcomeMessage": "A concise and powerful cross-platform AI chat client.",
+  "welcomeMessage": "A concise and powerful cross-platform AI client.",
   "quickSettings": "Quick Settings",
   "readyToGo": "Ready to Go",
   "readyToGoMessage": "Everything is set up.\nRemember to add your API provider in the Settings page to get started.",
