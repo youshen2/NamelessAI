@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/providers/app_config_provider.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
@@ -10,6 +11,8 @@ class GeneralSettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final appConfig = Provider.of<AppConfigProvider>(context);
+    final midjourneyIntervalController = TextEditingController(
+        text: appConfig.midjourneyRefreshInterval.toString());
 
     return Scaffold(
       appBar: AppBar(
@@ -66,6 +69,46 @@ class GeneralSettingsScreen extends StatelessWidget {
                     onChanged: (value) =>
                         appConfig.setResumeAutoScrollOnBottom(value),
                     activeColor: Theme.of(context).colorScheme.primary,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Card(
+            margin: const EdgeInsets.only(bottom: 16),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                    child: Text(localizations.taskSettings,
+                        style: Theme.of(context).textTheme.titleMedium),
+                  ),
+                  ListTile(
+                    title: Text(localizations.midjourneyRefreshInterval),
+                    subtitle: Text(localizations.midjourneyRefreshIntervalHint),
+                    trailing: SizedBox(
+                      width: 80,
+                      child: TextFormField(
+                        controller: midjourneyIntervalController,
+                        textAlign: TextAlign.center,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
+                        decoration: const InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(horizontal: 8),
+                        ),
+                        onChanged: (value) {
+                          final interval = int.tryParse(value);
+                          if (interval != null) {
+                            appConfig.setMidjourneyRefreshInterval(interval);
+                          }
+                        },
+                      ),
+                    ),
                   ),
                 ],
               ),

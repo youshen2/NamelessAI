@@ -87,6 +87,9 @@ class ChatMessage extends HiveObject {
   @HiveField(19)
   String? asyncTaskFullResponse;
 
+  @HiveField(20)
+  String? rawResponseJson;
+
   DateTime? thinkingStartTime;
 
   ChatMessage({
@@ -111,6 +114,7 @@ class ChatMessage extends HiveObject {
     this.asyncTaskStatus = AsyncTaskStatus.none,
     this.asyncTaskProgress,
     this.asyncTaskFullResponse,
+    this.rawResponseJson,
   })  : id = id ?? const Uuid().v4(),
         timestamp = timestamp ?? DateTime.now();
 
@@ -136,6 +140,7 @@ class ChatMessage extends HiveObject {
     AsyncTaskStatus? asyncTaskStatus,
     String? asyncTaskProgress,
     String? asyncTaskFullResponse,
+    String? rawResponseJson,
   }) {
     return ChatMessage(
       id: id ?? this.id,
@@ -160,6 +165,7 @@ class ChatMessage extends HiveObject {
       asyncTaskProgress: asyncTaskProgress ?? this.asyncTaskProgress,
       asyncTaskFullResponse:
           asyncTaskFullResponse ?? this.asyncTaskFullResponse,
+      rawResponseJson: rawResponseJson ?? this.rawResponseJson,
     );
   }
 
@@ -184,6 +190,7 @@ class ChatMessage extends HiveObject {
         'asyncTaskStatus': asyncTaskStatus.name,
         'asyncTaskProgress': asyncTaskProgress,
         'asyncTaskFullResponse': asyncTaskFullResponse,
+        'rawResponseJson': rawResponseJson,
       };
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) => ChatMessage(
@@ -211,5 +218,6 @@ class ChatMessage extends HiveObject {
             orElse: () => AsyncTaskStatus.none),
         asyncTaskProgress: json['asyncTaskProgress'],
         asyncTaskFullResponse: json['asyncTaskFullResponse'],
+        rawResponseJson: json['rawResponseJson'],
       );
 }

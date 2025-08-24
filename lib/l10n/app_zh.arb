@@ -12,6 +12,26 @@
   "enterSystemPrompt": "输入系统提示词...",
   "apiProviderSettings": "API 提供商",
   "systemPromptTemplates": "提示词模板",
+  "taskSettings": "任务设置",
+  "midjourneyRefreshInterval": "Midjourney 刷新间隔 (秒)",
+  "midjourneyRefreshIntervalHint": "设置为0则禁用自动刷新。",
+  "compatibilityMode": "兼容模式",
+  "compatibilityModeMidjourney": "Midjourney 代理",
+  "saveToGallery": "保存到相册",
+  "saveSuccess": "图片已保存到相册。",
+  "saveError": "保存图片失败: {error}",
+  "@saveError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "rawResponse": "原始响应",
+  "advancedSettings": "高级设置",
+  "imageModeInstant": "模式: 即时",
+  "imageModeAsync": "模式: 异步",
+  "streamable": "流式",
   "addProvider": "添加提供商",
   "editProvider": "编辑提供商",
   "deleteProvider": "删除提供商",
@@ -137,8 +157,6 @@
   "normal": "常规",
   "center": "居中",
   "showTimestamps": "显示时间戳",
-  "supportsThinking": "支持思考",
-  "supportsThinkingHint": "若实际不支持思考，流式输出过程中会作为思考内容，结束后会归类为正文。",
   "chatBubbleWidth": "聊天气泡宽度",
   "compactMode": "紧凑模式",
   "compactModeHint": "减少边距与间距，使界面更紧凑。",
@@ -245,7 +263,6 @@
   "imageGenerationMode": "图像生成模式",
   "instant": "即时",
   "asynchronous": "异步",
-  "asyncImageType": "异步类型",
   "midjourney": "Midjourney",
   "imaginePath": "Imagine 路径 (可选)",
   "fetchPath": "Fetch 路径 (可选)",

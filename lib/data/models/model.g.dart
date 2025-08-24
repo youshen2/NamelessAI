@@ -21,22 +21,21 @@ class ModelAdapter extends TypeAdapter<Model> {
       name: fields[1] as String,
       maxTokens: fields[2] as int?,
       isStreamable: fields[3] as bool,
-      supportsThinking: fields[4] == null ? false : fields[4] as bool,
       modelType:
-          fields[5] == null ? ModelType.language : fields[5] as ModelType,
-      imageGenerationMode: fields[6] == null
+          fields[4] == null ? ModelType.language : fields[4] as ModelType,
+      imageGenerationMode: fields[5] == null
           ? ImageGenerationMode.instant
-          : fields[6] as ImageGenerationMode,
-      asyncImageType: fields[7] as AsyncImageType?,
-      imaginePath: fields[8] as String?,
-      fetchPath: fields[9] as String?,
+          : fields[5] as ImageGenerationMode,
+      compatibilityMode: fields[6] as CompatibilityMode?,
+      imaginePath: fields[7] as String?,
+      fetchPath: fields[8] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Model obj) {
     writer
-      ..writeByte(10)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -46,16 +45,14 @@ class ModelAdapter extends TypeAdapter<Model> {
       ..writeByte(3)
       ..write(obj.isStreamable)
       ..writeByte(4)
-      ..write(obj.supportsThinking)
-      ..writeByte(5)
       ..write(obj.modelType)
-      ..writeByte(6)
+      ..writeByte(5)
       ..write(obj.imageGenerationMode)
+      ..writeByte(6)
+      ..write(obj.compatibilityMode)
       ..writeByte(7)
-      ..write(obj.asyncImageType)
-      ..writeByte(8)
       ..write(obj.imaginePath)
-      ..writeByte(9)
+      ..writeByte(8)
       ..write(obj.fetchPath);
   }
 
@@ -109,24 +106,24 @@ class ImageGenerationModeAdapter extends TypeAdapter<ImageGenerationMode> {
           typeId == other.typeId;
 }
 
-class AsyncImageTypeAdapter extends TypeAdapter<AsyncImageType> {
+class CompatibilityModeAdapter extends TypeAdapter<CompatibilityMode> {
   @override
   final int typeId = 17;
 
   @override
-  AsyncImageType read(BinaryReader reader) {
+  CompatibilityMode read(BinaryReader reader) {
     switch (reader.readByte()) {
       case 0:
-        return AsyncImageType.midjourney;
+        return CompatibilityMode.midjourneyProxy;
       default:
-        return AsyncImageType.midjourney;
+        return CompatibilityMode.midjourneyProxy;
     }
   }
 
   @override
-  void write(BinaryWriter writer, AsyncImageType obj) {
+  void write(BinaryWriter writer, CompatibilityMode obj) {
     switch (obj) {
-      case AsyncImageType.midjourney:
+      case CompatibilityMode.midjourneyProxy:
         writer.writeByte(0);
         break;
     }
@@ -138,7 +135,7 @@ class AsyncImageTypeAdapter extends TypeAdapter<AsyncImageType> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is AsyncImageTypeAdapter &&
+      other is CompatibilityModeAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

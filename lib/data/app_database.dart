@@ -42,8 +42,8 @@ class AppDatabase {
     if (!Hive.isAdapterRegistered(ImageGenerationModeAdapter().typeId)) {
       Hive.registerAdapter(ImageGenerationModeAdapter());
     }
-    if (!Hive.isAdapterRegistered(AsyncImageTypeAdapter().typeId)) {
-      Hive.registerAdapter(AsyncImageTypeAdapter());
+    if (!Hive.isAdapterRegistered(CompatibilityModeAdapter().typeId)) {
+      Hive.registerAdapter(CompatibilityModeAdapter());
     }
     if (!Hive.isAdapterRegistered(AsyncTaskStatusAdapter().typeId)) {
       Hive.registerAdapter(AsyncTaskStatusAdapter());

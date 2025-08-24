@@ -170,6 +170,84 @@ abstract class AppLocalizations {
   /// **'Prompt Templates'**
   String get systemPromptTemplates;
 
+  /// No description provided for @taskSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Task Settings'**
+  String get taskSettings;
+
+  /// No description provided for @midjourneyRefreshInterval.
+  ///
+  /// In en, this message translates to:
+  /// **'Midjourney Refresh Interval (seconds)'**
+  String get midjourneyRefreshInterval;
+
+  /// No description provided for @midjourneyRefreshIntervalHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Set to 0 to disable automatic refresh.'**
+  String get midjourneyRefreshIntervalHint;
+
+  /// No description provided for @compatibilityMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Compatibility Mode'**
+  String get compatibilityMode;
+
+  /// No description provided for @compatibilityModeMidjourney.
+  ///
+  /// In en, this message translates to:
+  /// **'Midjourney Proxy'**
+  String get compatibilityModeMidjourney;
+
+  /// No description provided for @saveToGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Save to Gallery'**
+  String get saveToGallery;
+
+  /// No description provided for @saveSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Image saved to gallery.'**
+  String get saveSuccess;
+
+  /// No description provided for @saveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save image: {error}'**
+  String saveError(String error);
+
+  /// No description provided for @rawResponse.
+  ///
+  /// In en, this message translates to:
+  /// **'Raw Response'**
+  String get rawResponse;
+
+  /// No description provided for @advancedSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced Settings'**
+  String get advancedSettings;
+
+  /// No description provided for @imageModeInstant.
+  ///
+  /// In en, this message translates to:
+  /// **'Mode: Instant'**
+  String get imageModeInstant;
+
+  /// No description provided for @imageModeAsync.
+  ///
+  /// In en, this message translates to:
+  /// **'Mode: Asynchronous'**
+  String get imageModeAsync;
+
+  /// No description provided for @streamable.
+  ///
+  /// In en, this message translates to:
+  /// **'Stream'**
+  String get streamable;
+
   /// No description provided for @addProvider.
   ///
   /// In en, this message translates to:
@@ -836,18 +914,6 @@ abstract class AppLocalizations {
   /// **'Show Timestamps'**
   String get showTimestamps;
 
-  /// No description provided for @supportsThinking.
-  ///
-  /// In en, this message translates to:
-  /// **'Supports Thinking'**
-  String get supportsThinking;
-
-  /// No description provided for @supportsThinkingHint.
-  ///
-  /// In en, this message translates to:
-  /// **'If not supported, streaming content is shown as thinking and merged into the main body on completion.'**
-  String get supportsThinkingHint;
-
   /// No description provided for @chatBubbleWidth.
   ///
   /// In en, this message translates to:
@@ -1273,12 +1339,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Asynchronous'**
   String get asynchronous;
-
-  /// No description provided for @asyncImageType.
-  ///
-  /// In en, this message translates to:
-  /// **'Asynchronous Type'**
-  String get asyncImageType;
 
   /// No description provided for @midjourney.
   ///

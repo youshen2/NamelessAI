@@ -10,6 +10,7 @@ import 'package:nameless_ai/data/models/chat_message.dart';
 import 'package:nameless_ai/data/models/chat_session.dart';
 import 'package:nameless_ai/data/models/model.dart';
 import 'package:nameless_ai/data/models/model_type.dart';
+import 'package:nameless_ai/data/providers/api_provider_manager.dart';
 import 'package:nameless_ai/services/generation_service.dart';
 
 class ChatSessionManager extends ChangeNotifier {
@@ -25,9 +26,18 @@ class ChatSessionManager extends ChangeNotifier {
   bool _isNewSession = true;
   final Set<String> _generatingSessions = {};
   final Map<String, CancelToken> _cancelTokens = {};
+  APIProviderManager? _apiProviderManager;
+  Timer? _refreshTimer;
 
   ChatSessionManager() {
     _loadSessions();
+    _startRefreshTimer();
+  }
+
+  @override
+  void dispose() {
+    _refreshTimer?.cancel();
+    super.dispose();
   }
 
   List<ChatSession> get sessions => _sessions;
@@ -43,10 +53,52 @@ class ChatSessionManager extends ChangeNotifier {
     return _currentSession!.activeMessages;
   }
 
+  void setApiProviderManager(APIProviderManager manager) {
+    _apiProviderManager = manager;
+  }
+
   void _loadSessions() {
     _sessions = AppDatabase.chatSessionsBox.values.toList()
       ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
     notifyListeners();
+  }
+
+  void _startRefreshTimer() {
+    _refreshTimer?.cancel();
+    final intervalSeconds = AppDatabase.appConfigBox
+        .get('midjourneyRefreshInterval', defaultValue: 10);
+    if (intervalSeconds > 0) {
+      _refreshTimer = Timer.periodic(
+          Duration(seconds: intervalSeconds), (timer) => _periodicRefresh());
+    }
+  }
+
+  Future<void> _periodicRefresh() async {
+    if (_apiProviderManager == null) return;
+
+    final allProviders = _apiProviderManager!.providers;
+    if (allProviders.isEmpty) return;
+
+    for (final session in _sessions) {
+      for (final message in session.messages) {
+        if (message.taskId != null &&
+            (message.asyncTaskStatus == AsyncTaskStatus.inProgress ||
+                message.asyncTaskStatus == AsyncTaskStatus.submitted)) {
+          final provider = allProviders.firstWhere(
+            (p) => p.id == session.providerId,
+            orElse: () => allProviders.first,
+          );
+          final model = provider.models.firstWhere(
+            (m) => m.id == session.modelId,
+            orElse: () => provider.models.first,
+          );
+
+          if (model.imageGenerationMode == ImageGenerationMode.asynchronous) {
+            await refreshAsyncTaskStatus(message.id, provider, model);
+          }
+        }
+      }
+    }
   }
 
   void startNewSession(
@@ -516,7 +568,7 @@ class ChatSessionManager extends ChangeNotifier {
 
     if (message == null ||
         message.taskId == null ||
-        model.asyncImageType != AsyncImageType.midjourney) {
+        model.compatibilityMode != CompatibilityMode.midjourneyProxy) {
       return;
     }
 
@@ -527,7 +579,7 @@ class ChatSessionManager extends ChangeNotifier {
       final apiService = ApiService(provider);
       final response =
           await apiService.fetchMidjourneyTask(message.taskId!, model);
-
+      message.rawResponseJson = response.rawResponse;
       message.asyncTaskFullResponse = jsonEncode(response);
 
       if (response.status == 'SUCCESS') {

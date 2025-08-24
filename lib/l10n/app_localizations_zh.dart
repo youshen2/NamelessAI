@@ -45,6 +45,47 @@ class AppLocalizationsZh extends AppLocalizations {
   String get systemPromptTemplates => '提示词模板';
 
   @override
+  String get taskSettings => '任务设置';
+
+  @override
+  String get midjourneyRefreshInterval => 'Midjourney 刷新间隔 (秒)';
+
+  @override
+  String get midjourneyRefreshIntervalHint => '设置为0则禁用自动刷新。';
+
+  @override
+  String get compatibilityMode => '兼容模式';
+
+  @override
+  String get compatibilityModeMidjourney => 'Midjourney 代理';
+
+  @override
+  String get saveToGallery => '保存到相册';
+
+  @override
+  String get saveSuccess => '图片已保存到相册。';
+
+  @override
+  String saveError(String error) {
+    return '保存图片失败: $error';
+  }
+
+  @override
+  String get rawResponse => '原始响应';
+
+  @override
+  String get advancedSettings => '高级设置';
+
+  @override
+  String get imageModeInstant => '模式: 即时';
+
+  @override
+  String get imageModeAsync => '模式: 异步';
+
+  @override
+  String get streamable => '流式';
+
+  @override
   String get addProvider => '添加提供商';
 
   @override
@@ -384,12 +425,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get showTimestamps => '显示时间戳';
 
   @override
-  String get supportsThinking => '支持思考';
-
-  @override
-  String get supportsThinkingHint => '若实际不支持思考，流式输出过程中会作为思考内容，结束后会归类为正文。';
-
-  @override
   String get chatBubbleWidth => '聊天气泡宽度';
 
   @override
@@ -612,9 +647,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get asynchronous => '异步';
-
-  @override
-  String get asyncImageType => '异步类型';
 
   @override
   String get midjourney => 'Midjourney';

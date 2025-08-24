@@ -56,6 +56,7 @@ class GenerationService {
         String errorMessage = "请求错误";
         if (e.response?.data != null) {
           try {
+            messageToUpdate.rawResponseJson = e.response!.data.toString();
             final prettyJson =
                 const JsonEncoder.withIndent('  ').convert(e.response!.data);
             errorMessage += '\n\n```json\n$prettyJson\n```';
@@ -85,8 +86,7 @@ class GenerationService {
         messageToUpdate.completionTokens = usage.completionTokens;
       }
 
-      if (model.supportsThinking &&
-          messageToUpdate.thinkingContent != null &&
+      if (messageToUpdate.thinkingContent != null &&
           messageToUpdate.thinkingStartTime != null &&
           messageToUpdate.thinkingDurationMs == null) {
         messageToUpdate.thinkingDurationMs = DateTime.now()
@@ -130,40 +130,34 @@ class GenerationService {
         if (item is String) {
           if (firstChunkTimeMs == null) {
             firstChunkTimeMs = stopwatch.elapsedMilliseconds;
-            if (model.supportsThinking) {
-              messageToUpdate.thinkingStartTime = DateTime.now();
+            messageToUpdate.thinkingStartTime = DateTime.now();
+          }
+
+          if (isFirstChunk) {
+            isFirstChunk = false;
+            if (item.trim().startsWith(thinkStartTag)) {
+              isThinkingResponse = true;
             }
           }
 
-          if (model.supportsThinking) {
-            if (isFirstChunk) {
-              isFirstChunk = false;
-              if (item.trim().startsWith(thinkStartTag)) {
-                isThinkingResponse = true;
+          if (isThinkingResponse) {
+            fullResponseBuffer += item;
+            if (!thinkingDone && fullResponseBuffer.contains(thinkEndTag)) {
+              thinkingDone = true;
+              final parts = fullResponseBuffer.split(thinkEndTag);
+              messageToUpdate.thinkingContent =
+                  parts[0].substring(thinkStartTag.length);
+              messageToUpdate.content = parts.length > 1 ? parts[1] : '';
+              if (messageToUpdate.thinkingStartTime != null) {
+                messageToUpdate.thinkingDurationMs = DateTime.now()
+                    .difference(messageToUpdate.thinkingStartTime!)
+                    .inMilliseconds;
               }
-            }
-
-            if (isThinkingResponse) {
-              fullResponseBuffer += item;
-              if (!thinkingDone && fullResponseBuffer.contains(thinkEndTag)) {
-                thinkingDone = true;
-                final parts = fullResponseBuffer.split(thinkEndTag);
-                messageToUpdate.thinkingContent =
-                    parts[0].substring(thinkStartTag.length);
-                messageToUpdate.content = parts.length > 1 ? parts[1] : '';
-                if (messageToUpdate.thinkingStartTime != null) {
-                  messageToUpdate.thinkingDurationMs = DateTime.now()
-                      .difference(messageToUpdate.thinkingStartTime!)
-                      .inMilliseconds;
-                }
-              } else if (thinkingDone) {
-                messageToUpdate.content = (messageToUpdate.content) + item;
-              } else {
-                messageToUpdate.thinkingContent =
-                    fullResponseBuffer.substring(thinkStartTag.length);
-              }
-            } else {
+            } else if (thinkingDone) {
               messageToUpdate.content = (messageToUpdate.content) + item;
+            } else {
+              messageToUpdate.thinkingContent =
+                  fullResponseBuffer.substring(thinkStartTag.length);
             }
           } else {
             messageToUpdate.content = (messageToUpdate.content) + item;
@@ -183,19 +177,18 @@ class GenerationService {
         topP: session.topP,
       );
       final response = await apiService.getChatCompletion(request, cancelToken);
+      messageToUpdate.rawResponseJson = response.rawResponse;
       final responseMessage = response.choices.first.message;
       fullResponseBuffer = responseMessage.content;
       usage = response.usage;
 
-      if (model.supportsThinking &&
-          responseMessage.reasoningContent != null &&
+      if (responseMessage.reasoningContent != null &&
           responseMessage.reasoningContent!.isNotEmpty) {
         thinkingDone = true;
         messageToUpdate.thinkingContent = responseMessage.reasoningContent;
         messageToUpdate.content = fullResponseBuffer;
         messageToUpdate.thinkingDurationMs = stopwatch.elapsedMilliseconds;
-      } else if (model.supportsThinking &&
-          fullResponseBuffer.trim().startsWith(thinkStartTag) &&
+      } else if (fullResponseBuffer.trim().startsWith(thinkStartTag) &&
           fullResponseBuffer.contains(thinkEndTag)) {
         thinkingDone = true;
         final parts = fullResponseBuffer.split(thinkEndTag);
@@ -208,8 +201,7 @@ class GenerationService {
       }
     }
 
-    if (model.supportsThinking &&
-        isThinkingResponse &&
+    if (isThinkingResponse &&
         !thinkingDone &&
         messageToUpdate.thinkingContent != null) {
       messageToUpdate.content = messageToUpdate.thinkingContent!;
@@ -240,6 +232,7 @@ class GenerationService {
       style: session.imageStyle,
     );
     final response = await apiService.generateImage(request, cancelToken);
+    messageToUpdate.rawResponseJson = response.rawResponse;
 
     if (response.data.isNotEmpty && response.data.first.url != null) {
       messageToUpdate.content = response.data.first.url!;
@@ -249,7 +242,7 @@ class GenerationService {
   }
 
   Future<void> _submitAsyncImageTask() async {
-    if (model.asyncImageType == AsyncImageType.midjourney) {
+    if (model.compatibilityMode == CompatibilityMode.midjourneyProxy) {
       await _submitMidjourneyTask();
     } else {
       throw Exception("Unsupported asynchronous image model type.");
@@ -266,6 +259,7 @@ class GenerationService {
     );
     final response =
         await apiService.submitMidjourneyTask(request, cancelToken);
+    messageToUpdate.rawResponseJson = response.rawResponse;
 
     if (response.code == 1 && response.result != null) {
       messageToUpdate.taskId = response.result;

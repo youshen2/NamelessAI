@@ -32,13 +32,15 @@ class ApiService {
         data: request.toJson(),
         cancelToken: cancelToken,
       );
-      debugPrint(
-          "NamelessAI - Received Response: ${jsonEncode(response.data)}");
+      final rawResponseString =
+          response.data is String ? response.data : jsonEncode(response.data);
+      debugPrint("NamelessAI - Received Response: $rawResponseString");
 
       if (response.data is String) {
         try {
           final jsonData = jsonDecode(response.data as String);
-          return ChatCompletionResponse.fromJson(jsonData);
+          return ChatCompletionResponse.fromJson(jsonData,
+              rawResponse: rawResponseString);
         } catch (e) {
           return ChatCompletionResponse(
             id: 'non-compliant-${const Uuid().v4()}',
@@ -55,11 +57,13 @@ class ApiService {
                 finishReason: 'stop',
               ),
             ],
+            rawResponse: rawResponseString,
           );
         }
       }
 
-      return ChatCompletionResponse.fromJson(response.data);
+      return ChatCompletionResponse.fromJson(response.data,
+          rawResponse: rawResponseString);
     } on DioException {
       rethrow;
     }
@@ -178,9 +182,10 @@ class ApiService {
         data: request.toJson(),
         cancelToken: cancelToken,
       );
-      debugPrint(
-          "NamelessAI - Received Image Response: ${jsonEncode(response.data)}");
-      return ImageGenerationResponse.fromJson(response.data);
+      final rawResponseString = jsonEncode(response.data);
+      debugPrint("NamelessAI - Received Image Response: $rawResponseString");
+      return ImageGenerationResponse.fromJson(response.data,
+          rawResponse: rawResponseString);
     } on DioException {
       rethrow;
     }
@@ -202,14 +207,16 @@ class ApiService {
         data: request.toJson(),
         cancelToken: cancelToken,
       );
+      final rawResponseString =
+          response.data is String ? response.data : jsonEncode(response.data);
       debugPrint(
-          "NamelessAI - Received Midjourney Task Response: ${response.data}");
+          "NamelessAI - Received Midjourney Task Response: $rawResponseString");
 
-      // Handle cases where the response is a JSON string instead of a map
       final data = response.data;
       final jsonData = data is String ? jsonDecode(data) : data;
 
-      return MidjourneyImagineResponse.fromJson(jsonData);
+      return MidjourneyImagineResponse.fromJson(jsonData,
+          rawResponse: rawResponseString);
     } on DioException {
       rethrow;
     }
@@ -230,9 +237,11 @@ class ApiService {
         path,
         cancelToken: cancelToken,
       );
+      final rawResponseString = jsonEncode(response.data);
       debugPrint(
-          "NamelessAI - Received Midjourney Fetch Response: ${jsonEncode(response.data)}");
-      return MidjourneyFetchResponse.fromJson(response.data);
+          "NamelessAI - Received Midjourney Fetch Response: $rawResponseString");
+      return MidjourneyFetchResponse.fromJson(response.data,
+          rawResponse: rawResponseString);
     } on DioException {
       rethrow;
     }

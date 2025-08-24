@@ -8,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:nameless_ai/data/models/chat_message.dart';
 import 'package:nameless_ai/data/providers/app_config_provider.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
+import 'package:nameless_ai/screens/chat/widgets/image_viewer_screen.dart';
 import 'package:nameless_ai/screens/chat/widgets/markdown_code_block.dart';
 import 'package:nameless_ai/screens/chat/widgets/markdown_components.dart';
 import 'package:nameless_ai/screens/chat/widgets/message_action_bar.dart';
@@ -298,31 +299,46 @@ class _MessageBubbleState extends State<MessageBubble>
       // NULL
     }
 
-    return Image.network(
-      imageUrl,
-      fit: BoxFit.cover,
-      loadingBuilder: (context, child, loadingProgress) {
-        if (loadingProgress == null) return child;
-        return const SizedBox(
-          width: 256,
-          height: 256,
-          child: Center(child: CircularProgressIndicator()),
-        );
-      },
-      errorBuilder: (context, error, stackTrace) {
-        return Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Icon(Icons.broken_image,
-                  size: 48, color: textColor.withOpacity(0.7)),
-              const SizedBox(height: 8),
-              Text(localizations.failedToLoadImage,
-                  style: TextStyle(color: textColor)),
-            ],
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => ImageViewerScreen(
+              imageUrl: imageUrl,
+              heroTag: message.id,
+            ),
           ),
         );
       },
+      child: Hero(
+        tag: message.id,
+        child: Image.network(
+          imageUrl,
+          fit: BoxFit.cover,
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return const SizedBox(
+              width: 256,
+              height: 256,
+              child: Center(child: CircularProgressIndicator()),
+            );
+          },
+          errorBuilder: (context, error, stackTrace) {
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  Icon(Icons.broken_image,
+                      size: 48, color: textColor.withOpacity(0.7)),
+                  const SizedBox(height: 8),
+                  Text(localizations.failedToLoadImage,
+                      style: TextStyle(color: textColor)),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 

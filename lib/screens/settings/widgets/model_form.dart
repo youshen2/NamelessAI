@@ -20,10 +20,9 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
   late TextEditingController _fetchPathController;
 
   late bool _isStreamable;
-  late bool _supportsThinking;
   late ModelType _modelType;
   late ImageGenerationMode _imageGenerationMode;
-  late AsyncImageType _asyncImageType;
+  late CompatibilityMode _compatibilityMode;
 
   @override
   void initState() {
@@ -32,11 +31,11 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
     _maxTokensController =
         TextEditingController(text: widget.model?.maxTokens?.toString() ?? '');
     _isStreamable = widget.model?.isStreamable ?? true;
-    _supportsThinking = widget.model?.supportsThinking ?? false;
     _modelType = widget.model?.modelType ?? ModelType.language;
     _imageGenerationMode =
         widget.model?.imageGenerationMode ?? ImageGenerationMode.instant;
-    _asyncImageType = widget.model?.asyncImageType ?? AsyncImageType.midjourney;
+    _compatibilityMode =
+        widget.model?.compatibilityMode ?? CompatibilityMode.midjourneyProxy;
     _imaginePathController =
         TextEditingController(text: widget.model?.imaginePath);
     _fetchPathController = TextEditingController(text: widget.model?.fetchPath);
@@ -60,10 +59,9 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
         name: _modelNameController.text,
         maxTokens: int.tryParse(_maxTokensController.text),
         isStreamable: _isStreamable,
-        supportsThinking: _supportsThinking,
         modelType: _modelType,
         imageGenerationMode: _imageGenerationMode,
-        asyncImageType: _asyncImageType,
+        compatibilityMode: _compatibilityMode,
         imaginePath: imaginePath.isEmpty ? null : imaginePath,
         fetchPath: fetchPath.isEmpty ? null : fetchPath,
       );
@@ -170,13 +168,6 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
           onChanged: (value) => setState(() => _isStreamable = value),
           contentPadding: EdgeInsets.zero,
         ),
-        SwitchListTile(
-          title: Text(localizations.supportsThinking),
-          subtitle: Text(localizations.supportsThinkingHint),
-          value: _supportsThinking,
-          onChanged: (value) => setState(() => _supportsThinking = value),
-          contentPadding: EdgeInsets.zero,
-        ),
       ],
     );
   }
@@ -209,47 +200,63 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
         ),
         const SizedBox(height: 16),
         if (_imageGenerationMode == ImageGenerationMode.asynchronous) ...[
-          DropdownButtonFormField<AsyncImageType>(
-            value: _asyncImageType,
+          DropdownButtonFormField<CompatibilityMode>(
+            value: _compatibilityMode,
             decoration:
-                InputDecoration(labelText: localizations.asyncImageType),
+                InputDecoration(labelText: localizations.compatibilityMode),
             items: [
               DropdownMenuItem(
-                value: AsyncImageType.midjourney,
-                child: Text(localizations.midjourney),
+                value: CompatibilityMode.midjourneyProxy,
+                child: Text(localizations.compatibilityModeMidjourney),
               ),
             ],
             onChanged: (value) {
               if (value != null) {
                 setState(() {
-                  _asyncImageType = value;
+                  _compatibilityMode = value;
                 });
               }
             },
           ),
           const SizedBox(height: 16),
-          TextFormField(
-            controller: _imaginePathController,
-            decoration: InputDecoration(
-              labelText: localizations.imaginePath,
-              hintText: localizations.asyncImaginePathHint,
-            ),
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            controller: _fetchPathController,
-            decoration: InputDecoration(
-              labelText: localizations.fetchPath,
-              hintText: localizations.asyncFetchPathHint('{taskId}'),
-            ),
+          ExpansionTile(
+            title: Text(localizations.advancedSettings,
+                style: Theme.of(context).textTheme.titleSmall),
+            initiallyExpanded: false,
+            childrenPadding: const EdgeInsets.only(top: 8),
+            children: [
+              TextFormField(
+                controller: _imaginePathController,
+                decoration: InputDecoration(
+                  labelText: localizations.imaginePath,
+                  hintText: localizations.asyncImaginePathHint,
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _fetchPathController,
+                decoration: InputDecoration(
+                  labelText: localizations.fetchPath,
+                  hintText: localizations.asyncFetchPathHint('{taskId}'),
+                ),
+              ),
+            ],
           ),
         ] else ...[
-          TextFormField(
-            controller: _imaginePathController,
-            decoration: InputDecoration(
-              labelText: localizations.imaginePath,
-              hintText: '/v1/images/generations',
-            ),
+          ExpansionTile(
+            title: Text(localizations.advancedSettings,
+                style: Theme.of(context).textTheme.titleSmall),
+            initiallyExpanded: false,
+            childrenPadding: const EdgeInsets.only(top: 8),
+            children: [
+              TextFormField(
+                controller: _imaginePathController,
+                decoration: InputDecoration(
+                  labelText: localizations.imaginePath,
+                  hintText: '/v1/images/generations',
+                ),
+              ),
+            ],
           ),
         ],
       ],

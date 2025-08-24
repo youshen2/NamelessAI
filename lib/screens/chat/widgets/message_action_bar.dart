@@ -27,8 +27,19 @@ class MessageActionBar extends StatelessWidget {
 
   void _showDebugInfo(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    final jsonString =
-        const JsonEncoder.withIndent('  ').convert(message.toJson());
+    final messageJson = message.toJson();
+
+    if (message.rawResponseJson != null) {
+      try {
+        final rawJson = jsonDecode(message.rawResponseJson!);
+        messageJson[localizations.rawResponse] = rawJson;
+      } catch (e) {
+        messageJson[localizations.rawResponse] = message.rawResponseJson;
+      }
+    }
+
+    final jsonString = const JsonEncoder.withIndent('  ').convert(messageJson);
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(

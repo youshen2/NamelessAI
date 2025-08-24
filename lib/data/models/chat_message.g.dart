@@ -40,13 +40,14 @@ class ChatMessageAdapter extends TypeAdapter<ChatMessage> {
           : fields[17] as AsyncTaskStatus,
       asyncTaskProgress: fields[18] as String?,
       asyncTaskFullResponse: fields[19] as String?,
+      rawResponseJson: fields[20] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ChatMessage obj) {
     writer
-      ..writeByte(20)
+      ..writeByte(21)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -86,7 +87,9 @@ class ChatMessageAdapter extends TypeAdapter<ChatMessage> {
       ..writeByte(18)
       ..write(obj.asyncTaskProgress)
       ..writeByte(19)
-      ..write(obj.asyncTaskFullResponse);
+      ..write(obj.asyncTaskFullResponse)
+      ..writeByte(20)
+      ..write(obj.rawResponseJson);
   }
 
   @override

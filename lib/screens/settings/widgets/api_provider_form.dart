@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/models/api_provider.dart';
 import 'package:nameless_ai/data/models/model.dart';
+import 'package:nameless_ai/data/models/model_type.dart';
 import 'package:nameless_ai/data/providers/api_provider_manager.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
 import 'package:nameless_ai/screens/settings/widgets/model_form.dart';
@@ -170,18 +171,31 @@ class _APIProviderFormState extends State<APIProviderForm> {
                           value!.isEmpty ? localizations.apiKeyRequired : null,
                     ),
                     const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _chatPathController,
-                      decoration:
-                          InputDecoration(labelText: localizations.chatPath),
-                      validator: (value) => value!.isEmpty
-                          ? localizations.chatPathRequired
-                          : null,
+                    ExpansionTile(
+                      title: Text(localizations.advancedSettings,
+                          style: Theme.of(context).textTheme.titleSmall),
+                      initiallyExpanded: false,
+                      childrenPadding: const EdgeInsets.only(top: 8),
+                      children: [
+                        TextFormField(
+                          controller: _chatPathController,
+                          decoration: InputDecoration(
+                              labelText: localizations.chatPath),
+                          validator: (value) => value!.isEmpty
+                              ? localizations.chatPathRequired
+                              : null,
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 16),
                     ExpansionTile(
                       title: Text(localizations.models,
                           style: Theme.of(context).textTheme.titleMedium),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.add_circle_outline),
+                        tooltip: localizations.addModel,
+                        onPressed: _addOrEditModel,
+                      ),
                       initiallyExpanded: true,
                       children: [
                         if (_models.isEmpty)
@@ -192,12 +206,21 @@ class _APIProviderFormState extends State<APIProviderForm> {
                         ..._models.asMap().entries.map((entry) {
                           final index = entry.key;
                           final model = entry.value;
+                          String subtitle;
+                          if (model.modelType == ModelType.image) {
+                            subtitle = model.imageGenerationMode ==
+                                    ImageGenerationMode.instant
+                                ? localizations.imageModeInstant
+                                : localizations.imageModeAsync;
+                          } else {
+                            subtitle =
+                                '${localizations.streamable}: ${model.isStreamable ? '✓' : '✗'}';
+                          }
                           return Card(
                             margin: const EdgeInsets.symmetric(vertical: 4),
                             child: ListTile(
                               title: Text(model.name),
-                              subtitle: Text(
-                                  '${model.modelType.name} - Stream: ${model.isStreamable ? '✓' : '✗'}, Thinking: ${model.supportsThinking ? '✓' : '✗'}'),
+                              subtitle: Text(subtitle),
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -215,14 +238,6 @@ class _APIProviderFormState extends State<APIProviderForm> {
                             ),
                           );
                         }),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: TextButton.icon(
-                            onPressed: _addOrEditModel,
-                            icon: const Icon(Icons.add),
-                            label: Text(localizations.addModel),
-                          ),
-                        ),
                       ],
                     ),
                   ],

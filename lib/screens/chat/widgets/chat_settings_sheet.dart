@@ -74,7 +74,6 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
   }
 
   void _showTemplateSelection() async {
-    final localizations = AppLocalizations.of(context)!;
     final selectedPrompt = await showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,

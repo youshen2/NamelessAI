@@ -42,6 +42,7 @@ class ChatCompletionResponse {
   final String model;
   final List<ChatChoice> choices;
   final Usage? usage;
+  final String? rawResponse;
 
   ChatCompletionResponse({
     required this.id,
@@ -50,9 +51,11 @@ class ChatCompletionResponse {
     required this.model,
     required this.choices,
     this.usage,
+    this.rawResponse,
   });
 
-  factory ChatCompletionResponse.fromJson(Map<String, dynamic> json) {
+  factory ChatCompletionResponse.fromJson(Map<String, dynamic> json,
+      {String? rawResponse}) {
     return ChatCompletionResponse(
       id: json['id'],
       object: json['object'],
@@ -61,6 +64,7 @@ class ChatCompletionResponse {
       choices:
           (json['choices'] as List).map((e) => ChatChoice.fromJson(e)).toList(),
       usage: json['usage'] != null ? Usage.fromJson(json['usage']) : null,
+      rawResponse: rawResponse,
     );
   }
 }
@@ -228,14 +232,16 @@ class ImageGenerationRequest {
 class ImageGenerationResponse {
   final int created;
   final List<ImageData> data;
+  final String? rawResponse;
 
   ImageGenerationResponse({
     required this.created,
     required this.data,
+    this.rawResponse,
   });
 
-  factory ImageGenerationResponse.fromJson(Map<String, dynamic> json) {
-    // Handle API error responses that don't contain 'data'
+  factory ImageGenerationResponse.fromJson(Map<String, dynamic> json,
+      {String? rawResponse}) {
     if (json.containsKey('error') && json['error'] != null) {
       final errorData = json['error'];
       final message = errorData['message'] ?? 'Unknown image generation error';
@@ -250,6 +256,7 @@ class ImageGenerationResponse {
     return ImageGenerationResponse(
       created: json['created'] ?? DateTime.now().millisecondsSinceEpoch ~/ 1000,
       data: (json['data'] as List).map((e) => ImageData.fromJson(e)).toList(),
+      rawResponse: rawResponse,
     );
   }
 }
@@ -284,15 +291,21 @@ class MidjourneyImagineResponse {
   final int code;
   final String description;
   final String? result;
+  final String? rawResponse;
 
   MidjourneyImagineResponse(
-      {required this.code, required this.description, this.result});
+      {required this.code,
+      required this.description,
+      this.result,
+      this.rawResponse});
 
-  factory MidjourneyImagineResponse.fromJson(Map<String, dynamic> json) {
+  factory MidjourneyImagineResponse.fromJson(Map<String, dynamic> json,
+      {String? rawResponse}) {
     return MidjourneyImagineResponse(
       code: json['code'],
       description: json['description'],
       result: json['result'],
+      rawResponse: rawResponse,
     );
   }
 }
@@ -312,6 +325,7 @@ class MidjourneyFetchResponse {
   final String? progress;
   final String? failReason;
   final Map<String, dynamic>? properties;
+  final String? rawResponse;
 
   MidjourneyFetchResponse({
     this.action,
@@ -328,6 +342,7 @@ class MidjourneyFetchResponse {
     this.progress,
     this.failReason,
     this.properties,
+    this.rawResponse,
   });
 
   Map<String, dynamic> toJson() {
@@ -349,7 +364,8 @@ class MidjourneyFetchResponse {
     };
   }
 
-  factory MidjourneyFetchResponse.fromJson(Map<String, dynamic> json) {
+  factory MidjourneyFetchResponse.fromJson(Map<String, dynamic> json,
+      {String? rawResponse}) {
     return MidjourneyFetchResponse(
       action: json['action'],
       id: json['id'],
@@ -365,6 +381,7 @@ class MidjourneyFetchResponse {
       progress: json['progress'],
       failReason: json['failReason'],
       properties: json['properties'],
+      rawResponse: rawResponse,
     );
   }
 }

@@ -45,6 +45,49 @@ class AppLocalizationsEn extends AppLocalizations {
   String get systemPromptTemplates => 'Prompt Templates';
 
   @override
+  String get taskSettings => 'Task Settings';
+
+  @override
+  String get midjourneyRefreshInterval =>
+      'Midjourney Refresh Interval (seconds)';
+
+  @override
+  String get midjourneyRefreshIntervalHint =>
+      'Set to 0 to disable automatic refresh.';
+
+  @override
+  String get compatibilityMode => 'Compatibility Mode';
+
+  @override
+  String get compatibilityModeMidjourney => 'Midjourney Proxy';
+
+  @override
+  String get saveToGallery => 'Save to Gallery';
+
+  @override
+  String get saveSuccess => 'Image saved to gallery.';
+
+  @override
+  String saveError(String error) {
+    return 'Failed to save image: $error';
+  }
+
+  @override
+  String get rawResponse => 'Raw Response';
+
+  @override
+  String get advancedSettings => 'Advanced Settings';
+
+  @override
+  String get imageModeInstant => 'Mode: Instant';
+
+  @override
+  String get imageModeAsync => 'Mode: Asynchronous';
+
+  @override
+  String get streamable => 'Stream';
+
+  @override
   String get addProvider => 'Add Provider';
 
   @override
@@ -388,13 +431,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get showTimestamps => 'Show Timestamps';
 
   @override
-  String get supportsThinking => 'Supports Thinking';
-
-  @override
-  String get supportsThinkingHint =>
-      'If not supported, streaming content is shown as thinking and merged into the main body on completion.';
-
-  @override
   String get chatBubbleWidth => 'Chat Bubble Width';
 
   @override
@@ -625,9 +661,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get asynchronous => 'Asynchronous';
-
-  @override
-  String get asyncImageType => 'Asynchronous Type';
 
   @override
   String get midjourney => 'Midjourney';

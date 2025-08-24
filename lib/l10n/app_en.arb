@@ -12,6 +12,26 @@
   "enterSystemPrompt": "Enter system prompt...",
   "apiProviderSettings": "API Providers",
   "systemPromptTemplates": "Prompt Templates",
+  "taskSettings": "Task Settings",
+  "midjourneyRefreshInterval": "Midjourney Refresh Interval (seconds)",
+  "midjourneyRefreshIntervalHint": "Set to 0 to disable automatic refresh.",
+  "compatibilityMode": "Compatibility Mode",
+  "compatibilityModeMidjourney": "Midjourney Proxy",
+  "saveToGallery": "Save to Gallery",
+  "saveSuccess": "Image saved to gallery.",
+  "saveError": "Failed to save image: {error}",
+  "@saveError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "rawResponse": "Raw Response",
+  "advancedSettings": "Advanced Settings",
+  "imageModeInstant": "Mode: Instant",
+  "imageModeAsync": "Mode: Asynchronous",
+  "streamable": "Stream",
   "addProvider": "Add Provider",
   "editProvider": "Edit Provider",
   "deleteProvider": "Delete Provider",
@@ -137,8 +157,6 @@
   "normal": "Normal",
   "center": "Center",
   "showTimestamps": "Show Timestamps",
-  "supportsThinking": "Supports Thinking",
-  "supportsThinkingHint": "If not supported, streaming content is shown as thinking and merged into the main body on completion.",
   "chatBubbleWidth": "Chat Bubble Width",
   "compactMode": "Compact Mode",
   "compactModeHint": "Reduces padding and margins for a denser UI.",
@@ -245,7 +263,6 @@
   "imageGenerationMode": "Image Generation Mode",
   "instant": "Instant",
   "asynchronous": "Asynchronous",
-  "asyncImageType": "Asynchronous Type",
   "midjourney": "Midjourney",
   "imaginePath": "Imagine Path (Optional)",
   "fetchPath": "Fetch Path (Optional)",

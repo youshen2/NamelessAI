@@ -33,7 +33,11 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AppConfigProvider()),
         ChangeNotifierProvider(create: (_) => APIProviderManager()),
-        ChangeNotifierProvider(create: (_) => ChatSessionManager()),
+        ChangeNotifierProxyProvider<APIProviderManager, ChatSessionManager>(
+          create: (context) => ChatSessionManager(),
+          update: (context, apiManager, sessionManager) =>
+              sessionManager!..setApiProviderManager(apiManager),
+        ),
         ChangeNotifierProvider(create: (_) => SystemPromptTemplateManager()),
       ],
       child: Consumer<AppConfigProvider>(
@@ -55,7 +59,7 @@ class MyApp extends StatelessWidget {
               }
 
               return MaterialApp.router(
-                title: AppLocalizations.of(context)?.appName ?? 'NamelessAI',
+                title: 'NamelessAI',
                 debugShowCheckedModeBanner: false,
                 theme: AppTheme.lightTheme(lightColorScheme),
                 darkTheme: AppTheme.darkTheme(darkColorScheme),

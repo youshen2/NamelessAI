@@ -34,6 +34,7 @@ class AppConfigProvider extends ChangeNotifier {
   String _codeTheme = 'github';
   bool _showDebugButton = false;
   bool _checkForUpdatesOnStartup = true;
+  int _midjourneyRefreshInterval = 10;
 
   AppConfigProvider() {
     _loadConfig();
@@ -65,6 +66,7 @@ class AppConfigProvider extends ChangeNotifier {
   String get codeTheme => _codeTheme;
   bool get showDebugButton => _showDebugButton;
   bool get checkForUpdatesOnStartup => _checkForUpdatesOnStartup;
+  int get midjourneyRefreshInterval => _midjourneyRefreshInterval;
 
   void _loadConfig() {
     final box = AppDatabase.appConfigBox;
@@ -105,6 +107,8 @@ class AppConfigProvider extends ChangeNotifier {
     _showDebugButton = box.get('showDebugButton', defaultValue: false);
     _checkForUpdatesOnStartup =
         box.get('checkForUpdatesOnStartup', defaultValue: true);
+    _midjourneyRefreshInterval =
+        box.get('midjourneyRefreshInterval', defaultValue: 10);
 
     notifyListeners();
   }
@@ -265,6 +269,13 @@ class AppConfigProvider extends ChangeNotifier {
     if (_checkForUpdatesOnStartup != check) {
       _checkForUpdatesOnStartup = check;
       _updateValue('checkForUpdatesOnStartup', check);
+    }
+  }
+
+  void setMidjourneyRefreshInterval(int interval) {
+    if (_midjourneyRefreshInterval != interval) {
+      _midjourneyRefreshInterval = interval;
+      _updateValue('midjourneyRefreshInterval', interval);
     }
   }
 }
