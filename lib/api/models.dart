@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:nameless_ai/data/models/model.dart';
 
 class ChatCompletionRequest {
-  final String model;
+  final Model model;
   final List<Map<String, String>> messages;
   final double? temperature;
   final double? topP;
@@ -20,7 +20,7 @@ class ChatCompletionRequest {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {
-      'model': model,
+      'model': model.name,
       'messages': messages,
       'temperature': temperature,
       'stream': stream,

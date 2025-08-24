@@ -760,4 +760,28 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get resetOnboardingConfirmation => '您确定要重置引导状态吗？';
+
+  @override
+  String get apiPathTemplate => '接口模板';
+
+  @override
+  String get selectApiPathTemplate => '选择模板';
+
+  @override
+  String get apiPathTemplateQingyunTop => '青云Top';
+
+  @override
+  String get apiPathTemplateStandardOpenAI => '标准 OpenAI';
+
+  @override
+  String get nonLanguageModelPathWarning => '使用前请确定接口路径是否正确。';
+
+  @override
+  String get noApiPathTemplatesFound => '未找到接口模板。';
+
+  @override
+  String get searchApiPathTemplates => '搜索模板...';
+
+  @override
+  String get chatPathHint => '例如 /v1/chat/completions';
 }

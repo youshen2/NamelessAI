@@ -306,5 +306,13 @@
   "resetOnboarding": "Reset Onboarding",
   "resetOnboardingHint": "This will show the onboarding screen on the next app launch.",
   "reset": "Reset",
-  "resetOnboardingConfirmation": "Are you sure you want to reset the onboarding status?"
+  "resetOnboardingConfirmation": "Are you sure you want to reset the onboarding status?",
+  "apiPathTemplate": "API Path Template",
+  "selectApiPathTemplate": "Select a Template",
+  "apiPathTemplateQingyunTop": "Qingyun Top",
+  "apiPathTemplateStandardOpenAI": "Standard OpenAI",
+  "nonLanguageModelPathWarning": "Please ensure the API path is correct before use.",
+  "noApiPathTemplatesFound": "No API path templates found.",
+  "searchApiPathTemplates": "Search templates...",
+  "chatPathHint": "e.g., /v1/chat/completions"
 }

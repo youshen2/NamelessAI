@@ -306,5 +306,13 @@
   "resetOnboarding": "重置引导",
   "resetOnboardingHint": "这将在下次启动应用时显示引导页面。",
   "reset": "重置",
-  "resetOnboardingConfirmation": "您确定要重置引导状态吗？"
+  "resetOnboardingConfirmation": "您确定要重置引导状态吗？",
+  "apiPathTemplate": "接口模板",
+  "selectApiPathTemplate": "选择模板",
+  "apiPathTemplateQingyunTop": "青云Top",
+  "apiPathTemplateStandardOpenAI": "标准 OpenAI",
+  "nonLanguageModelPathWarning": "使用前请确定接口路径是否正确。",
+  "noApiPathTemplatesFound": "未找到接口模板。",
+  "searchApiPathTemplates": "搜索模板...",
+  "chatPathHint": "例如 /v1/chat/completions"
 }

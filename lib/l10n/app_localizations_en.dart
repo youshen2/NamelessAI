@@ -781,4 +781,29 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get resetOnboardingConfirmation =>
       'Are you sure you want to reset the onboarding status?';
+
+  @override
+  String get apiPathTemplate => 'API Path Template';
+
+  @override
+  String get selectApiPathTemplate => 'Select a Template';
+
+  @override
+  String get apiPathTemplateQingyunTop => 'Qingyun Top';
+
+  @override
+  String get apiPathTemplateStandardOpenAI => 'Standard OpenAI';
+
+  @override
+  String get nonLanguageModelPathWarning =>
+      'Please ensure the API path is correct before use.';
+
+  @override
+  String get noApiPathTemplatesFound => 'No API path templates found.';
+
+  @override
+  String get searchApiPathTemplates => 'Search templates...';
+
+  @override
+  String get chatPathHint => 'e.g., /v1/chat/completions';
 }

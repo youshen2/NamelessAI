@@ -1561,6 +1561,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Are you sure you want to reset the onboarding status?'**
   String get resetOnboardingConfirmation;
+
+  /// No description provided for @apiPathTemplate.
+  ///
+  /// In en, this message translates to:
+  /// **'API Path Template'**
+  String get apiPathTemplate;
+
+  /// No description provided for @selectApiPathTemplate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a Template'**
+  String get selectApiPathTemplate;
+
+  /// No description provided for @apiPathTemplateQingyunTop.
+  ///
+  /// In en, this message translates to:
+  /// **'Qingyun Top'**
+  String get apiPathTemplateQingyunTop;
+
+  /// No description provided for @apiPathTemplateStandardOpenAI.
+  ///
+  /// In en, this message translates to:
+  /// **'Standard OpenAI'**
+  String get apiPathTemplateStandardOpenAI;
+
+  /// No description provided for @nonLanguageModelPathWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Please ensure the API path is correct before use.'**
+  String get nonLanguageModelPathWarning;
+
+  /// No description provided for @noApiPathTemplatesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No API path templates found.'**
+  String get noApiPathTemplatesFound;
+
+  /// No description provided for @searchApiPathTemplates.
+  ///
+  /// In en, this message translates to:
+  /// **'Search templates...'**
+  String get searchApiPathTemplates;
+
+  /// No description provided for @chatPathHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., /v1/chat/completions'**
+  String get chatPathHint;
 }
 
 class _AppLocalizationsDelegate

@@ -27,8 +27,11 @@ class ApiService {
     try {
       debugPrint(
           "NamelessAI - Sending Request: ${jsonEncode(request.toJson())}");
+      final path = request.model.chatPath?.isNotEmpty == true
+          ? request.model.chatPath!
+          : provider.chatCompletionPath;
       final response = await _dio.post(
-        provider.chatCompletionPath,
+        path,
         data: request.toJson(),
         cancelToken: cancelToken,
       );
@@ -46,7 +49,7 @@ class ApiService {
             id: 'non-compliant-${const Uuid().v4()}',
             object: 'chat.completion',
             created: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-            model: request.model,
+            model: request.model.name,
             choices: [
               ChatChoice(
                 index: 0,
@@ -74,8 +77,11 @@ class ApiService {
     try {
       debugPrint(
           "NamelessAI - Sending Stream Request: ${jsonEncode(request.toJson())}");
+      final path = request.model.chatPath?.isNotEmpty == true
+          ? request.model.chatPath!
+          : provider.chatCompletionPath;
       final response = await _dio.post(
-        provider.chatCompletionPath,
+        path,
         data: request.toJson(),
         options: Options(
           responseType: ResponseType.stream,

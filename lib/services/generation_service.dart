@@ -115,7 +115,7 @@ class GenerationService {
 
     if (useStreaming) {
       final request = api_models.ChatCompletionRequest(
-        model: model.name,
+        model: model,
         messages: _formatMessages(messagesForApi, session.systemPrompt),
         maxTokens: model.maxTokens,
         stream: true,
@@ -169,7 +169,7 @@ class GenerationService {
       }
     } else {
       final request = api_models.ChatCompletionRequest(
-        model: model.name,
+        model: model,
         messages: _formatMessages(messagesForApi, session.systemPrompt),
         maxTokens: model.maxTokens,
         stream: false,

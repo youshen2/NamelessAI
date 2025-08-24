@@ -47,6 +47,9 @@ class Model extends HiveObject {
   @HiveField(8)
   String? fetchPath;
 
+  @HiveField(9)
+  String? chatPath;
+
   Model({
     String? id,
     required this.name,
@@ -57,6 +60,7 @@ class Model extends HiveObject {
     this.compatibilityMode,
     this.imaginePath,
     this.fetchPath,
+    this.chatPath,
   }) : id = id ?? const Uuid().v4();
 
   Model copyWith({
@@ -69,6 +73,7 @@ class Model extends HiveObject {
     CompatibilityMode? compatibilityMode,
     String? imaginePath,
     String? fetchPath,
+    String? chatPath,
   }) {
     return Model(
       id: id ?? this.id,
@@ -80,6 +85,7 @@ class Model extends HiveObject {
       compatibilityMode: compatibilityMode ?? this.compatibilityMode,
       imaginePath: imaginePath ?? this.imaginePath,
       fetchPath: fetchPath ?? this.fetchPath,
+      chatPath: chatPath ?? this.chatPath,
     );
   }
 
@@ -93,6 +99,7 @@ class Model extends HiveObject {
         'compatibilityMode': compatibilityMode?.name,
         'imaginePath': imaginePath,
         'fetchPath': fetchPath,
+        'chatPath': chatPath,
       };
 
   factory Model.fromJson(Map<String, dynamic> json) => Model(
@@ -113,5 +120,6 @@ class Model extends HiveObject {
                 orElse: () => CompatibilityMode.midjourneyProxy),
         imaginePath: json['imaginePath'],
         fetchPath: json['fetchPath'],
+        chatPath: json['chatPath'],
       );
 }

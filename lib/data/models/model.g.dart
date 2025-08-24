@@ -29,13 +29,14 @@ class ModelAdapter extends TypeAdapter<Model> {
       compatibilityMode: fields[6] as CompatibilityMode?,
       imaginePath: fields[7] as String?,
       fetchPath: fields[8] as String?,
+      chatPath: fields[9] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Model obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -53,7 +54,9 @@ class ModelAdapter extends TypeAdapter<Model> {
       ..writeByte(7)
       ..write(obj.imaginePath)
       ..writeByte(8)
-      ..write(obj.fetchPath);
+      ..write(obj.fetchPath)
+      ..writeByte(9)
+      ..write(obj.chatPath);
   }
 
   @override

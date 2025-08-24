@@ -29,7 +29,7 @@ class ChatService {
       [CancelToken? cancelToken]) async {
     final apiService = ApiService(provider);
     final request = ChatCompletionRequest(
-      model: model.name,
+      model: model,
       messages: _formatMessages(messages, systemPrompt),
       maxTokens: model.maxTokens,
       stream: false,
@@ -51,7 +51,7 @@ class ChatService {
       [CancelToken? cancelToken]) {
     final apiService = ApiService(provider);
     final request = ChatCompletionRequest(
-      model: model.name,
+      model: model,
       messages: _formatMessages(messages, systemPrompt),
       maxTokens: model.maxTokens,
       stream: true,
