@@ -253,7 +253,7 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
                 controller: _imaginePathController,
                 decoration: InputDecoration(
                   labelText: localizations.imaginePath,
-                  hintText: '/v1/images/generations',
+                  hintText: localizations.imageGenerationPathHint,
                 ),
               ),
             ],

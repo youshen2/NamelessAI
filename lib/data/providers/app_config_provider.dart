@@ -288,4 +288,11 @@ class AppConfigProvider extends ChangeNotifier {
       await _updateValue('isFirstLaunch', false);
     }
   }
+
+  Future<void> resetOnboarding() async {
+    if (!_isFirstLaunch) {
+      _isFirstLaunch = true;
+      await _updateValue('isFirstLaunch', true);
+    }
+  }
 }

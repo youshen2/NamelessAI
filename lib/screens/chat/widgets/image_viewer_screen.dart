@@ -64,10 +64,23 @@ class _ImageViewerScreenState extends State<ImageViewerScreen> {
     final localizations = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.black,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.black.withOpacity(0.7),
+                Colors.transparent,
+              ],
+            ),
+          ),
+        ),
         actions: [
           if (_isSaving)
             const Padding(
@@ -99,6 +112,19 @@ class _ImageViewerScreenState extends State<ImageViewerScreen> {
           maxScale: PhotoViewComputedScale.covered * 2.5,
           loadingBuilder: (context, event) => const Center(
             child: CircularProgressIndicator(color: Colors.white),
+          ),
+          errorBuilder: (context, error, stackTrace) => Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.broken_image, color: Colors.white70, size: 64),
+                const SizedBox(height: 16),
+                Text(
+                  localizations.failedToLoadImage,
+                  style: const TextStyle(color: Colors.white70, fontSize: 16),
+                ),
+              ],
+            ),
           ),
         ),
       ),

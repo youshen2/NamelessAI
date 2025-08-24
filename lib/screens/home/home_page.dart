@@ -20,14 +20,16 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _checkForUpdate();
+      _checkFirstLaunchAndUpdates();
     });
   }
 
-  void _checkForUpdate() {
+  void _checkFirstLaunchAndUpdates() {
     if (!mounted) return;
     final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
-    if (appConfig.checkForUpdatesOnStartup) {
+    if (appConfig.isFirstLaunch) {
+      context.go('/onboarding');
+    } else if (appConfig.checkForUpdatesOnStartup) {
       UpdateService().check(context);
     }
   }

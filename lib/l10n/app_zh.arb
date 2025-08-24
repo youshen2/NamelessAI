@@ -290,5 +290,21 @@
   "midjourneyPromptHint": "输入提示词，可附带 --ar 16:9 等参数",
   "clearHistory": "清空历史记录",
   "clearHistoryConfirmation": "您确定要删除所有聊天记录吗？此操作无法撤销。",
-  "jsonDebugViewer": "JSON 查看器"
+  "jsonDebugViewer": "JSON 查看器",
+  "next": "下一步",
+  "welcomeMessage": "一个简洁且强大的跨平台AI聊天客户端。",
+  "quickSettings": "快速设置",
+  "readyToGo": "准备就绪",
+  "readyToGoMessage": "一切已准备就绪。\n请记得在“设置”页面添加您的API提供商，以便正常使用。",
+  "back": "上一步",
+  "skip": "跳过",
+  "getStarted": "开始使用",
+  "searchHint": "搜索...",
+  "historyCleared": "历史记录已清空。",
+  "imageExpirationWarning": "图片存在有效期，请及时下载。",
+  "imageGenerationPathHint": "例如 /v1/images/generations",
+  "resetOnboarding": "重置引导",
+  "resetOnboardingHint": "这将在下次启动应用时显示引导页面。",
+  "reset": "重置",
+  "resetOnboardingConfirmation": "您确定要重置引导状态吗？"
 }

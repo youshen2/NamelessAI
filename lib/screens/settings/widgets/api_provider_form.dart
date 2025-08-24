@@ -105,10 +105,9 @@ class _APIProviderFormState extends State<APIProviderForm> {
         bottom: MediaQuery.of(context).viewInsets.bottom,
         left: 16,
         right: 16,
-        top: 16,
+        top: 8,
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
             height: 4,
@@ -134,6 +133,7 @@ class _APIProviderFormState extends State<APIProviderForm> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    const SizedBox(height: 8),
                     TextFormField(
                       controller: _nameController,
                       decoration: InputDecoration(
@@ -187,17 +187,26 @@ class _APIProviderFormState extends State<APIProviderForm> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
-                    ExpansionTile(
-                      title: Text(localizations.models,
-                          style: Theme.of(context).textTheme.titleMedium),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.add_circle_outline),
-                        tooltip: localizations.addModel,
-                        onPressed: _addOrEditModel,
-                      ),
-                      initiallyExpanded: true,
+                    const SizedBox(height: 24),
+                    Column(
                       children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16.0),
+                              child: Text(localizations.models,
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.add_circle_outline),
+                              tooltip: localizations.addModel,
+                              onPressed: _addOrEditModel,
+                            ),
+                          ],
+                        ),
                         if (_models.isEmpty)
                           Padding(
                             padding: const EdgeInsets.all(16.0),

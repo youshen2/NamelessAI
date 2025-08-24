@@ -111,7 +111,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       final manager = Provider.of<ChatSessionManager>(context, listen: false);
       await manager.clearAllHistory();
       if (mounted) {
-        showSnackBar(context, localizations.history);
+        showSnackBar(context, localizations.historyCleared);
         setState(() {
           _selectedSessionForPreview = null;
           _previewMessagesFuture = null;
@@ -199,7 +199,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       child: TextField(
         controller: _searchController,
         decoration: InputDecoration(
-          hintText: "${localizations.search}...",
+          hintText: localizations.searchHint,
           prefixIcon: const Icon(Icons.search),
           suffixIcon: _searchQuery.isNotEmpty
               ? IconButton(
@@ -261,7 +261,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       await manager.deleteSession(session.id);
                       if (mounted) {
                         showSnackBar(
-                            context, '${localizations.delete} ${session.name}');
+                            context, localizations.itemDeleted(session.name));
                       }
                       if (_selectedSessionForPreview?.id == session.id) {
                         setState(() {

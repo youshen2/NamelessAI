@@ -290,5 +290,21 @@
   "midjourneyPromptHint": "Enter prompt, you can add parameters like --ar 16:9",
   "clearHistory": "Clear History",
   "clearHistoryConfirmation": "Are you sure you want to delete all chat history? This action cannot be undone.",
-  "jsonDebugViewer": "JSON Viewer"
+  "jsonDebugViewer": "JSON Viewer",
+  "next": "Next",
+  "welcomeMessage": "A concise and powerful cross-platform AI chat client.",
+  "quickSettings": "Quick Settings",
+  "readyToGo": "Ready to Go",
+  "readyToGoMessage": "Everything is set up.\nRemember to add your API provider in the Settings page to get started.",
+  "back": "Back",
+  "skip": "Skip",
+  "getStarted": "Get Started",
+  "searchHint": "Search...",
+  "historyCleared": "History has been cleared.",
+  "imageExpirationWarning": "Image may expire, please save it in time.",
+  "imageGenerationPathHint": "e.g., /v1/images/generations",
+  "resetOnboarding": "Reset Onboarding",
+  "resetOnboardingHint": "This will show the onboarding screen on the next app launch.",
+  "reset": "Reset",
+  "resetOnboardingConfirmation": "Are you sure you want to reset the onboarding status?"
 }

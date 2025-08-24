@@ -728,4 +728,57 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get jsonDebugViewer => 'JSON Viewer';
+
+  @override
+  String get next => 'Next';
+
+  @override
+  String get welcomeMessage =>
+      'A concise and powerful cross-platform AI chat client.';
+
+  @override
+  String get quickSettings => 'Quick Settings';
+
+  @override
+  String get readyToGo => 'Ready to Go';
+
+  @override
+  String get readyToGoMessage =>
+      'Everything is set up.\nRemember to add your API provider in the Settings page to get started.';
+
+  @override
+  String get back => 'Back';
+
+  @override
+  String get skip => 'Skip';
+
+  @override
+  String get getStarted => 'Get Started';
+
+  @override
+  String get searchHint => 'Search...';
+
+  @override
+  String get historyCleared => 'History has been cleared.';
+
+  @override
+  String get imageExpirationWarning =>
+      'Image may expire, please save it in time.';
+
+  @override
+  String get imageGenerationPathHint => 'e.g., /v1/images/generations';
+
+  @override
+  String get resetOnboarding => 'Reset Onboarding';
+
+  @override
+  String get resetOnboardingHint =>
+      'This will show the onboarding screen on the next app launch.';
+
+  @override
+  String get reset => 'Reset';
+
+  @override
+  String get resetOnboardingConfirmation =>
+      'Are you sure you want to reset the onboarding status?';
 }

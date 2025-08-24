@@ -299,46 +299,69 @@ class _MessageBubbleState extends State<MessageBubble>
       // NULL
     }
 
-    return GestureDetector(
-      onTap: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => ImageViewerScreen(
-              imageUrl: imageUrl,
-              heroTag: message.id,
-            ),
-          ),
-        );
-      },
-      child: Hero(
-        tag: message.id,
-        child: Image.network(
-          imageUrl,
-          fit: BoxFit.cover,
-          loadingBuilder: (context, child, loadingProgress) {
-            if (loadingProgress == null) return child;
-            return const SizedBox(
-              width: 256,
-              height: 256,
-              child: Center(child: CircularProgressIndicator()),
-            );
-          },
-          errorBuilder: (context, error, stackTrace) {
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  Icon(Icons.broken_image,
-                      size: 48, color: textColor.withOpacity(0.7)),
-                  const SizedBox(height: 8),
-                  Text(localizations.failedToLoadImage,
-                      style: TextStyle(color: textColor)),
-                ],
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => ImageViewerScreen(
+                  imageUrl: imageUrl,
+                  heroTag: message.id,
+                ),
               ),
             );
           },
+          child: Hero(
+            tag: message.id,
+            child: Image.network(
+              imageUrl,
+              fit: BoxFit.cover,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return const SizedBox(
+                  width: 256,
+                  height: 256,
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              },
+              errorBuilder: (context, error, stackTrace) {
+                return Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      Icon(Icons.broken_image,
+                          size: 48, color: textColor.withOpacity(0.7)),
+                      const SizedBox(height: 8),
+                      Text(localizations.failedToLoadImage,
+                          style: TextStyle(color: textColor)),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
         ),
-      ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.info_outline,
+                  size: 14, color: textColor.withOpacity(0.7)),
+              const SizedBox(width: 6),
+              Flexible(
+                child: Text(
+                  localizations.imageExpirationWarning,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: textColor.withOpacity(0.7),
+                      ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 

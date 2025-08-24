@@ -1465,6 +1465,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'JSON Viewer'**
   String get jsonDebugViewer;
+
+  /// No description provided for @next.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get next;
+
+  /// No description provided for @welcomeMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'A concise and powerful cross-platform AI chat client.'**
+  String get welcomeMessage;
+
+  /// No description provided for @quickSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Settings'**
+  String get quickSettings;
+
+  /// No description provided for @readyToGo.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to Go'**
+  String get readyToGo;
+
+  /// No description provided for @readyToGoMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything is set up.\nRemember to add your API provider in the Settings page to get started.'**
+  String get readyToGoMessage;
+
+  /// No description provided for @back.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get back;
+
+  /// No description provided for @skip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get skip;
+
+  /// No description provided for @getStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Get Started'**
+  String get getStarted;
+
+  /// No description provided for @searchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search...'**
+  String get searchHint;
+
+  /// No description provided for @historyCleared.
+  ///
+  /// In en, this message translates to:
+  /// **'History has been cleared.'**
+  String get historyCleared;
+
+  /// No description provided for @imageExpirationWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Image may expire, please save it in time.'**
+  String get imageExpirationWarning;
+
+  /// No description provided for @imageGenerationPathHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., /v1/images/generations'**
+  String get imageGenerationPathHint;
+
+  /// No description provided for @resetOnboarding.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Onboarding'**
+  String get resetOnboarding;
+
+  /// No description provided for @resetOnboardingHint.
+  ///
+  /// In en, this message translates to:
+  /// **'This will show the onboarding screen on the next app launch.'**
+  String get resetOnboardingHint;
+
+  /// No description provided for @reset.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get reset;
+
+  /// No description provided for @resetOnboardingConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to reset the onboarding status?'**
+  String get resetOnboardingConfirmation;
 }
 
 class _AppLocalizationsDelegate

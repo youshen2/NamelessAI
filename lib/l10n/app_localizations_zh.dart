@@ -712,4 +712,52 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get jsonDebugViewer => 'JSON 查看器';
+
+  @override
+  String get next => '下一步';
+
+  @override
+  String get welcomeMessage => '一个简洁且强大的跨平台AI聊天客户端。';
+
+  @override
+  String get quickSettings => '快速设置';
+
+  @override
+  String get readyToGo => '准备就绪';
+
+  @override
+  String get readyToGoMessage => '一切已准备就绪。\n请记得在“设置”页面添加您的API提供商，以便正常使用。';
+
+  @override
+  String get back => '上一步';
+
+  @override
+  String get skip => '跳过';
+
+  @override
+  String get getStarted => '开始使用';
+
+  @override
+  String get searchHint => '搜索...';
+
+  @override
+  String get historyCleared => '历史记录已清空。';
+
+  @override
+  String get imageExpirationWarning => '图片存在有效期，请及时下载。';
+
+  @override
+  String get imageGenerationPathHint => '例如 /v1/images/generations';
+
+  @override
+  String get resetOnboarding => '重置引导';
+
+  @override
+  String get resetOnboardingHint => '这将在下次启动应用时显示引导页面。';
+
+  @override
+  String get reset => '重置';
+
+  @override
+  String get resetOnboardingConfirmation => '您确定要重置引导状态吗？';
 }

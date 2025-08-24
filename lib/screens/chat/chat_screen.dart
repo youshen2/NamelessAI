@@ -168,9 +168,14 @@ class _ChatScreenState extends State<ChatScreen> {
     if (_userScrolledUp && !instant) return;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
+      if (_scrollController.hasClients &&
+          _scrollController.position.hasContentDimensions) {
         if (instant) {
-          _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+          _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 1),
+            curve: Curves.linear,
+          );
         } else {
           _scrollController.animateTo(
             _scrollController.position.maxScrollExtent,
@@ -267,32 +272,6 @@ class _ChatScreenState extends State<ChatScreen> {
       modelId: apiProviderManager.selectedModel?.id,
     );
     _messageController.clear();
-  }
-
-  Future<void> _saveChat() async {
-    final localizations = AppLocalizations.of(context)!;
-    final chatSessionManager =
-        Provider.of<ChatSessionManager>(context, listen: false);
-    if (chatSessionManager.currentSession == null ||
-        chatSessionManager.currentSession!.messages.isEmpty) {
-      showSnackBar(context, localizations.noChatHistory, isError: true);
-      return;
-    }
-
-    final String? chatName = await showTextInputDialog(
-      context,
-      localizations.saveChat,
-      localizations.chatName,
-      initialValue:
-          chatSessionManager.currentSession!.name.startsWith("New Chat")
-              ? null
-              : chatSessionManager.currentSession!.name,
-    );
-
-    if (chatName != null && chatName.isNotEmpty) {
-      await chatSessionManager.saveCurrentSession(chatName);
-      showSnackBar(context, localizations.chatSaved);
-    }
   }
 
   void _toggleEditing(String messageId, bool isEditing) {
@@ -434,6 +413,8 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+    final isAndroid = Theme.of(context).platform == TargetPlatform.android;
+
     return Consumer<ChatSessionManager>(
       builder: (context, manager, child) {
         final messages = manager.activeMessages;
@@ -470,11 +451,6 @@ class _ChatScreenState extends State<ChatScreen> {
                 tooltip: localizations.newChat,
                 onPressed: _startNewChat,
               ),
-              IconButton(
-                icon: const Icon(Icons.save_outlined),
-                tooltip: localizations.saveChat,
-                onPressed: _saveChat,
-              ),
               const SizedBox(width: 8),
             ],
           ),
@@ -491,6 +467,10 @@ class _ChatScreenState extends State<ChatScreen> {
                           );
                         }
                         return ListView.builder(
+                          physics: isAndroid
+                              ? const BouncingScrollPhysics(
+                                  parent: AlwaysScrollableScrollPhysics())
+                              : null,
                           controller: _scrollController,
                           addAutomaticKeepAlives: true,
                           itemCount: messages.length,

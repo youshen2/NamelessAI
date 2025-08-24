@@ -91,7 +91,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             actions: [
               FilledButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text('OK'),
+                child: Text(localizations.ok),
               )
             ],
           ),

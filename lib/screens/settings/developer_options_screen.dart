@@ -26,13 +26,47 @@ class _DeveloperOptionsScreenState extends State<DeveloperOptionsScreen> {
         padding: const EdgeInsets.all(16.0),
         children: [
           Card(
-            child: SwitchListTile(
-              title: Text(localizations.showDebugButton),
-              subtitle: Text(localizations.showDebugButtonHint),
-              value: appConfig.showDebugButton,
-              onChanged: (value) {
-                appConfig.setShowDebugButton(value);
-              },
+            child: Column(
+              children: [
+                SwitchListTile(
+                  title: Text(localizations.showDebugButton),
+                  subtitle: Text(localizations.showDebugButtonHint),
+                  value: appConfig.showDebugButton,
+                  onChanged: (value) {
+                    appConfig.setShowDebugButton(value);
+                  },
+                ),
+                ListTile(
+                  title: Text(localizations.resetOnboarding),
+                  subtitle: Text(localizations.resetOnboardingHint),
+                  onTap: () async {
+                    final confirmed = await showDialog<bool>(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text(localizations.resetOnboarding),
+                        content:
+                            Text(localizations.resetOnboardingConfirmation),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(false),
+                            child: Text(localizations.cancel),
+                          ),
+                          FilledButton(
+                            onPressed: () => Navigator.of(context).pop(true),
+                            child: Text(localizations.reset),
+                          ),
+                        ],
+                      ),
+                    );
+                    if (confirmed == true) {
+                      await appConfig.resetOnboarding();
+                      if (mounted) {
+                        showSnackBar(context, "Onboarding has been reset.");
+                      }
+                    }
+                  },
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 16),
