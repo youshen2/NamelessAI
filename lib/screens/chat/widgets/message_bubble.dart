@@ -112,7 +112,16 @@ class _MessageBubbleState extends State<MessageBubble>
         _editFocusNode.requestFocus();
       }
     }
-    if (oldWidget.message.asyncTaskStatus != widget.message.asyncTaskStatus) {
+
+    final bool statusChanged =
+        oldWidget.message.asyncTaskStatus != widget.message.asyncTaskStatus;
+    final bool needsTimerNow = widget.message.taskId != null &&
+        (widget.message.asyncTaskStatus == AsyncTaskStatus.submitted ||
+            widget.message.asyncTaskStatus == AsyncTaskStatus.inProgress);
+    final bool justFinishedLoading =
+        oldWidget.message.isLoading && !widget.message.isLoading;
+
+    if (statusChanged || (needsTimerNow && justFinishedLoading)) {
       _setupTimer();
     }
   }
@@ -128,6 +137,7 @@ class _MessageBubbleState extends State<MessageBubble>
 
   void _setupTimer() {
     _countdownTimer?.cancel();
+
     final needsTimer = widget.message.taskId != null &&
         (widget.message.asyncTaskStatus == AsyncTaskStatus.submitted ||
             widget.message.asyncTaskStatus == AsyncTaskStatus.inProgress);
@@ -139,14 +149,24 @@ class _MessageBubbleState extends State<MessageBubble>
           timer.cancel();
           return;
         }
+
+        final newCountdown = _countdown - 1;
         setState(() {
-          if (_countdown > 1) {
-            _countdown--;
-          } else {
-            _countdown = _appConfig.asyncTaskRefreshInterval;
-          }
+          _countdown = newCountdown;
         });
+
+        if (newCountdown <= 0) {
+          timer.cancel();
+          widget.onRefresh(widget.message);
+        }
       });
+      if (mounted) {
+        setState(() {});
+      }
+    } else {
+      if (mounted) {
+        setState(() {});
+      }
     }
   }
 
@@ -458,6 +478,7 @@ class _MessageBubbleState extends State<MessageBubble>
                 child: IconButton(
                   icon: const Icon(Icons.play_circle_outline,
                       color: Colors.white, size: 48),
+                  tooltip: localizations.playVideo,
                   onPressed: () => launchUrl(Uri.parse(message.videoUrl!)),
                 ),
               ),
@@ -468,6 +489,23 @@ class _MessageBubbleState extends State<MessageBubble>
               label: Text(localizations.copyUrl,
                   style: TextStyle(color: textColor)),
               onPressed: () => widget.onCopy(message.videoUrl!),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.info_outline,
+                    size: 14, color: textColor.withOpacity(0.7)),
+                const SizedBox(width: 6),
+                Flexible(
+                  child: Text(
+                    localizations.videoExpirationWarning,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: textColor.withOpacity(0.7),
+                        ),
+                  ),
+                ),
+              ],
             ),
           ] else ...[
             _buildTextContent(context, textColor),

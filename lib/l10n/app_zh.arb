@@ -333,5 +333,6 @@
   "copyUrl": "复制链接",
   "playVideo": "播放视频",
   "videoGenerationFailed": "视频生成失败",
-  "failedToLoadVideo": "加载视频失败"
+  "failedToLoadVideo": "加载视频失败",
+  "videoExpirationWarning": "文件有效期2天，请及时下载。"
 }

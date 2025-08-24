@@ -844,4 +844,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get failedToLoadVideo => 'Failed to load video';
+
+  @override
+  String get videoExpirationWarning =>
+      'File is valid for 2 days, please download it in time.';
 }

@@ -822,4 +822,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get failedToLoadVideo => '加载视频失败';
+
+  @override
+  String get videoExpirationWarning => '文件有效期2天，请及时下载。';
 }

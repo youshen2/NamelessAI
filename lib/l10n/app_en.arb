@@ -333,5 +333,6 @@
   "copyUrl": "Copy URL",
   "playVideo": "Play Video",
   "videoGenerationFailed": "Video generation failed",
-  "failedToLoadVideo": "Failed to load video"
+  "failedToLoadVideo": "Failed to load video",
+  "videoExpirationWarning": "File is valid for 2 days, please download it in time."
 }

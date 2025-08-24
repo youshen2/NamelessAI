@@ -1681,6 +1681,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to load video'**
   String get failedToLoadVideo;
+
+  /// No description provided for @videoExpirationWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'File is valid for 2 days, please download it in time.'**
+  String get videoExpirationWarning;
 }
 
 class _AppLocalizationsDelegate
