@@ -410,7 +410,30 @@ class _ChatScreenState extends State<ChatScreen> {
         final messages = manager.activeMessages;
         return Scaffold(
           appBar: AppBar(
-            title: Text(manager.currentSession?.name ?? localizations.newChat),
+            title: GestureDetector(
+              onTap: () {
+                if (manager.currentSession != null &&
+                    (manager.currentSession?.name.isNotEmpty ?? false)) {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text(localizations.chatName),
+                      content: SelectableText(manager.currentSession!.name),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: Text(localizations.close),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+              },
+              child: Text(
+                manager.currentSession?.name ?? localizations.newChat,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
             actions: [
               _buildAppBarModelSelector(localizations),
               IconButton(

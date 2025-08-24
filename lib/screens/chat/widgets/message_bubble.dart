@@ -391,7 +391,10 @@ class _MessageBubbleState extends State<MessageBubble>
     final markdownStyleSheet = MarkdownStyleSheet(
       p: TextStyle(color: textColor, fontSize: fontSize, height: 1.4),
       code: TextStyle(
-        backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+        backgroundColor: Theme.of(context)
+            .colorScheme
+            .surfaceContainerHighest
+            .withOpacity(0.6),
         color: Theme.of(context).colorScheme.onSurface,
         fontFamily: 'monospace',
       ),
