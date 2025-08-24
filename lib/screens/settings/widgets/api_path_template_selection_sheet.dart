@@ -10,6 +10,8 @@ class ApiPathTemplate {
   final String? chatPath;
   final String? imaginePath;
   final String? fetchPath;
+  final String? createVideoPath;
+  final String? queryVideoPath;
 
   ApiPathTemplate({
     required this.name,
@@ -18,6 +20,8 @@ class ApiPathTemplate {
     this.chatPath,
     this.imaginePath,
     this.fetchPath,
+    this.createVideoPath,
+    this.queryVideoPath,
   });
 }
 
@@ -87,6 +91,12 @@ class _ApiPathTemplateSelectionSheetState
         name: localizations.apiPathTemplateStandardOpenAI,
         modelType: ModelType.language,
         chatPath: '/v1/chat/completions',
+      ),
+      ApiPathTemplate(
+        name: localizations.apiPathTemplateQingyunTopVeo,
+        modelType: ModelType.video,
+        createVideoPath: '/v1/video/create',
+        queryVideoPath: '/v1/video/query',
       ),
     ];
   }
@@ -161,6 +171,10 @@ class _ApiPathTemplateSelectionSheetState
                                 'Imagine: ${template.imaginePath}',
                               if (template.fetchPath != null)
                                 'Fetch: ${template.fetchPath}',
+                              if (template.createVideoPath != null)
+                                'Create: ${template.createVideoPath}',
+                              if (template.queryVideoPath != null)
+                                'Query: ${template.queryVideoPath}',
                             ].join('\n'),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,

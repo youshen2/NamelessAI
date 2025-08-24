@@ -34,7 +34,7 @@ class AppConfigProvider extends ChangeNotifier {
   String _codeTheme = 'github';
   bool _showDebugButton = false;
   bool _checkForUpdatesOnStartup = true;
-  int _midjourneyRefreshInterval = 10;
+  int _asyncTaskRefreshInterval = 10;
   bool _isFirstLaunch = true;
 
   AppConfigProvider() {
@@ -67,7 +67,7 @@ class AppConfigProvider extends ChangeNotifier {
   String get codeTheme => _codeTheme;
   bool get showDebugButton => _showDebugButton;
   bool get checkForUpdatesOnStartup => _checkForUpdatesOnStartup;
-  int get midjourneyRefreshInterval => _midjourneyRefreshInterval;
+  int get asyncTaskRefreshInterval => _asyncTaskRefreshInterval;
   bool get isFirstLaunch => _isFirstLaunch;
 
   void _loadConfig() {
@@ -109,8 +109,8 @@ class AppConfigProvider extends ChangeNotifier {
     _showDebugButton = box.get('showDebugButton', defaultValue: false);
     _checkForUpdatesOnStartup =
         box.get('checkForUpdatesOnStartup', defaultValue: true);
-    _midjourneyRefreshInterval =
-        box.get('midjourneyRefreshInterval', defaultValue: 10);
+    _asyncTaskRefreshInterval =
+        box.get('asyncTaskRefreshInterval', defaultValue: 10);
     _isFirstLaunch = box.get('isFirstLaunch', defaultValue: true);
 
     notifyListeners();
@@ -275,10 +275,10 @@ class AppConfigProvider extends ChangeNotifier {
     }
   }
 
-  void setMidjourneyRefreshInterval(int interval) {
-    if (_midjourneyRefreshInterval != interval) {
-      _midjourneyRefreshInterval = interval;
-      _updateValue('midjourneyRefreshInterval', interval);
+  void setAsyncTaskRefreshInterval(int interval) {
+    if (_asyncTaskRefreshInterval != interval) {
+      _asyncTaskRefreshInterval = interval;
+      _updateValue('asyncTaskRefreshInterval', interval);
     }
   }
 

@@ -41,13 +41,15 @@ class ChatMessageAdapter extends TypeAdapter<ChatMessage> {
       asyncTaskProgress: fields[18] as String?,
       asyncTaskFullResponse: fields[19] as String?,
       rawResponseJson: fields[20] as String?,
+      enhancedPrompt: fields[21] as String?,
+      videoUrl: fields[22] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ChatMessage obj) {
     writer
-      ..writeByte(21)
+      ..writeByte(23)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -89,7 +91,11 @@ class ChatMessageAdapter extends TypeAdapter<ChatMessage> {
       ..writeByte(19)
       ..write(obj.asyncTaskFullResponse)
       ..writeByte(20)
-      ..write(obj.rawResponseJson);
+      ..write(obj.rawResponseJson)
+      ..writeByte(21)
+      ..write(obj.enhancedPrompt)
+      ..writeByte(22)
+      ..write(obj.videoUrl);
   }
 
   @override
@@ -114,6 +120,8 @@ class MessageTypeAdapter extends TypeAdapter<MessageType> {
         return MessageType.text;
       case 1:
         return MessageType.image;
+      case 2:
+        return MessageType.video;
       default:
         return MessageType.text;
     }
@@ -127,6 +135,9 @@ class MessageTypeAdapter extends TypeAdapter<MessageType> {
         break;
       case MessageType.image:
         writer.writeByte(1);
+        break;
+      case MessageType.video:
+        writer.writeByte(2);
         break;
     }
   }

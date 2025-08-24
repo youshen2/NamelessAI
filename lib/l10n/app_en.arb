@@ -13,8 +13,8 @@
   "apiProviderSettings": "API Providers",
   "systemPromptTemplates": "Prompt Templates",
   "taskSettings": "Task Settings",
-  "midjourneyRefreshInterval": "Midjourney Refresh Interval (seconds)",
-  "midjourneyRefreshIntervalHint": "Set to 0 to disable automatic refresh.",
+  "asyncTaskRefreshInterval": "Async Task Refresh Interval (seconds)",
+  "asyncTaskRefreshIntervalHint": "For image/video generation. Set to 0 to disable.",
   "compatibilityMode": "Compatibility Mode",
   "compatibilityModeMidjourney": "Midjourney Proxy",
   "saveToGallery": "Save to Gallery",
@@ -273,6 +273,14 @@
   "refresh": "Refresh",
   "imageGenerationFailed": "Image generation failed",
   "failedToLoadImage": "Failed to load image",
+  "refreshingIn": "Auto-refresh in {seconds}s",
+  "@refreshingIn": {
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
   "requestError": "Request Error",
   "unknownErrorOccurred": "An unknown error occurred",
   "cancelled": "Cancelled",
@@ -314,5 +322,16 @@
   "nonLanguageModelPathWarning": "Please ensure the API path is correct before use.",
   "noApiPathTemplatesFound": "No API path templates found.",
   "searchApiPathTemplates": "Search templates...",
-  "chatPathHint": "e.g., /v1/chat/completions"
+  "chatPathHint": "e.g., /v1/chat/completions",
+  "createVideoPath": "Create Video Path (Optional)",
+  "queryVideoPath": "Query Video Path (Optional)",
+  "createVideoPathHint": "e.g., /v1/video/create",
+  "queryVideoPathHint": "e.g., /v1/video/query",
+  "apiPathTemplateQingyunTopVeo": "Qingyun Top - Veo Universal",
+  "enhancedPrompt": "Enhanced Prompt",
+  "videoUrl": "Video URL",
+  "copyUrl": "Copy URL",
+  "playVideo": "Play Video",
+  "videoGenerationFailed": "Video generation failed",
+  "failedToLoadVideo": "Failed to load video"
 }

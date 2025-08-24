@@ -11,8 +11,8 @@ class GeneralSettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final appConfig = Provider.of<AppConfigProvider>(context);
-    final midjourneyIntervalController = TextEditingController(
-        text: appConfig.midjourneyRefreshInterval.toString());
+    final asyncTaskIntervalController = TextEditingController(
+        text: appConfig.asyncTaskRefreshInterval.toString());
 
     return Scaffold(
       appBar: AppBar(
@@ -87,12 +87,12 @@ class GeneralSettingsScreen extends StatelessWidget {
                         style: Theme.of(context).textTheme.titleMedium),
                   ),
                   ListTile(
-                    title: Text(localizations.midjourneyRefreshInterval),
-                    subtitle: Text(localizations.midjourneyRefreshIntervalHint),
+                    title: Text(localizations.asyncTaskRefreshInterval),
+                    subtitle: Text(localizations.asyncTaskRefreshIntervalHint),
                     trailing: SizedBox(
                       width: 80,
                       child: TextFormField(
-                        controller: midjourneyIntervalController,
+                        controller: asyncTaskIntervalController,
                         textAlign: TextAlign.center,
                         keyboardType: TextInputType.number,
                         inputFormatters: [
@@ -104,7 +104,7 @@ class GeneralSettingsScreen extends StatelessWidget {
                         onChanged: (value) {
                           final interval = int.tryParse(value);
                           if (interval != null) {
-                            appConfig.setMidjourneyRefreshInterval(interval);
+                            appConfig.setAsyncTaskRefreshInterval(interval);
                           }
                         },
                       ),

@@ -20,6 +20,8 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
   late TextEditingController _imaginePathController;
   late TextEditingController _fetchPathController;
   late TextEditingController _chatPathController;
+  late TextEditingController _createVideoPathController;
+  late TextEditingController _queryVideoPathController;
 
   late bool _isStreamable;
   late ModelType _modelType;
@@ -42,6 +44,10 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
         TextEditingController(text: widget.model?.imaginePath);
     _fetchPathController = TextEditingController(text: widget.model?.fetchPath);
     _chatPathController = TextEditingController(text: widget.model?.chatPath);
+    _createVideoPathController =
+        TextEditingController(text: widget.model?.createVideoPath);
+    _queryVideoPathController =
+        TextEditingController(text: widget.model?.queryVideoPath);
 
     if (widget.model == null) {
       _autoPopulatePaths();
@@ -55,6 +61,8 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
     _imaginePathController.dispose();
     _fetchPathController.dispose();
     _chatPathController.dispose();
+    _createVideoPathController.dispose();
+    _queryVideoPathController.dispose();
     super.dispose();
   }
 
@@ -63,6 +71,9 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
       final imaginePath = _imaginePathController.text.trim();
       final fetchPath = _fetchPathController.text.trim();
       final chatPath = _chatPathController.text.trim();
+      final createVideoPath = _createVideoPathController.text.trim();
+      final queryVideoPath = _queryVideoPathController.text.trim();
+
       final newModel = Model(
         id: widget.model?.id,
         name: _modelNameController.text,
@@ -74,6 +85,8 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
         imaginePath: imaginePath.isEmpty ? null : imaginePath,
         fetchPath: fetchPath.isEmpty ? null : fetchPath,
         chatPath: chatPath.isEmpty ? null : chatPath,
+        createVideoPath: createVideoPath.isEmpty ? null : createVideoPath,
+        queryVideoPath: queryVideoPath.isEmpty ? null : queryVideoPath,
       );
       Navigator.pop(context, newModel);
     }
@@ -125,6 +138,12 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
         imageGenerationMode: ImageGenerationMode.instant,
         imaginePath: '/v1/images/generations',
       ),
+      ApiPathTemplate(
+        name: localizations.apiPathTemplateQingyunTopVeo,
+        modelType: ModelType.video,
+        createVideoPath: '/v1/video/create',
+        queryVideoPath: '/v1/video/query',
+      ),
     ];
   }
 
@@ -146,12 +165,16 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
           _chatPathController.text = firstTemplate.chatPath ?? '';
           _imaginePathController.text = firstTemplate.imaginePath ?? '';
           _fetchPathController.text = firstTemplate.fetchPath ?? '';
+          _createVideoPathController.text = firstTemplate.createVideoPath ?? '';
+          _queryVideoPathController.text = firstTemplate.queryVideoPath ?? '';
         });
       } else {
         setState(() {
           _chatPathController.clear();
           _imaginePathController.clear();
           _fetchPathController.clear();
+          _createVideoPathController.clear();
+          _queryVideoPathController.clear();
         });
       }
     });
@@ -177,6 +200,12 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
         }
         if (result.fetchPath != null) {
           _fetchPathController.text = result.fetchPath!;
+        }
+        if (result.createVideoPath != null) {
+          _createVideoPathController.text = result.createVideoPath!;
+        }
+        if (result.queryVideoPath != null) {
+          _queryVideoPathController.text = result.queryVideoPath!;
         }
       });
     }
@@ -258,6 +287,8 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
             const SizedBox(height: 16),
             if (_modelType == ModelType.image) ...[
               _buildImageModelSettings(localizations),
+            ] else if (_modelType == ModelType.video) ...[
+              _buildVideoModelSettings(localizations),
             ] else ...[
               _buildLanguageModelSettings(localizations),
             ],
@@ -424,6 +455,50 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
                 ),
               ),
             ]
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildVideoModelSettings(AppLocalizations localizations) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ExpansionTile(
+          title: Text(localizations.advancedSettings,
+              style: Theme.of(context).textTheme.titleSmall),
+          initiallyExpanded: true,
+          childrenPadding: const EdgeInsets.only(top: 8, bottom: 8),
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(localizations.apiPathTemplate,
+                    style: Theme.of(context).textTheme.titleMedium),
+                TextButton.icon(
+                  onPressed: _showTemplateSelection,
+                  icon: const Icon(Icons.library_books_outlined, size: 18),
+                  label: Text(localizations.selectApiPathTemplate),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            TextFormField(
+              controller: _createVideoPathController,
+              decoration: InputDecoration(
+                labelText: localizations.createVideoPath,
+                hintText: localizations.createVideoPathHint,
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _queryVideoPathController,
+              decoration: InputDecoration(
+                labelText: localizations.queryVideoPath,
+                hintText: localizations.queryVideoPathHint,
+              ),
+            ),
           ],
         ),
       ],

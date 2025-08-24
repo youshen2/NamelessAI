@@ -39,6 +39,8 @@ class GenerationService {
     try {
       if (model.modelType == ModelType.image) {
         await _generateImage();
+      } else if (model.modelType == ModelType.video) {
+        await _submitVideoTask();
       } else {
         final result = await _generateText(stopwatch);
         firstChunkTimeMs = result.firstChunkTimeMs;
@@ -270,6 +272,24 @@ class GenerationService {
       throw Exception(
           "Midjourney task submission failed: ${response.description} (Code: ${response.code})");
     }
+  }
+
+  Future<void> _submitVideoTask() async {
+    final apiService = ApiService(provider);
+    final userPrompt = messagesForApi.last.content;
+
+    final request = api_models.VideoCreationRequest(
+      prompt: userPrompt,
+      modelSettings: model,
+    );
+    final response = await apiService.createVideoTask(request, cancelToken);
+    messageToUpdate.rawResponseJson = response.rawResponse;
+
+    messageToUpdate.taskId = response.id;
+    messageToUpdate.enhancedPrompt = response.enhancedPrompt;
+    messageToUpdate.asyncTaskStatus = AsyncTaskStatus.submitted;
+    messageToUpdate.content = 'Task Submitted: ${response.status}';
+    messageToUpdate.isLoading = false;
   }
 
   List<Map<String, String>> _formatMessages(

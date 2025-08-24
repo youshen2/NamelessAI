@@ -50,6 +50,12 @@ class Model extends HiveObject {
   @HiveField(9)
   String? chatPath;
 
+  @HiveField(10)
+  String? createVideoPath;
+
+  @HiveField(11)
+  String? queryVideoPath;
+
   Model({
     String? id,
     required this.name,
@@ -61,6 +67,8 @@ class Model extends HiveObject {
     this.imaginePath,
     this.fetchPath,
     this.chatPath,
+    this.createVideoPath,
+    this.queryVideoPath,
   }) : id = id ?? const Uuid().v4();
 
   Model copyWith({
@@ -74,6 +82,8 @@ class Model extends HiveObject {
     String? imaginePath,
     String? fetchPath,
     String? chatPath,
+    String? createVideoPath,
+    String? queryVideoPath,
   }) {
     return Model(
       id: id ?? this.id,
@@ -86,6 +96,8 @@ class Model extends HiveObject {
       imaginePath: imaginePath ?? this.imaginePath,
       fetchPath: fetchPath ?? this.fetchPath,
       chatPath: chatPath ?? this.chatPath,
+      createVideoPath: createVideoPath ?? this.createVideoPath,
+      queryVideoPath: queryVideoPath ?? this.queryVideoPath,
     );
   }
 
@@ -100,6 +112,8 @@ class Model extends HiveObject {
         'imaginePath': imaginePath,
         'fetchPath': fetchPath,
         'chatPath': chatPath,
+        'createVideoPath': createVideoPath,
+        'queryVideoPath': queryVideoPath,
       };
 
   factory Model.fromJson(Map<String, dynamic> json) => Model(
@@ -121,5 +135,7 @@ class Model extends HiveObject {
         imaginePath: json['imaginePath'],
         fetchPath: json['fetchPath'],
         chatPath: json['chatPath'],
+        createVideoPath: json['createVideoPath'],
+        queryVideoPath: json['queryVideoPath'],
       );
 }

@@ -13,8 +13,8 @@
   "apiProviderSettings": "API 提供商",
   "systemPromptTemplates": "提示词模板",
   "taskSettings": "任务设置",
-  "midjourneyRefreshInterval": "Midjourney 刷新间隔 (秒)",
-  "midjourneyRefreshIntervalHint": "设置为0则禁用自动刷新。",
+  "asyncTaskRefreshInterval": "异步任务刷新间隔 (秒)",
+  "asyncTaskRefreshIntervalHint": "用于图片/视频生成。设置为0则禁用。",
   "compatibilityMode": "兼容模式",
   "compatibilityModeMidjourney": "Midjourney 代理",
   "saveToGallery": "保存到相册",
@@ -273,6 +273,14 @@
   "refresh": "刷新",
   "imageGenerationFailed": "图像生成失败",
   "failedToLoadImage": "加载图像失败",
+  "refreshingIn": "将在 {seconds} 秒后自动刷新",
+  "@refreshingIn": {
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
   "requestError": "请求错误",
   "unknownErrorOccurred": "发生未知错误",
   "cancelled": "已取消",
@@ -314,5 +322,16 @@
   "nonLanguageModelPathWarning": "使用前请确定接口路径是否正确。",
   "noApiPathTemplatesFound": "未找到接口模板。",
   "searchApiPathTemplates": "搜索模板...",
-  "chatPathHint": "例如 /v1/chat/completions"
+  "chatPathHint": "例如 /v1/chat/completions",
+  "createVideoPath": "创建视频路径 (可选)",
+  "queryVideoPath": "查询视频路径 (可选)",
+  "createVideoPathHint": "例如 /v1/video/create",
+  "queryVideoPathHint": "例如 /v1/video/query",
+  "apiPathTemplateQingyunTopVeo": "青云Top - Veo通用",
+  "enhancedPrompt": "优化后的提示词",
+  "videoUrl": "视频链接",
+  "copyUrl": "复制链接",
+  "playVideo": "播放视频",
+  "videoGenerationFailed": "视频生成失败",
+  "failedToLoadVideo": "加载视频失败"
 }

@@ -48,10 +48,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get taskSettings => '任务设置';
 
   @override
-  String get midjourneyRefreshInterval => 'Midjourney 刷新间隔 (秒)';
+  String get asyncTaskRefreshInterval => '异步任务刷新间隔 (秒)';
 
   @override
-  String get midjourneyRefreshIntervalHint => '设置为0则禁用自动刷新。';
+  String get asyncTaskRefreshIntervalHint => '用于图片/视频生成。设置为0则禁用。';
 
   @override
   String get compatibilityMode => '兼容模式';
@@ -679,6 +679,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get failedToLoadImage => '加载图像失败';
 
   @override
+  String refreshingIn(String seconds) {
+    return '将在 $seconds 秒后自动刷新';
+  }
+
+  @override
   String get requestError => '请求错误';
 
   @override
@@ -784,4 +789,37 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get chatPathHint => '例如 /v1/chat/completions';
+
+  @override
+  String get createVideoPath => '创建视频路径 (可选)';
+
+  @override
+  String get queryVideoPath => '查询视频路径 (可选)';
+
+  @override
+  String get createVideoPathHint => '例如 /v1/video/create';
+
+  @override
+  String get queryVideoPathHint => '例如 /v1/video/query';
+
+  @override
+  String get apiPathTemplateQingyunTopVeo => '青云Top - Veo通用';
+
+  @override
+  String get enhancedPrompt => '优化后的提示词';
+
+  @override
+  String get videoUrl => '视频链接';
+
+  @override
+  String get copyUrl => '复制链接';
+
+  @override
+  String get playVideo => '播放视频';
+
+  @override
+  String get videoGenerationFailed => '视频生成失败';
+
+  @override
+  String get failedToLoadVideo => '加载视频失败';
 }

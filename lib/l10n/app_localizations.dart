@@ -176,17 +176,17 @@ abstract class AppLocalizations {
   /// **'Task Settings'**
   String get taskSettings;
 
-  /// No description provided for @midjourneyRefreshInterval.
+  /// No description provided for @asyncTaskRefreshInterval.
   ///
   /// In en, this message translates to:
-  /// **'Midjourney Refresh Interval (seconds)'**
-  String get midjourneyRefreshInterval;
+  /// **'Async Task Refresh Interval (seconds)'**
+  String get asyncTaskRefreshInterval;
 
-  /// No description provided for @midjourneyRefreshIntervalHint.
+  /// No description provided for @asyncTaskRefreshIntervalHint.
   ///
   /// In en, this message translates to:
-  /// **'Set to 0 to disable automatic refresh.'**
-  String get midjourneyRefreshIntervalHint;
+  /// **'For image/video generation. Set to 0 to disable.'**
+  String get asyncTaskRefreshIntervalHint;
 
   /// No description provided for @compatibilityMode.
   ///
@@ -1400,6 +1400,12 @@ abstract class AppLocalizations {
   /// **'Failed to load image'**
   String get failedToLoadImage;
 
+  /// No description provided for @refreshingIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-refresh in {seconds}s'**
+  String refreshingIn(String seconds);
+
   /// No description provided for @requestError.
   ///
   /// In en, this message translates to:
@@ -1609,6 +1615,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'e.g., /v1/chat/completions'**
   String get chatPathHint;
+
+  /// No description provided for @createVideoPath.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Video Path (Optional)'**
+  String get createVideoPath;
+
+  /// No description provided for @queryVideoPath.
+  ///
+  /// In en, this message translates to:
+  /// **'Query Video Path (Optional)'**
+  String get queryVideoPath;
+
+  /// No description provided for @createVideoPathHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., /v1/video/create'**
+  String get createVideoPathHint;
+
+  /// No description provided for @queryVideoPathHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., /v1/video/query'**
+  String get queryVideoPathHint;
+
+  /// No description provided for @apiPathTemplateQingyunTopVeo.
+  ///
+  /// In en, this message translates to:
+  /// **'Qingyun Top - Veo Universal'**
+  String get apiPathTemplateQingyunTopVeo;
+
+  /// No description provided for @enhancedPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Enhanced Prompt'**
+  String get enhancedPrompt;
+
+  /// No description provided for @videoUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Video URL'**
+  String get videoUrl;
+
+  /// No description provided for @copyUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy URL'**
+  String get copyUrl;
+
+  /// No description provided for @playVideo.
+  ///
+  /// In en, this message translates to:
+  /// **'Play Video'**
+  String get playVideo;
+
+  /// No description provided for @videoGenerationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Video generation failed'**
+  String get videoGenerationFailed;
+
+  /// No description provided for @failedToLoadVideo.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load video'**
+  String get failedToLoadVideo;
 }
 
 class _AppLocalizationsDelegate

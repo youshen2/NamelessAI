@@ -385,3 +385,83 @@ class MidjourneyFetchResponse {
     );
   }
 }
+
+class VideoCreationRequest {
+  final String prompt;
+  final Model modelSettings;
+
+  VideoCreationRequest({required this.prompt, required this.modelSettings});
+
+  Map<String, dynamic> toJson() => {
+        'prompt': prompt,
+        'model': modelSettings.name,
+      };
+}
+
+class VideoCreationResponse {
+  final String id;
+  final String status;
+  final int statusUpdateTime;
+  final String? enhancedPrompt;
+  final String? rawResponse;
+
+  VideoCreationResponse({
+    required this.id,
+    required this.status,
+    required this.statusUpdateTime,
+    this.enhancedPrompt,
+    this.rawResponse,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'status': status,
+        'status_update_time': statusUpdateTime,
+        'enhanced_prompt': enhancedPrompt,
+      };
+
+  factory VideoCreationResponse.fromJson(Map<String, dynamic> json,
+      {String? rawResponse}) {
+    return VideoCreationResponse(
+      id: json['id'],
+      status: json['status'],
+      statusUpdateTime: json['status_update_time'],
+      enhancedPrompt: json['enhanced_prompt'],
+      rawResponse: rawResponse,
+    );
+  }
+}
+
+class VideoQueryResponse {
+  final String id;
+  final String status;
+  final String? videoUrl;
+  final int statusUpdateTime;
+  final String? rawResponse;
+
+  VideoQueryResponse({
+    required this.id,
+    required this.status,
+    this.videoUrl,
+    required this.statusUpdateTime,
+    this.rawResponse,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'status': status,
+        'video_url': videoUrl,
+        'status_update_time': statusUpdateTime,
+      };
+
+  factory VideoQueryResponse.fromJson(Map<String, dynamic> json,
+      {String? rawResponse}) {
+    return VideoQueryResponse(
+      id: json['id'],
+      status: json['status'],
+      videoUrl: json['video_url'],
+      statusUpdateTime: json['status_update_time'],
+      rawResponse: rawResponse,
+    );
+  }
+}

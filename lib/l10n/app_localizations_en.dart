@@ -48,12 +48,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get taskSettings => 'Task Settings';
 
   @override
-  String get midjourneyRefreshInterval =>
-      'Midjourney Refresh Interval (seconds)';
+  String get asyncTaskRefreshInterval =>
+      'Async Task Refresh Interval (seconds)';
 
   @override
-  String get midjourneyRefreshIntervalHint =>
-      'Set to 0 to disable automatic refresh.';
+  String get asyncTaskRefreshIntervalHint =>
+      'For image/video generation. Set to 0 to disable.';
 
   @override
   String get compatibilityMode => 'Compatibility Mode';
@@ -693,6 +693,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get failedToLoadImage => 'Failed to load image';
 
   @override
+  String refreshingIn(String seconds) {
+    return 'Auto-refresh in ${seconds}s';
+  }
+
+  @override
   String get requestError => 'Request Error';
 
   @override
@@ -806,4 +811,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chatPathHint => 'e.g., /v1/chat/completions';
+
+  @override
+  String get createVideoPath => 'Create Video Path (Optional)';
+
+  @override
+  String get queryVideoPath => 'Query Video Path (Optional)';
+
+  @override
+  String get createVideoPathHint => 'e.g., /v1/video/create';
+
+  @override
+  String get queryVideoPathHint => 'e.g., /v1/video/query';
+
+  @override
+  String get apiPathTemplateQingyunTopVeo => 'Qingyun Top - Veo Universal';
+
+  @override
+  String get enhancedPrompt => 'Enhanced Prompt';
+
+  @override
+  String get videoUrl => 'Video URL';
+
+  @override
+  String get copyUrl => 'Copy URL';
+
+  @override
+  String get playVideo => 'Play Video';
+
+  @override
+  String get videoGenerationFailed => 'Video generation failed';
+
+  @override
+  String get failedToLoadVideo => 'Failed to load video';
 }

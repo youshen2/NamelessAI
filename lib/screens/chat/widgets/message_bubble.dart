@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -63,6 +64,10 @@ class _MessageBubbleState extends State<MessageBubble>
   late final Animation<Offset> _slideAnimation;
   late final Animation<double> _fadeAnimation;
 
+  Timer? _countdownTimer;
+  int _countdown = 0;
+  late AppConfigProvider _appConfig;
+
   @override
   bool get wantKeepAlive => true;
 
@@ -70,6 +75,7 @@ class _MessageBubbleState extends State<MessageBubble>
   void initState() {
     super.initState();
     _editController = TextEditingController(text: widget.message.content);
+    _appConfig = Provider.of<AppConfigProvider>(context, listen: false);
 
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 400),
@@ -90,6 +96,8 @@ class _MessageBubbleState extends State<MessageBubble>
     } else {
       _animationController.value = 1.0;
     }
+
+    _setupTimer();
   }
 
   @override
@@ -104,6 +112,9 @@ class _MessageBubbleState extends State<MessageBubble>
         _editFocusNode.requestFocus();
       }
     }
+    if (oldWidget.message.asyncTaskStatus != widget.message.asyncTaskStatus) {
+      _setupTimer();
+    }
   }
 
   @override
@@ -111,7 +122,32 @@ class _MessageBubbleState extends State<MessageBubble>
     _editController.dispose();
     _editFocusNode.dispose();
     _animationController.dispose();
+    _countdownTimer?.cancel();
     super.dispose();
+  }
+
+  void _setupTimer() {
+    _countdownTimer?.cancel();
+    final needsTimer = widget.message.taskId != null &&
+        (widget.message.asyncTaskStatus == AsyncTaskStatus.submitted ||
+            widget.message.asyncTaskStatus == AsyncTaskStatus.inProgress);
+
+    if (needsTimer && _appConfig.asyncTaskRefreshInterval > 0) {
+      _countdown = _appConfig.asyncTaskRefreshInterval;
+      _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        if (!mounted) {
+          timer.cancel();
+          return;
+        }
+        setState(() {
+          if (_countdown > 1) {
+            _countdown--;
+          } else {
+            _countdown = _appConfig.asyncTaskRefreshInterval;
+          }
+        });
+      });
+    }
   }
 
   void _handleEditKeyEvent(RawKeyEvent event) {
@@ -187,7 +223,8 @@ class _MessageBubbleState extends State<MessageBubble>
                   MessageActionBar(
                     message: widget.message,
                     isHovering: _isHovering,
-                    onCopy: () => widget.onCopy(widget.message.content),
+                    onCopy: () => widget.onCopy(
+                        widget.message.videoUrl ?? widget.message.content),
                     onRegenerate: () => widget.onRegenerate(widget.message),
                     onEdit: () => widget.onEdit(widget.message, true),
                     onDelete: () => widget.onDelete(widget.message),
@@ -257,6 +294,9 @@ class _MessageBubbleState extends State<MessageBubble>
   Widget _buildDisplayModeContent(BuildContext context, Color textColor) {
     if (widget.message.messageType == MessageType.image) {
       return _buildImageContent(context, textColor);
+    }
+    if (widget.message.messageType == MessageType.video) {
+      return _buildVideoContent(context, textColor);
     }
     return _buildTextContent(context, textColor);
   }
@@ -365,6 +405,78 @@ class _MessageBubbleState extends State<MessageBubble>
     );
   }
 
+  Widget _buildVideoContent(BuildContext context, Color textColor) {
+    final localizations = AppLocalizations.of(context)!;
+    final message = widget.message;
+
+    if (message.isLoading && message.asyncTaskStatus == AsyncTaskStatus.none) {
+      return const SizedBox(
+        width: 256,
+        height: 256,
+        child: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (message.asyncTaskStatus != AsyncTaskStatus.none &&
+        message.asyncTaskStatus != AsyncTaskStatus.success) {
+      return _buildAsyncTaskStatus(context, textColor, localizations);
+    }
+
+    if (message.isError) {
+      return _buildTextContent(context, textColor);
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (message.enhancedPrompt != null &&
+              message.enhancedPrompt!.isNotEmpty) ...[
+            Text(localizations.enhancedPrompt,
+                style: Theme.of(context)
+                    .textTheme
+                    .labelSmall
+                    ?.copyWith(color: textColor.withOpacity(0.8))),
+            const SizedBox(height: 4),
+            SelectableText(message.enhancedPrompt!,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall
+                    ?.copyWith(color: textColor.withOpacity(0.8))),
+            const SizedBox(height: 12),
+          ],
+          if (message.videoUrl != null) ...[
+            Container(
+              width: 256,
+              height: 144,
+              decoration: BoxDecoration(
+                color: Colors.black,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Center(
+                child: IconButton(
+                  icon: const Icon(Icons.play_circle_outline,
+                      color: Colors.white, size: 48),
+                  onPressed: () => launchUrl(Uri.parse(message.videoUrl!)),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            TextButton.icon(
+              icon: Icon(Icons.link, size: 16, color: textColor),
+              label: Text(localizations.copyUrl,
+                  style: TextStyle(color: textColor)),
+              onPressed: () => widget.onCopy(message.videoUrl!),
+            ),
+          ] else ...[
+            _buildTextContent(context, textColor),
+          ],
+        ],
+      ),
+    );
+  }
+
   Widget _buildAsyncTaskStatus(
       BuildContext context, Color textColor, AppLocalizations localizations) {
     final message = widget.message;
@@ -407,6 +519,40 @@ class _MessageBubbleState extends State<MessageBubble>
                 style: TextStyle(color: textColor, fontSize: 16),
                 textAlign: TextAlign.center,
               ),
+              if (message.enhancedPrompt != null &&
+                  message.enhancedPrompt!.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                Text(
+                  '${localizations.enhancedPrompt}:',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall
+                      ?.copyWith(color: textColor.withOpacity(0.7)),
+                ),
+                const SizedBox(height: 4),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Text(
+                      message.enhancedPrompt!,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall
+                          ?.copyWith(color: textColor.withOpacity(0.7)),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              ],
+              if (_countdownTimer?.isActive ?? false) ...[
+                const SizedBox(height: 8),
+                Text(
+                  localizations.refreshingIn(_countdown.toString()),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall
+                      ?.copyWith(color: textColor.withOpacity(0.7)),
+                ),
+              ],
             ],
           ),
         ),

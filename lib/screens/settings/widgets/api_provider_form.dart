@@ -22,7 +22,6 @@ class _APIProviderFormState extends State<APIProviderForm> {
   late TextEditingController _nameController;
   late TextEditingController _baseUrlController;
   late TextEditingController _apiKeyController;
-  late TextEditingController _chatPathController;
   List<Model> _models = [];
   bool _isApiKeyObscured = true;
 
@@ -32,8 +31,6 @@ class _APIProviderFormState extends State<APIProviderForm> {
     _nameController = TextEditingController(text: widget.provider?.name);
     _baseUrlController = TextEditingController(text: widget.provider?.baseUrl);
     _apiKeyController = TextEditingController(text: widget.provider?.apiKey);
-    _chatPathController = TextEditingController(
-        text: widget.provider?.chatCompletionPath ?? '/v1/chat/completions');
     _models = List.from(widget.provider?.models ?? []);
   }
 
@@ -42,7 +39,6 @@ class _APIProviderFormState extends State<APIProviderForm> {
     _nameController.dispose();
     _baseUrlController.dispose();
     _apiKeyController.dispose();
-    _chatPathController.dispose();
     super.dispose();
   }
 
@@ -82,7 +78,6 @@ class _APIProviderFormState extends State<APIProviderForm> {
         name: _nameController.text,
         baseUrl: _baseUrlController.text,
         apiKey: _apiKeyController.text,
-        chatCompletionPath: _chatPathController.text,
         models: _models,
       );
 
@@ -170,23 +165,6 @@ class _APIProviderFormState extends State<APIProviderForm> {
                       validator: (value) =>
                           value!.isEmpty ? localizations.apiKeyRequired : null,
                     ),
-                    const SizedBox(height: 16),
-                    ExpansionTile(
-                      title: Text(localizations.advancedSettings,
-                          style: Theme.of(context).textTheme.titleSmall),
-                      initiallyExpanded: false,
-                      childrenPadding: const EdgeInsets.only(top: 8),
-                      children: [
-                        TextFormField(
-                          controller: _chatPathController,
-                          decoration: InputDecoration(
-                              labelText: localizations.chatPath),
-                          validator: (value) => value!.isEmpty
-                              ? localizations.chatPathRequired
-                              : null,
-                        ),
-                      ],
-                    ),
                     const SizedBox(height: 24),
                     Column(
                       children: [
@@ -217,10 +195,17 @@ class _APIProviderFormState extends State<APIProviderForm> {
                           final model = entry.value;
                           String subtitle;
                           if (model.modelType == ModelType.image) {
-                            subtitle = model.imageGenerationMode ==
-                                    ImageGenerationMode.instant
-                                ? localizations.imageModeInstant
-                                : localizations.imageModeAsync;
+                            if (model.imageGenerationMode ==
+                                ImageGenerationMode.instant) {
+                              subtitle = localizations.imageModeInstant;
+                            } else {
+                              subtitle = localizations.imageModeAsync;
+                              if (model.compatibilityMode ==
+                                  CompatibilityMode.midjourneyProxy) {
+                                subtitle +=
+                                    ' (${localizations.compatibilityModeMidjourney})';
+                              }
+                            }
                           } else {
                             subtitle =
                                 '${localizations.streamable}: ${model.isStreamable ? '✓' : '✗'}';

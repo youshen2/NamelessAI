@@ -66,7 +66,7 @@ class ChatSessionManager extends ChangeNotifier {
   void _startRefreshTimer() {
     _refreshTimer?.cancel();
     final intervalSeconds = AppDatabase.appConfigBox
-        .get('midjourneyRefreshInterval', defaultValue: 10);
+        .get('asyncTaskRefreshInterval', defaultValue: 10);
     if (intervalSeconds > 0) {
       _refreshTimer = Timer.periodic(
           Duration(seconds: intervalSeconds), (timer) => _periodicRefresh());
@@ -93,7 +93,8 @@ class ChatSessionManager extends ChangeNotifier {
             orElse: () => provider.models.first,
           );
 
-          if (model.imageGenerationMode == ImageGenerationMode.asynchronous) {
+          if (model.imageGenerationMode == ImageGenerationMode.asynchronous ||
+              model.modelType == ModelType.video) {
             await refreshAsyncTaskStatus(message.id, provider, model);
           }
         }
@@ -290,7 +291,8 @@ class ChatSessionManager extends ChangeNotifier {
     }
 
     if (model.modelType != ModelType.language &&
-        model.modelType != ModelType.image) {
+        model.modelType != ModelType.image &&
+        model.modelType != ModelType.video) {
       if (_isNewSession) {
         await saveCurrentSession(_currentSession!.name);
       }
@@ -323,14 +325,24 @@ class ChatSessionManager extends ChangeNotifier {
     );
     _addMessageToActivePath(_currentSession!, userMessage);
 
+    MessageType messageType;
+    switch (model.modelType) {
+      case ModelType.image:
+        messageType = MessageType.image;
+        break;
+      case ModelType.video:
+        messageType = MessageType.video;
+        break;
+      default:
+        messageType = MessageType.text;
+    }
+
     final assistantMessage = ChatMessage(
       role: 'assistant',
       content: '',
       isLoading: true,
       modelName: model.name,
-      messageType: model.modelType == ModelType.image
-          ? MessageType.image
-          : MessageType.text,
+      messageType: messageType,
     );
     _addMessageToActivePath(_currentSession!, assistantMessage);
 
@@ -391,7 +403,8 @@ class ChatSessionManager extends ChangeNotifier {
 
     final ChatMessage newAssistantMessage;
     if (model.modelType != ModelType.language &&
-        model.modelType != ModelType.image) {
+        model.modelType != ModelType.image &&
+        model.modelType != ModelType.video) {
       newAssistantMessage = ChatMessage(
         role: 'assistant',
         content: unsupportedModelErrorText,
@@ -400,14 +413,23 @@ class ChatSessionManager extends ChangeNotifier {
         modelName: model.name,
       );
     } else {
+      MessageType messageType;
+      switch (model.modelType) {
+        case ModelType.image:
+          messageType = MessageType.image;
+          break;
+        case ModelType.video:
+          messageType = MessageType.video;
+          break;
+        default:
+          messageType = MessageType.text;
+      }
       newAssistantMessage = ChatMessage(
         role: 'assistant',
         content: '',
         isLoading: true,
         modelName: model.name,
-        messageType: model.modelType == ModelType.image
-            ? MessageType.image
-            : MessageType.text,
+        messageType: messageType,
       );
     }
 
@@ -436,7 +458,8 @@ class ChatSessionManager extends ChangeNotifier {
     }
 
     if (model.modelType != ModelType.language &&
-        model.modelType != ModelType.image) {
+        model.modelType != ModelType.image &&
+        model.modelType != ModelType.video) {
       await updateCurrentSession(session);
       return;
     }
@@ -576,9 +599,7 @@ class ChatSessionManager extends ChangeNotifier {
     final session = _currentSession!;
     final message = _findMessageInSession(session, messageId);
 
-    if (message == null ||
-        message.taskId == null ||
-        model.compatibilityMode != CompatibilityMode.midjourneyProxy) {
+    if (message == null || message.taskId == null) {
       return;
     }
 
@@ -586,26 +607,10 @@ class ChatSessionManager extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final apiService = ApiService(provider);
-      final response =
-          await apiService.fetchMidjourneyTask(message.taskId!, model);
-      message.rawResponseJson = response.rawResponse;
-      message.asyncTaskFullResponse = jsonEncode(response);
-
-      if (response.status == 'SUCCESS') {
-        message.asyncTaskStatus = AsyncTaskStatus.success;
-        message.content = response.imageUrl ?? message.content;
-        message.asyncTaskProgress = '100%';
-      } else if (response.status == 'FAILURE') {
-        message.asyncTaskStatus = AsyncTaskStatus.failure;
-        message.isError = true;
-        message.content = response.failReason ?? 'Task failed without reason.';
-      } else if (response.status == 'IN_PROGRESS') {
-        message.asyncTaskStatus = AsyncTaskStatus.inProgress;
-        message.asyncTaskProgress = response.progress;
-      } else {
-        message.asyncTaskStatus = AsyncTaskStatus.submitted;
-        message.asyncTaskProgress = response.progress;
+      if (model.modelType == ModelType.video) {
+        await _refreshVideoTask(message, provider, model);
+      } else if (model.compatibilityMode == CompatibilityMode.midjourneyProxy) {
+        await _refreshMidjourneyTask(message, provider, model);
       }
     } catch (e) {
       message.isError = true;
@@ -614,6 +619,57 @@ class ChatSessionManager extends ChangeNotifier {
     } finally {
       message.isLoading = false;
       await updateCurrentSession(session);
+    }
+  }
+
+  Future<void> _refreshMidjourneyTask(
+      ChatMessage message, APIProvider provider, Model model) async {
+    final apiService = ApiService(provider);
+    final response =
+        await apiService.fetchMidjourneyTask(message.taskId!, model);
+    message.rawResponseJson = response.rawResponse;
+    message.asyncTaskFullResponse = jsonEncode(response.toJson());
+
+    if (response.status == 'SUCCESS') {
+      message.asyncTaskStatus = AsyncTaskStatus.success;
+      message.content = response.imageUrl ?? message.content;
+      message.asyncTaskProgress = '100%';
+    } else if (response.status == 'FAILURE') {
+      message.asyncTaskStatus = AsyncTaskStatus.failure;
+      message.isError = true;
+      message.content = response.failReason ?? 'Task failed without reason.';
+    } else if (response.status == 'IN_PROGRESS') {
+      message.asyncTaskStatus = AsyncTaskStatus.inProgress;
+      message.asyncTaskProgress = response.progress;
+    } else {
+      message.asyncTaskStatus = AsyncTaskStatus.submitted;
+      message.asyncTaskProgress = response.progress;
+    }
+  }
+
+  Future<void> _refreshVideoTask(
+      ChatMessage message, APIProvider provider, Model model) async {
+    final apiService = ApiService(provider);
+    final response = await apiService.queryVideoTask(message.taskId!, model);
+    message.rawResponseJson = response.rawResponse;
+    message.asyncTaskFullResponse = jsonEncode(response.toJson());
+
+    final status = response.status.toUpperCase();
+    if (status == 'SUCCESS' || status == 'COMPLETED') {
+      message.asyncTaskStatus = AsyncTaskStatus.success;
+      message.videoUrl = response.videoUrl;
+      message.content = 'Video generated successfully.';
+      message.asyncTaskProgress = '100%';
+    } else if (status == 'FAILURE' || status == 'FAILED') {
+      message.asyncTaskStatus = AsyncTaskStatus.failure;
+      message.isError = true;
+      message.content = 'Video generation failed.';
+    } else if (status == 'IN_PROGRESS' || status == 'PROCESSING') {
+      message.asyncTaskStatus = AsyncTaskStatus.inProgress;
+      message.content = 'Video generation in progress...';
+    } else {
+      message.asyncTaskStatus = AsyncTaskStatus.submitted;
+      message.content = 'Video task submitted: ${response.status}';
     }
   }
 

@@ -30,13 +30,15 @@ class ModelAdapter extends TypeAdapter<Model> {
       imaginePath: fields[7] as String?,
       fetchPath: fields[8] as String?,
       chatPath: fields[9] as String?,
+      createVideoPath: fields[10] as String?,
+      queryVideoPath: fields[11] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Model obj) {
     writer
-      ..writeByte(10)
+      ..writeByte(12)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -56,7 +58,11 @@ class ModelAdapter extends TypeAdapter<Model> {
       ..writeByte(8)
       ..write(obj.fetchPath)
       ..writeByte(9)
-      ..write(obj.chatPath);
+      ..write(obj.chatPath)
+      ..writeByte(10)
+      ..write(obj.createVideoPath)
+      ..writeByte(11)
+      ..write(obj.queryVideoPath);
   }
 
   @override

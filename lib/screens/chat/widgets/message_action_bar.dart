@@ -82,9 +82,10 @@ class MessageActionBar extends StatelessWidget {
         platform == TargetPlatform.iOS ||
         platform == TargetPlatform.fuchsia;
     final isUser = message.role == 'user';
-    final isAiImage =
-        message.role == 'assistant' && message.messageType == MessageType.image;
-    final isAsyncTask = isAiImage && message.taskId != null;
+    final isAiMedia = message.role == 'assistant' &&
+        (message.messageType == MessageType.image ||
+            message.messageType == MessageType.video);
+    final isAsyncTask = isAiMedia && message.taskId != null;
     final isTaskFinished = message.asyncTaskStatus == AsyncTaskStatus.success ||
         message.asyncTaskStatus == AsyncTaskStatus.failure;
 
@@ -109,7 +110,7 @@ class MessageActionBar extends StatelessWidget {
             if (isAsyncTask && !isTaskFinished)
               _actionButton(context, Icons.sync, localizations.refresh,
                   onRefresh, appConfig.compactMode),
-            if (!isAiImage)
+            if (!isAiMedia)
               _actionButton(context, Icons.edit_outlined,
                   localizations.editMessage, onEdit, appConfig.compactMode),
             _actionButton(context, Icons.delete_outline,

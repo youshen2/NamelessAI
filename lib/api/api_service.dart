@@ -27,9 +27,7 @@ class ApiService {
     try {
       debugPrint(
           "NamelessAI - Sending Request: ${jsonEncode(request.toJson())}");
-      final path = request.model.chatPath?.isNotEmpty == true
-          ? request.model.chatPath!
-          : provider.chatCompletionPath;
+      final path = request.model.chatPath ?? '/v1/chat/completions';
       final response = await _dio.post(
         path,
         data: request.toJson(),
@@ -77,9 +75,7 @@ class ApiService {
     try {
       debugPrint(
           "NamelessAI - Sending Stream Request: ${jsonEncode(request.toJson())}");
-      final path = request.model.chatPath?.isNotEmpty == true
-          ? request.model.chatPath!
-          : provider.chatCompletionPath;
+      final path = request.model.chatPath ?? '/v1/chat/completions';
       final response = await _dio.post(
         path,
         data: request.toJson(),
@@ -247,6 +243,47 @@ class ApiService {
       debugPrint(
           "NamelessAI - Received Midjourney Fetch Response: $rawResponseString");
       return MidjourneyFetchResponse.fromJson(response.data,
+          rawResponse: rawResponseString);
+    } on DioException {
+      rethrow;
+    }
+  }
+
+  Future<VideoCreationResponse> createVideoTask(VideoCreationRequest request,
+      [CancelToken? cancelToken]) async {
+    try {
+      debugPrint(
+          "NamelessAI - Creating Video Task: ${jsonEncode(request.toJson())}");
+      final path = request.modelSettings.createVideoPath ?? '/v1/video/create';
+      final response = await _dio.post(
+        path,
+        data: request.toJson(),
+        cancelToken: cancelToken,
+      );
+      final rawResponseString = jsonEncode(response.data);
+      debugPrint(
+          "NamelessAI - Received Video Task Response: $rawResponseString");
+      return VideoCreationResponse.fromJson(response.data,
+          rawResponse: rawResponseString);
+    } on DioException {
+      rethrow;
+    }
+  }
+
+  Future<VideoQueryResponse> queryVideoTask(String taskId, Model model,
+      [CancelToken? cancelToken]) async {
+    try {
+      final path = model.queryVideoPath ?? '/v1/video/query';
+      debugPrint("NamelessAI - Querying Video Task: $path, id: $taskId");
+      final response = await _dio.get(
+        path,
+        queryParameters: {'id': taskId},
+        cancelToken: cancelToken,
+      );
+      final rawResponseString = jsonEncode(response.data);
+      debugPrint(
+          "NamelessAI - Received Video Query Response: $rawResponseString");
+      return VideoQueryResponse.fromJson(response.data,
           rawResponse: rawResponseString);
     } on DioException {
       rethrow;

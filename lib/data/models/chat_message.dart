@@ -9,6 +9,8 @@ enum MessageType {
   text,
   @HiveField(1)
   image,
+  @HiveField(2)
+  video,
 }
 
 @HiveType(typeId: 18)
@@ -90,6 +92,12 @@ class ChatMessage extends HiveObject {
   @HiveField(20)
   String? rawResponseJson;
 
+  @HiveField(21)
+  String? enhancedPrompt;
+
+  @HiveField(22)
+  String? videoUrl;
+
   DateTime? thinkingStartTime;
 
   ChatMessage({
@@ -115,6 +123,8 @@ class ChatMessage extends HiveObject {
     this.asyncTaskProgress,
     this.asyncTaskFullResponse,
     this.rawResponseJson,
+    this.enhancedPrompt,
+    this.videoUrl,
   })  : id = id ?? const Uuid().v4(),
         timestamp = timestamp ?? DateTime.now();
 
@@ -141,6 +151,8 @@ class ChatMessage extends HiveObject {
     String? asyncTaskProgress,
     String? asyncTaskFullResponse,
     String? rawResponseJson,
+    String? enhancedPrompt,
+    String? videoUrl,
   }) {
     return ChatMessage(
       id: id ?? this.id,
@@ -166,6 +178,8 @@ class ChatMessage extends HiveObject {
       asyncTaskFullResponse:
           asyncTaskFullResponse ?? this.asyncTaskFullResponse,
       rawResponseJson: rawResponseJson ?? this.rawResponseJson,
+      enhancedPrompt: enhancedPrompt ?? this.enhancedPrompt,
+      videoUrl: videoUrl ?? this.videoUrl,
     );
   }
 
@@ -191,6 +205,8 @@ class ChatMessage extends HiveObject {
         'asyncTaskProgress': asyncTaskProgress,
         'asyncTaskFullResponse': asyncTaskFullResponse,
         'rawResponseJson': rawResponseJson,
+        'enhancedPrompt': enhancedPrompt,
+        'videoUrl': videoUrl,
       };
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) => ChatMessage(
@@ -219,5 +235,7 @@ class ChatMessage extends HiveObject {
         asyncTaskProgress: json['asyncTaskProgress'],
         asyncTaskFullResponse: json['asyncTaskFullResponse'],
         rawResponseJson: json['rawResponseJson'],
+        enhancedPrompt: json['enhancedPrompt'],
+        videoUrl: json['videoUrl'],
       );
 }

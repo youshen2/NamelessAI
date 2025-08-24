@@ -21,19 +21,14 @@ class APIProvider extends HiveObject {
   @HiveField(4)
   List<Model> models;
 
-  @HiveField(5)
-  String chatCompletionPath;
-
   APIProvider({
     String? id,
     required this.name,
     required this.baseUrl,
     required this.apiKey,
     List<Model>? models,
-    String? chatCompletionPath,
   })  : id = id ?? const Uuid().v4(),
-        models = models ?? [],
-        chatCompletionPath = chatCompletionPath ?? '/v1/chat/completions';
+        models = models ?? [];
 
   APIProvider copyWith({
     String? id,
@@ -41,7 +36,6 @@ class APIProvider extends HiveObject {
     String? baseUrl,
     String? apiKey,
     List<Model>? models,
-    String? chatCompletionPath,
   }) {
     return APIProvider(
       id: id ?? this.id,
@@ -49,7 +43,6 @@ class APIProvider extends HiveObject {
       baseUrl: baseUrl ?? this.baseUrl,
       apiKey: apiKey ?? this.apiKey,
       models: models ?? this.models,
-      chatCompletionPath: chatCompletionPath ?? this.chatCompletionPath,
     );
   }
 
@@ -59,7 +52,6 @@ class APIProvider extends HiveObject {
         'baseUrl': baseUrl,
         'apiKey': apiKey,
         'models': models.map((m) => m.toJson()).toList(),
-        'chatCompletionPath': chatCompletionPath,
       };
 
   factory APIProvider.fromJson(Map<String, dynamic> json) => APIProvider(
@@ -68,6 +60,5 @@ class APIProvider extends HiveObject {
         baseUrl: json['baseUrl'],
         apiKey: json['apiKey'],
         models: (json['models'] as List).map((m) => Model.fromJson(m)).toList(),
-        chatCompletionPath: json['chatCompletionPath'],
       );
 }
