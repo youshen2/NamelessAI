@@ -17,7 +17,8 @@ class ApiService {
             'Authorization': 'Bearer ${provider.apiKey}',
           },
           connectTimeout: const Duration(seconds: 10),
-          receiveTimeout: const Duration(seconds: 30),
+          // 将 receiveTimeout 修改为 10 分钟 (600 秒)
+          receiveTimeout: const Duration(minutes: 10), // 原来是 60 秒
         ));
 
   Future<ChatCompletionResponse> getChatCompletion(
@@ -59,8 +60,8 @@ class ApiService {
       }
 
       return ChatCompletionResponse.fromJson(response.data);
-    } on DioException catch (e) {
-      throw Exception('Failed to get chat completion: ${e.message}');
+    } on DioException {
+      rethrow;
     }
   }
 
@@ -95,10 +96,10 @@ class ApiService {
           if (line.startsWith('data: ')) {
             final String jsonStr = line.substring(6).trim();
             if (jsonStr == '[DONE]') {
-              return; // End of stream
+              return;
             }
             if (jsonStr.isEmpty) {
-              continue; // Skip empty data lines
+              continue;
             }
             try {
               final Map<String, dynamic> json = jsonDecode(jsonStr);
@@ -159,8 +160,26 @@ class ApiService {
           }
         }
       }
-    } on DioException catch (e) {
-      throw Exception('Failed to get chat completion stream: ${e.message}');
+    } on DioException {
+      rethrow;
+    }
+  }
+
+  Future<ImageGenerationResponse> generateImage(ImageGenerationRequest request,
+      [CancelToken? cancelToken]) async {
+    try {
+      debugPrint(
+          "NamelessAI - Sending Image Request: ${jsonEncode(request.toJson())}");
+      final response = await _dio.post(
+        provider.imageGenerationPath ?? '/v1/images/generations',
+        data: request.toJson(),
+        cancelToken: cancelToken,
+      );
+      debugPrint(
+          "NamelessAI - Received Image Response: ${jsonEncode(response.data)}");
+      return ImageGenerationResponse.fromJson(response.data);
+    } on DioException {
+      rethrow;
     }
   }
 }

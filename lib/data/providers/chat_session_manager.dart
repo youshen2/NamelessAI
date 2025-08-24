@@ -1,14 +1,13 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:nameless_ai/api/models.dart' as api_models;
 import 'package:nameless_ai/data/app_database.dart';
 import 'package:nameless_ai/data/models/api_provider.dart';
 import 'package:nameless_ai/data/models/chat_message.dart';
 import 'package:nameless_ai/data/models/chat_session.dart';
 import 'package:nameless_ai/data/models/model.dart';
 import 'package:nameless_ai/data/models/model_type.dart';
-import 'package:nameless_ai/services/chat_service.dart';
+import 'package:nameless_ai/services/generation_service.dart';
 
 class ChatSessionManager extends ChangeNotifier {
   static const String _defaultSystemPrompt = "You are a helpful assistant.";
@@ -19,7 +18,6 @@ class ChatSessionManager extends ChangeNotifier {
   ChatSession? _currentSession;
   bool _isNewSession = true;
   final Set<String> _generatingSessions = {};
-  final Set<String> _cancelledSessions = {};
   final Map<String, CancelToken> _cancelTokens = {};
 
   ChatSessionManager() {
@@ -214,7 +212,8 @@ class ChatSessionManager extends ChangeNotifier {
       startNewSession(providerId: provider.id, modelId: model.id);
     }
 
-    if (model.modelType != ModelType.language) {
+    if (model.modelType != ModelType.language &&
+        model.modelType != ModelType.image) {
       if (_isNewSession) {
         await saveCurrentSession(_currentSession!.name);
       }
@@ -252,6 +251,9 @@ class ChatSessionManager extends ChangeNotifier {
       content: '',
       isLoading: true,
       modelName: model.name,
+      messageType: model.modelType == ModelType.image
+          ? MessageType.image
+          : MessageType.text,
     );
     _addMessageToActivePath(_currentSession!, assistantMessage);
 
@@ -311,7 +313,8 @@ class ChatSessionManager extends ChangeNotifier {
     userMessageToEdit.modelName = model.name;
 
     final ChatMessage newAssistantMessage;
-    if (model.modelType != ModelType.language) {
+    if (model.modelType != ModelType.language &&
+        model.modelType != ModelType.image) {
       newAssistantMessage = ChatMessage(
         role: 'assistant',
         content: unsupportedModelErrorText,
@@ -325,6 +328,9 @@ class ChatSessionManager extends ChangeNotifier {
         content: '',
         isLoading: true,
         modelName: model.name,
+        messageType: model.modelType == ModelType.image
+            ? MessageType.image
+            : MessageType.text,
       );
     }
 
@@ -352,7 +358,8 @@ class ChatSessionManager extends ChangeNotifier {
       }
     }
 
-    if (model.modelType != ModelType.language) {
+    if (model.modelType != ModelType.language &&
+        model.modelType != ModelType.image) {
       await updateCurrentSession(session);
       return;
     }
@@ -420,10 +427,8 @@ class ChatSessionManager extends ChangeNotifier {
 
   void cancelGeneration(String sessionId) {
     if (_generatingSessions.contains(sessionId)) {
-      _cancelledSessions.add(sessionId);
       _cancelTokens[sessionId]?.cancel("Operation cancelled by user.");
       debugPrint("NamelessAI - Cancellation requested for session $sessionId");
-      notifyListeners();
     }
   }
 
@@ -436,12 +441,8 @@ class ChatSessionManager extends ChangeNotifier {
       return;
     }
 
-    _cancelledSessions.remove(sessionId);
-
     final cancelToken = CancelToken();
     _cancelTokens[sessionId] = cancelToken;
-
-    final chatService = ChatService(provider: provider, model: model);
 
     var messagesForApi = session.activeMessages
         .where((m) => m.id != assistantMessageId)
@@ -454,185 +455,42 @@ class ChatSessionManager extends ChangeNotifier {
       }
     }
 
-    final stopwatch = Stopwatch()..start();
-    int? firstChunkTimeMs;
-    String fullResponseBuffer = '';
-    api_models.Usage? usage;
-    const thinkStartTag = '<think>';
-    const thinkEndTag = '</think>';
-    bool isThinkingResponse = false;
-    bool isFirstChunk = true;
-    bool thinkingDone = false;
-    try {
-      final useStreaming = session.useStreaming ?? model.isStreamable;
-      final messageToUpdate =
-          _findMessageInSession(session, assistantMessageId);
-      if (messageToUpdate == null) return;
-      if (useStreaming) {
-        final stream = chatService.getCompletionStream(
-          messagesForApi,
-          session.systemPrompt,
-          session.temperature,
-          session.topP,
-          cancelToken,
-        );
-
-        await for (final item in stream) {
-          if (_cancelledSessions.contains(sessionId)) {
-            debugPrint(
-                "NamelessAI - Generation cancelled for session $sessionId");
-            break;
-          }
-
-          if (item is String) {
-            if (firstChunkTimeMs == null) {
-              firstChunkTimeMs = stopwatch.elapsedMilliseconds;
-              if (model.supportsThinking) {
-                messageToUpdate.thinkingStartTime = DateTime.now();
-              }
-            }
-
-            if (model.supportsThinking) {
-              if (isFirstChunk) {
-                isFirstChunk = false;
-                if (item.trim().startsWith(thinkStartTag)) {
-                  isThinkingResponse = true;
-                }
-              }
-
-              if (isThinkingResponse) {
-                fullResponseBuffer += item;
-                if (!thinkingDone && fullResponseBuffer.contains(thinkEndTag)) {
-                  thinkingDone = true;
-                  final parts = fullResponseBuffer.split(thinkEndTag);
-                  messageToUpdate.thinkingContent =
-                      parts[0].substring(thinkStartTag.length);
-                  messageToUpdate.content = parts.length > 1 ? parts[1] : '';
-                  if (messageToUpdate.thinkingStartTime != null) {
-                    messageToUpdate.thinkingDurationMs = DateTime.now()
-                        .difference(messageToUpdate.thinkingStartTime!)
-                        .inMilliseconds;
-                  }
-                } else if (thinkingDone) {
-                  messageToUpdate.content =
-                      (messageToUpdate.content ?? '') + item;
-                } else {
-                  messageToUpdate.thinkingContent =
-                      fullResponseBuffer.substring(thinkStartTag.length);
-                }
-              } else {
-                messageToUpdate.content =
-                    (messageToUpdate.content ?? '') + item;
-              }
-            } else {
-              messageToUpdate.content = (messageToUpdate.content ?? '') + item;
-            }
-            notifyListeners();
-          } else if (item is api_models.Usage) {
-            usage = item;
-          }
-        }
-      } else {
-        final response = await chatService.getCompletion(
-          messagesForApi,
-          session.systemPrompt,
-          session.temperature,
-          session.topP,
-          cancelToken,
-        );
-        final responseMessage = response.choices.first.message;
-        fullResponseBuffer = responseMessage.content;
-        usage = response.usage;
-
-        if (model.supportsThinking &&
-            responseMessage.reasoningContent != null &&
-            responseMessage.reasoningContent!.isNotEmpty) {
-          thinkingDone = true;
-          messageToUpdate.thinkingContent = responseMessage.reasoningContent;
-          messageToUpdate.content = fullResponseBuffer;
-          messageToUpdate.thinkingDurationMs = stopwatch.elapsedMilliseconds;
-        } else if (model.supportsThinking &&
-            fullResponseBuffer.trim().startsWith(thinkStartTag) &&
-            fullResponseBuffer.contains(thinkEndTag)) {
-          thinkingDone = true;
-          final parts = fullResponseBuffer.split(thinkEndTag);
-          messageToUpdate.thinkingContent =
-              parts[0].substring(thinkStartTag.length);
-          messageToUpdate.content = parts.length > 1 ? parts[1] : '';
-          messageToUpdate.thinkingDurationMs = stopwatch.elapsedMilliseconds;
-        } else {
-          messageToUpdate.content = fullResponseBuffer;
-        }
-      }
-    } on DioException catch (e) {
-      if (e.type == DioExceptionType.cancel) {
-        debugPrint(
-            "NamelessAI - Generation for session $sessionId was cancelled via token.");
-        final messageToUpdate =
-            _findMessageInSession(session, assistantMessageId);
-        if (messageToUpdate != null &&
-            (messageToUpdate.content ?? '').isEmpty) {
-          _removeMessageInSession(session, assistantMessageId);
-        }
-      } else {
-        final messageToUpdate =
-            _findMessageInSession(session, assistantMessageId);
-        if (messageToUpdate != null) {
-          messageToUpdate.content = "Error: ${e.message}";
-          messageToUpdate.isError = true;
-        }
-      }
-    } catch (e) {
-      final messageToUpdate =
-          _findMessageInSession(session, assistantMessageId);
-      if (messageToUpdate != null) {
-        messageToUpdate.content = "Error: ${e.toString()}";
-        messageToUpdate.isError = true;
-      }
-    } finally {
-      stopwatch.stop();
-      final finalMessage = _findMessageInSession(session, assistantMessageId);
-      if (finalMessage != null) {
-        finalMessage.isLoading = false;
-        finalMessage.completionTimeMs = stopwatch.elapsedMilliseconds;
-        finalMessage.firstChunkTimeMs = firstChunkTimeMs;
-        finalMessage.outputCharacters = (finalMessage.content ?? '').length;
-        if (usage != null) {
-          finalMessage.promptTokens = usage.promptTokens;
-          finalMessage.completionTokens = usage.completionTokens;
-        }
-
-        if (model.supportsThinking &&
-            isThinkingResponse &&
-            !thinkingDone &&
-            finalMessage.thinkingContent != null) {
-          finalMessage.content = finalMessage.thinkingContent!;
-          finalMessage.thinkingContent = null;
-          finalMessage.thinkingDurationMs = null;
-        } else if (model.supportsThinking && thinkingDone) {
-          if (finalMessage.thinkingStartTime != null &&
-              finalMessage.thinkingDurationMs == null) {
-            finalMessage.thinkingDurationMs = DateTime.now()
-                .difference(finalMessage.thinkingStartTime!)
-                .inMilliseconds;
-          }
-        }
-
-        finalMessage.thinkingStartTime = null;
-      }
-
-      session.updatedAt = DateTime.now();
-      await session.save();
-
+    final messageToUpdate = _findMessageInSession(session, assistantMessageId);
+    if (messageToUpdate == null) {
       _generatingSessions.remove(sessionId);
-      _cancelledSessions.remove(sessionId);
-      _cancelTokens.remove(sessionId);
-      _loadSessions();
-      if (_currentSession?.id == session.id) {
-        _currentSession = session;
-      }
       notifyListeners();
+      return;
     }
+
+    final generationService = GenerationService(
+      provider: provider,
+      model: model,
+      session: session,
+      assistantMessageId: assistantMessageId,
+      messagesForApi: messagesForApi,
+      cancelToken: cancelToken,
+      messageToUpdate: messageToUpdate,
+      onUpdate: () {
+        notifyListeners();
+      },
+    );
+
+    await generationService.execute();
+
+    if (messageToUpdate.content == "[Cancelled]") {
+      _removeMessageInSession(session, assistantMessageId);
+    }
+
+    session.updatedAt = DateTime.now();
+    await session.save();
+
+    _generatingSessions.remove(sessionId);
+    _cancelTokens.remove(sessionId);
+    _loadSessions();
+    if (_currentSession?.id == session.id) {
+      _currentSession = session;
+    }
+    notifyListeners();
   }
 
   void _addMessageToActivePath(ChatSession session, ChatMessage message) {

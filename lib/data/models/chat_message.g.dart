@@ -32,13 +32,15 @@ class ChatMessageAdapter extends TypeAdapter<ChatMessage> {
       modelName: fields[12] as String?,
       thinkingContent: fields[13] as String?,
       thinkingDurationMs: fields[14] as int?,
+      messageType:
+          fields[15] == null ? MessageType.text : fields[15] as MessageType,
     );
   }
 
   @override
   void write(BinaryWriter writer, ChatMessage obj) {
     writer
-      ..writeByte(15)
+      ..writeByte(16)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -68,7 +70,9 @@ class ChatMessageAdapter extends TypeAdapter<ChatMessage> {
       ..writeByte(13)
       ..write(obj.thinkingContent)
       ..writeByte(14)
-      ..write(obj.thinkingDurationMs);
+      ..write(obj.thinkingDurationMs)
+      ..writeByte(15)
+      ..write(obj.messageType);
   }
 
   @override
@@ -78,6 +82,45 @@ class ChatMessageAdapter extends TypeAdapter<ChatMessage> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is ChatMessageAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class MessageTypeAdapter extends TypeAdapter<MessageType> {
+  @override
+  final int typeId = 15;
+
+  @override
+  MessageType read(BinaryReader reader) {
+    switch (reader.readByte()) {
+      case 0:
+        return MessageType.text;
+      case 1:
+        return MessageType.image;
+      default:
+        return MessageType.text;
+    }
+  }
+
+  @override
+  void write(BinaryWriter writer, MessageType obj) {
+    switch (obj) {
+      case MessageType.text:
+        writer.writeByte(0);
+        break;
+      case MessageType.image:
+        writer.writeByte(1);
+        break;
+    }
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MessageTypeAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

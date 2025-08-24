@@ -187,3 +187,60 @@ class ChatDelta {
     );
   }
 }
+
+class ImageGenerationRequest {
+  final String prompt;
+  final String? model;
+  final int? n;
+  final String? size;
+
+  ImageGenerationRequest({
+    required this.prompt,
+    this.model,
+    this.n = 1,
+    this.size = '1024x1024',
+  });
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = {
+      'prompt': prompt,
+      'n': n,
+      'size': size,
+    };
+    if (model != null) {
+      data['model'] = model;
+    }
+    return data;
+  }
+}
+
+class ImageGenerationResponse {
+  final int created;
+  final List<ImageData> data;
+
+  ImageGenerationResponse({
+    required this.created,
+    required this.data,
+  });
+
+  factory ImageGenerationResponse.fromJson(Map<String, dynamic> json) {
+    return ImageGenerationResponse(
+      created: json['created'],
+      data: (json['data'] as List).map((e) => ImageData.fromJson(e)).toList(),
+    );
+  }
+}
+
+class ImageData {
+  final String? url;
+  final String? b64Json;
+
+  ImageData({this.url, this.b64Json});
+
+  factory ImageData.fromJson(Map<String, dynamic> json) {
+    return ImageData(
+      url: json['url'],
+      b64Json: json['b64_json'],
+    );
+  }
+}

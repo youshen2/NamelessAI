@@ -24,6 +24,7 @@ class AppDatabase {
     Hive.registerAdapter(ChatSessionAdapter());
     Hive.registerAdapter(SystemPromptTemplateAdapter());
     Hive.registerAdapter(ModelTypeAdapter());
+    Hive.registerAdapter(MessageTypeAdapter());
   }
 
   static Future<void> openBoxes() async {

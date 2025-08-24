@@ -236,17 +236,13 @@ class _MessageBubbleState extends State<MessageBubble>
                 widget.message.thinkingContent!.isNotEmpty)
               ThinkingContentWidget(
                   message: widget.message, textColor: textColor),
-            Padding(
-              padding: widget.message.isEditing
-                  ? const EdgeInsets.all(8.0)
-                  : EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: appConfig.compactMode ? 6 : 10,
-                    ),
-              child: widget.message.isEditing
-                  ? _buildEditModeContent(context, textColor)
-                  : _buildDisplayModeContent(context, textColor, isError),
-            ),
+            if (widget.message.isEditing)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: _buildEditModeContent(context, textColor),
+              )
+            else
+              _buildDisplayModeContent(context, textColor, isError),
           ],
         ),
       ),
@@ -254,6 +250,72 @@ class _MessageBubbleState extends State<MessageBubble>
   }
 
   Widget _buildDisplayModeContent(
+      BuildContext context, Color textColor, bool isError) {
+    if (widget.message.messageType == MessageType.image) {
+      return _buildImageContent(context, textColor);
+    }
+    return _buildTextContent(context, textColor, isError);
+  }
+
+  Widget _buildImageContent(BuildContext context, Color textColor) {
+    if (widget.message.isLoading) {
+      return const SizedBox(
+        width: 256,
+        height: 256,
+        child: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (widget.message.isError || widget.message.content.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.error_outline, color: textColor, size: 20),
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text(
+                widget.message.content.isEmpty
+                    ? "Image generation failed"
+                    : widget.message.content,
+                style: TextStyle(color: textColor),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Image.network(
+      widget.message.content,
+      fit: BoxFit.cover,
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return const SizedBox(
+          width: 256,
+          height: 256,
+          child: Center(child: CircularProgressIndicator()),
+        );
+      },
+      errorBuilder: (context, error, stackTrace) {
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Icon(Icons.broken_image,
+                  size: 48, color: textColor.withOpacity(0.7)),
+              const SizedBox(height: 8),
+              Text("Failed to load image", style: TextStyle(color: textColor)),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildTextContent(
       BuildContext context, Color textColor, bool isError) {
     final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
     double fontSize;
@@ -272,7 +334,7 @@ class _MessageBubbleState extends State<MessageBubble>
 
     if (widget.message.isLoading && widget.message.content.isEmpty) {
       return const Padding(
-        padding: EdgeInsets.symmetric(vertical: 8.0),
+        padding: EdgeInsets.symmetric(vertical: 18.0, horizontal: 12.0),
         child: TypingIndicator(isInline: true),
       );
     }
@@ -317,26 +379,32 @@ class _MessageBubbleState extends State<MessageBubble>
       ),
     );
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (isError)
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(Icons.error_outline, color: textColor, size: 20),
-              const SizedBox(width: 8),
-              Expanded(child: markdownContent),
-            ],
-          )
-        else
-          markdownContent,
-        if (widget.message.isLoading)
-          const Padding(
-            padding: EdgeInsets.only(top: 8.0),
-            child: TypingIndicator(isInline: true),
-          ),
-      ],
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: 12,
+        vertical: appConfig.compactMode ? 6 : 10,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (isError)
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.error_outline, color: textColor, size: 20),
+                const SizedBox(width: 8),
+                Expanded(child: markdownContent),
+              ],
+            )
+          else
+            markdownContent,
+          if (widget.message.isLoading)
+            const Padding(
+              padding: EdgeInsets.only(top: 8.0),
+              child: TypingIndicator(isInline: true),
+            ),
+        ],
+      ),
     );
   }
 

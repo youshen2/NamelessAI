@@ -68,6 +68,8 @@ class MessageActionBar extends StatelessWidget {
         platform == TargetPlatform.iOS ||
         platform == TargetPlatform.fuchsia;
     final isUser = message.role == 'user';
+    final isAiImage =
+        message.role == 'assistant' && message.messageType == MessageType.image;
 
     return AnimatedOpacity(
       opacity: isHovering || isTouchDevice ? 1.0 : 0.0,
@@ -86,8 +88,9 @@ class MessageActionBar extends StatelessWidget {
                   localizations.regenerateResponse,
                   onRegenerate,
                   appConfig.compactMode),
-            _actionButton(context, Icons.edit_outlined,
-                localizations.editMessage, onEdit, appConfig.compactMode),
+            if (!isAiImage)
+              _actionButton(context, Icons.edit_outlined,
+                  localizations.editMessage, onEdit, appConfig.compactMode),
             _actionButton(context, Icons.delete_outline,
                 localizations.deleteMessage, onDelete, appConfig.compactMode),
             if (appConfig.showDebugButton)

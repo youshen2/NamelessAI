@@ -3,6 +3,14 @@ import 'package:uuid/uuid.dart';
 
 part 'chat_message.g.dart';
 
+@HiveType(typeId: 15)
+enum MessageType {
+  @HiveField(0)
+  text,
+  @HiveField(1)
+  image,
+}
+
 @HiveType(typeId: 2)
 class ChatMessage extends HiveObject {
   @HiveField(0)
@@ -50,6 +58,9 @@ class ChatMessage extends HiveObject {
   @HiveField(14)
   int? thinkingDurationMs;
 
+  @HiveField(15, defaultValue: MessageType.text)
+  MessageType messageType;
+
   DateTime? thinkingStartTime;
 
   ChatMessage({
@@ -69,6 +80,7 @@ class ChatMessage extends HiveObject {
     this.thinkingContent,
     this.thinkingDurationMs,
     this.thinkingStartTime,
+    this.messageType = MessageType.text,
   })  : id = id ?? const Uuid().v4(),
         timestamp = timestamp ?? DateTime.now();
 
@@ -89,6 +101,7 @@ class ChatMessage extends HiveObject {
     String? thinkingContent,
     int? thinkingDurationMs,
     DateTime? thinkingStartTime,
+    MessageType? messageType,
   }) {
     return ChatMessage(
       id: id ?? this.id,
@@ -107,6 +120,7 @@ class ChatMessage extends HiveObject {
       thinkingContent: thinkingContent ?? this.thinkingContent,
       thinkingDurationMs: thinkingDurationMs ?? this.thinkingDurationMs,
       thinkingStartTime: thinkingStartTime ?? this.thinkingStartTime,
+      messageType: messageType ?? this.messageType,
     );
   }
 
@@ -126,6 +140,7 @@ class ChatMessage extends HiveObject {
         'modelName': modelName,
         'thinkingContent': thinkingContent,
         'thinkingDurationMs': thinkingDurationMs,
+        'messageType': messageType.name,
       };
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) => ChatMessage(
@@ -144,5 +159,8 @@ class ChatMessage extends HiveObject {
         modelName: json['modelName'],
         thinkingContent: json['thinkingContent'],
         thinkingDurationMs: json['thinkingDurationMs'],
+        messageType: MessageType.values.firstWhere(
+            (e) => e.name == json['messageType'],
+            orElse: () => MessageType.text),
       );
 }

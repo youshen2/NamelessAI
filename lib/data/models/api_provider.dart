@@ -24,6 +24,9 @@ class APIProvider extends HiveObject {
   @HiveField(5)
   String chatCompletionPath;
 
+  @HiveField(6)
+  String? imageGenerationPath;
+
   APIProvider({
     String? id,
     required this.name,
@@ -31,6 +34,7 @@ class APIProvider extends HiveObject {
     required this.apiKey,
     List<Model>? models,
     String? chatCompletionPath,
+    this.imageGenerationPath,
   })  : id = id ?? const Uuid().v4(),
         models = models ?? [],
         chatCompletionPath = chatCompletionPath ?? '/v1/chat/completions';
@@ -42,6 +46,7 @@ class APIProvider extends HiveObject {
     String? apiKey,
     List<Model>? models,
     String? chatCompletionPath,
+    String? imageGenerationPath,
   }) {
     return APIProvider(
       id: id ?? this.id,
@@ -50,6 +55,7 @@ class APIProvider extends HiveObject {
       apiKey: apiKey ?? this.apiKey,
       models: models ?? this.models,
       chatCompletionPath: chatCompletionPath ?? this.chatCompletionPath,
+      imageGenerationPath: imageGenerationPath ?? this.imageGenerationPath,
     );
   }
 
@@ -60,6 +66,7 @@ class APIProvider extends HiveObject {
         'apiKey': apiKey,
         'models': models.map((m) => m.toJson()).toList(),
         'chatCompletionPath': chatCompletionPath,
+        'imageGenerationPath': imageGenerationPath,
       };
 
   factory APIProvider.fromJson(Map<String, dynamic> json) => APIProvider(
@@ -69,5 +76,6 @@ class APIProvider extends HiveObject {
         apiKey: json['apiKey'],
         models: (json['models'] as List).map((m) => Model.fromJson(m)).toList(),
         chatCompletionPath: json['chatCompletionPath'],
+        imageGenerationPath: json['imageGenerationPath'],
       );
 }

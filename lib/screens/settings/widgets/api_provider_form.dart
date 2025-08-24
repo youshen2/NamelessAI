@@ -22,6 +22,7 @@ class _APIProviderFormState extends State<APIProviderForm> {
   late TextEditingController _baseUrlController;
   late TextEditingController _apiKeyController;
   late TextEditingController _chatPathController;
+  late TextEditingController _imagePathController;
   List<Model> _models = [];
   bool _isApiKeyObscured = true;
 
@@ -33,6 +34,8 @@ class _APIProviderFormState extends State<APIProviderForm> {
     _apiKeyController = TextEditingController(text: widget.provider?.apiKey);
     _chatPathController = TextEditingController(
         text: widget.provider?.chatCompletionPath ?? '/v1/chat/completions');
+    _imagePathController = TextEditingController(
+        text: widget.provider?.imageGenerationPath ?? '/v1/images/generations');
     _models = List.from(widget.provider?.models ?? []);
   }
 
@@ -42,6 +45,7 @@ class _APIProviderFormState extends State<APIProviderForm> {
     _baseUrlController.dispose();
     _apiKeyController.dispose();
     _chatPathController.dispose();
+    _imagePathController.dispose();
     super.dispose();
   }
 
@@ -82,6 +86,7 @@ class _APIProviderFormState extends State<APIProviderForm> {
         baseUrl: _baseUrlController.text,
         apiKey: _apiKeyController.text,
         chatCompletionPath: _chatPathController.text,
+        imageGenerationPath: _imagePathController.text,
         models: _models,
       );
 
@@ -177,6 +182,12 @@ class _APIProviderFormState extends State<APIProviderForm> {
                       validator: (value) => value!.isEmpty
                           ? localizations.chatPathRequired
                           : null,
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _imagePathController,
+                      decoration: const InputDecoration(
+                          labelText: "Image Generation Path (Optional)"),
                     ),
                     const SizedBox(height: 16),
                     ExpansionTile(
