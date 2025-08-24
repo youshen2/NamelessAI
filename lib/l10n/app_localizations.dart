@@ -1183,6 +1183,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Expand'**
   String get expand;
+
+  /// No description provided for @unsupportedModelTypeInChat.
+  ///
+  /// In en, this message translates to:
+  /// **'This model type is not supported in chat.'**
+  String get unsupportedModelTypeInChat;
+
+  /// No description provided for @modelTypeLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get modelTypeLanguage;
+
+  /// No description provided for @modelTypeImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Image'**
+  String get modelTypeImage;
+
+  /// No description provided for @modelTypeVideo.
+  ///
+  /// In en, this message translates to:
+  /// **'Video'**
+  String get modelTypeVideo;
+
+  /// No description provided for @modelTypeTts.
+  ///
+  /// In en, this message translates to:
+  /// **'TTS'**
+  String get modelTypeTts;
 }
 
 class _AppLocalizationsDelegate

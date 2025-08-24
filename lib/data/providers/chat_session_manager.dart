@@ -6,6 +6,8 @@ import 'package:nameless_ai/data/app_database.dart';
 import 'package:nameless_ai/data/models/api_provider.dart';
 import 'package:nameless_ai/data/models/chat_message.dart';
 import 'package:nameless_ai/data/models/chat_session.dart';
+import 'package:nameless_ai/data/models/model.dart';
+import 'package:nameless_ai/data/models/model_type.dart';
 import 'package:nameless_ai/services/chat_service.dart';
 
 class ChatSessionManager extends ChangeNotifier {
@@ -204,12 +206,32 @@ class ChatSessionManager extends ChangeNotifier {
     }
   }
 
-  Future<void> sendMessage(
-      String text, APIProvider provider, Model model) async {
+  Future<void> sendMessage(String text, APIProvider provider, Model model,
+      String unsupportedModelErrorText) async {
     if (isGenerating) return;
 
     if (_currentSession == null) {
       startNewSession(providerId: provider.id, modelId: model.id);
+    }
+
+    if (model.modelType != ModelType.language) {
+      if (_isNewSession) {
+        await saveCurrentSession(_currentSession!.name);
+      }
+      final userMessage =
+          ChatMessage(role: 'user', content: text, modelName: model.name);
+      _addMessageToActivePath(_currentSession!, userMessage);
+
+      final assistantMessage = ChatMessage(
+        role: 'assistant',
+        content: unsupportedModelErrorText,
+        isLoading: false,
+        isError: true,
+        modelName: model.name,
+      );
+      _addMessageToActivePath(_currentSession!, assistantMessage);
+      await updateCurrentSession(_currentSession!);
+      return;
     }
 
     if (_isNewSession) {
@@ -265,8 +287,12 @@ class ChatSessionManager extends ChangeNotifier {
     return _recursiveSearch(session.messages, {});
   }
 
-  Future<void> resubmitMessage(String messageId, String newContent,
-      APIProvider provider, Model model) async {
+  Future<void> resubmitMessage(
+      String messageId,
+      String newContent,
+      APIProvider provider,
+      Model model,
+      String unsupportedModelErrorText) async {
     if (_currentSession == null || isGenerating) return;
 
     final session = _currentSession!;
@@ -284,12 +310,24 @@ class ChatSessionManager extends ChangeNotifier {
     userMessageToEdit.isEditing = false;
     userMessageToEdit.modelName = model.name;
 
-    final newAssistantMessage = ChatMessage(
-      role: 'assistant',
-      content: '',
-      isLoading: true,
-      modelName: model.name,
-    );
+    final ChatMessage newAssistantMessage;
+    if (model.modelType != ModelType.language) {
+      newAssistantMessage = ChatMessage(
+        role: 'assistant',
+        content: unsupportedModelErrorText,
+        isLoading: false,
+        isError: true,
+        modelName: model.name,
+      );
+    } else {
+      newAssistantMessage = ChatMessage(
+        role: 'assistant',
+        content: '',
+        isLoading: true,
+        modelName: model.name,
+      );
+    }
+
     final newBranch = [newAssistantMessage];
     final branchKey = userMessageToEdit.id;
 
@@ -314,13 +352,18 @@ class ChatSessionManager extends ChangeNotifier {
       }
     }
 
+    if (model.modelType != ModelType.language) {
+      await updateCurrentSession(session);
+      return;
+    }
+
     _generatingSessions.add(session.id);
     await updateCurrentSession(session);
     _performGeneration(session.id, newAssistantMessage.id, provider, model);
   }
 
-  Future<void> regenerateResponse(
-      String aiMessageId, APIProvider provider, Model model) async {
+  Future<void> regenerateResponse(String aiMessageId, APIProvider provider,
+      Model model, String unsupportedModelErrorText) async {
     if (_currentSession == null || isGenerating) return;
 
     final session = _currentSession!;
@@ -361,7 +404,8 @@ class ChatSessionManager extends ChangeNotifier {
       return;
     }
 
-    await resubmitMessage(userMessage.id, userMessage.content, provider, model);
+    await resubmitMessage(userMessage.id, userMessage.content, provider, model,
+        unsupportedModelErrorText);
   }
 
   Future<void> switchActiveBranch(String userMessageId, int branchIndex) async {
@@ -424,7 +468,6 @@ class ChatSessionManager extends ChangeNotifier {
       final messageToUpdate =
           _findMessageInSession(session, assistantMessageId);
       if (messageToUpdate == null) return;
-
       if (useStreaming) {
         final stream = chatService.getCompletionStream(
           messagesForApi,

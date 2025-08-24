@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nameless_ai/data/app_database.dart';
 import 'package:nameless_ai/data/models/api_provider.dart';
+import 'package:nameless_ai/data/models/model.dart';
 
 class APIProviderManager extends ChangeNotifier {
   List<APIProvider> _providers = [];

@@ -229,5 +229,10 @@
   "openSourceLicenses": "开源库许可",
   "madeWith": "使用 Flutter 构建",
   "collapse": "折叠",
-  "expand": "展开"
+  "expand": "展开",
+  "unsupportedModelTypeInChat": "此模型类型不支持聊天。",
+  "modelTypeLanguage": "语言",
+  "modelTypeImage": "图像",
+  "modelTypeVideo": "视频",
+  "modelTypeTts": "语音合成"
 }

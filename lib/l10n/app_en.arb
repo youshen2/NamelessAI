@@ -229,5 +229,10 @@
   "openSourceLicenses": "Open-source Licenses",
   "madeWith": "Made with Flutter",
   "collapse": "Collapse",
-  "expand": "Expand"
+  "expand": "Expand",
+  "unsupportedModelTypeInChat": "This model type is not supported in chat.",
+  "modelTypeLanguage": "Language",
+  "modelTypeImage": "Image",
+  "modelTypeVideo": "Video",
+  "modelTypeTts": "TTS"
 }

@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
+import 'package:nameless_ai/data/models/model.dart';
 
 part 'api_provider.g.dart';
 
@@ -68,63 +69,5 @@ class APIProvider extends HiveObject {
         apiKey: json['apiKey'],
         models: (json['models'] as List).map((m) => Model.fromJson(m)).toList(),
         chatCompletionPath: json['chatCompletionPath'],
-      );
-}
-
-@HiveType(typeId: 1)
-class Model extends HiveObject {
-  @HiveField(0)
-  String id;
-
-  @HiveField(1)
-  String name;
-
-  @HiveField(2)
-  int? maxTokens;
-
-  @HiveField(3)
-  bool isStreamable;
-
-  @HiveField(4, defaultValue: false)
-  bool supportsThinking;
-
-  Model({
-    String? id,
-    required this.name,
-    this.maxTokens,
-    required this.isStreamable,
-    this.supportsThinking = false,
-  }) : id = id ?? const Uuid().v4();
-
-  Model copyWith({
-    String? id,
-    String? name,
-    int? maxTokens,
-    bool? isStreamable,
-    bool? supportsThinking,
-  }) {
-    return Model(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      maxTokens: maxTokens ?? this.maxTokens,
-      isStreamable: isStreamable ?? this.isStreamable,
-      supportsThinking: supportsThinking ?? this.supportsThinking,
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'maxTokens': maxTokens,
-        'isStreamable': isStreamable,
-        'supportsThinking': supportsThinking,
-      };
-
-  factory Model.fromJson(Map<String, dynamic> json) => Model(
-        id: json['id'],
-        name: json['name'],
-        maxTokens: json['maxTokens'],
-        isStreamable: json['isStreamable'],
-        supportsThinking: json['supportsThinking'] ?? false,
       );
 }

@@ -2,6 +2,8 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:nameless_ai/data/models/api_provider.dart';
 import 'package:nameless_ai/data/models/chat_message.dart';
 import 'package:nameless_ai/data/models/chat_session.dart';
+import 'package:nameless_ai/data/models/model.dart';
+import 'package:nameless_ai/data/models/model_type.dart';
 import 'package:nameless_ai/data/models/system_prompt_template.dart';
 
 class AppDatabase {
@@ -21,6 +23,7 @@ class AppDatabase {
     Hive.registerAdapter(ChatMessageAdapter());
     Hive.registerAdapter(ChatSessionAdapter());
     Hive.registerAdapter(SystemPromptTemplateAdapter());
+    Hive.registerAdapter(ModelTypeAdapter());
   }
 
   static Future<void> openBoxes() async {

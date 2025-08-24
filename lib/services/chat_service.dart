@@ -4,6 +4,7 @@ import 'package:nameless_ai/api/api_service.dart';
 import 'package:nameless_ai/api/models.dart';
 import 'package:nameless_ai/data/models/api_provider.dart';
 import 'package:nameless_ai/data/models/chat_message.dart';
+import 'package:nameless_ai/data/models/model.dart';
 
 class ChatService {
   final APIProvider provider;

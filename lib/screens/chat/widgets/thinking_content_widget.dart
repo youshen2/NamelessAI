@@ -1,0 +1,158 @@
+import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:nameless_ai/data/models/chat_message.dart';
+import 'package:nameless_ai/l10n/app_localizations.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+class ThinkingContentWidget extends StatelessWidget {
+  final ChatMessage message;
+  final Color textColor;
+
+  const ThinkingContentWidget({
+    super.key,
+    required this.message,
+    required this.textColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final markdownStyleSheet = MarkdownStyleSheet(
+      p: TextStyle(
+          color: textColor.withOpacity(0.8), fontSize: 14, height: 1.3),
+      code: TextStyle(
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+        color: textColor.withOpacity(0.8),
+        fontFamily: 'monospace',
+      ),
+    );
+
+    return Theme(
+      data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+      child: ExpansionTile(
+        key: ValueKey(
+            'thinking_tile_${message.id}_${message.thinkingDurationMs != null}'),
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+        collapsedBackgroundColor:
+            Theme.of(context).colorScheme.surfaceContainerHigh,
+        tilePadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+        childrenPadding: const EdgeInsets.only(left: 12, right: 12, bottom: 10),
+        leading:
+            Icon(Icons.psychology_outlined, color: textColor.withOpacity(0.8)),
+        title: Align(
+          alignment: Alignment.centerLeft,
+          child: _ThinkingTimer(
+            startTime: message.thinkingStartTime,
+            durationMs: message.thinkingDurationMs,
+            textColor: textColor.withOpacity(0.8),
+          ),
+        ),
+        initiallyExpanded: message.thinkingDurationMs == null,
+        children: [
+          Divider(
+              height: 1,
+              thickness: 0.5,
+              color: textColor.withOpacity(0.2),
+              endIndent: 0,
+              indent: 0),
+          const SizedBox(height: 8),
+          SelectionArea(
+            child: MarkdownBody(
+              data: message.thinkingContent!,
+              selectable: false,
+              styleSheet: markdownStyleSheet,
+              onTapLink: (text, href, title) {
+                if (href != null) {
+                  launchUrl(Uri.parse(href));
+                }
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ThinkingTimer extends StatefulWidget {
+  final DateTime? startTime;
+  final int? durationMs;
+  final Color textColor;
+
+  const _ThinkingTimer({
+    this.startTime,
+    this.durationMs,
+    required this.textColor,
+  });
+
+  @override
+  State<_ThinkingTimer> createState() => _ThinkingTimerState();
+}
+
+class _ThinkingTimerState extends State<_ThinkingTimer> {
+  Timer? _timer;
+  Duration _elapsed = Duration.zero;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.startTime != null && widget.durationMs == null) {
+      _elapsed = DateTime.now().difference(widget.startTime!);
+      _timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
+        if (!mounted) {
+          timer.cancel();
+          return;
+        }
+        if (widget.startTime != null) {
+          setState(() {
+            _elapsed = DateTime.now().difference(widget.startTime!);
+          });
+        } else {
+          timer.cancel();
+        }
+      });
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant _ThinkingTimer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.durationMs != null) {
+      _timer?.cancel();
+    }
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  String _formatDuration(Duration d) {
+    return '${d.inSeconds}.${(d.inMilliseconds % 1000 ~/ 100)}s';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    String text;
+
+    if (widget.durationMs != null) {
+      final duration = Duration(milliseconds: widget.durationMs!);
+      text = localizations.thinkingTimeTaken(_formatDuration(duration));
+    } else if (widget.startTime != null) {
+      text = localizations.thinking(_formatDuration(_elapsed));
+    } else {
+      text = localizations.thinkingTitle;
+    }
+
+    return Text(
+      text,
+      style: TextStyle(
+        color: widget.textColor,
+        fontSize: 14,
+        fontStyle: FontStyle.italic,
+      ),
+    );
+  }
+}

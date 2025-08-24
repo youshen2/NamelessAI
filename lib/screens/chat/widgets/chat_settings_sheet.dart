@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/models/chat_session.dart';
-import 'package:nameless_ai/data/models/system_prompt_template.dart';
 import 'package:nameless_ai/data/providers/api_provider_manager.dart';
-import 'package:nameless_ai/data/providers/system_prompt_template_manager.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
+import 'package:nameless_ai/screens/chat/widgets/template_selection_sheet.dart';
 import 'package:nameless_ai/utils/helpers.dart';
 
 class ChatSettingsSheet extends StatefulWidget {
@@ -64,19 +63,11 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
   }
 
   void _showTemplateSelection() async {
-    final manager =
-        Provider.of<SystemPromptTemplateManager>(context, listen: false);
     final localizations = AppLocalizations.of(context)!;
-
-    if (manager.templates.isEmpty) {
-      showSnackBar(context, localizations.noSystemPromptTemplates);
-      return;
-    }
-
     final selectedPrompt = await showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
-      builder: (context) => const _TemplateSelectionSheet(),
+      builder: (context) => const TemplateSelectionSheet(),
     );
 
     if (selectedPrompt != null) {
@@ -357,112 +348,6 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _TemplateSelectionSheet extends StatefulWidget {
-  const _TemplateSelectionSheet();
-
-  @override
-  State<_TemplateSelectionSheet> createState() =>
-      __TemplateSelectionSheetState();
-}
-
-class __TemplateSelectionSheetState extends State<_TemplateSelectionSheet> {
-  final TextEditingController _searchController = TextEditingController();
-  List<SystemPromptTemplate> _filteredTemplates = [];
-
-  @override
-  void initState() {
-    super.initState();
-    final manager =
-        Provider.of<SystemPromptTemplateManager>(context, listen: false);
-    _filteredTemplates = manager.templates;
-    _searchController.addListener(_filterTemplates);
-  }
-
-  @override
-  void dispose() {
-    _searchController.removeListener(_filterTemplates);
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  void _filterTemplates() {
-    final manager =
-        Provider.of<SystemPromptTemplateManager>(context, listen: false);
-    final query = _searchController.text.toLowerCase();
-    setState(() {
-      _filteredTemplates = manager.templates.where((template) {
-        return template.name.toLowerCase().contains(query) ||
-            template.prompt.toLowerCase().contains(query);
-      }).toList();
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-      ),
-      child: SizedBox(
-        height: MediaQuery.of(context).size.height * 0.8,
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      localizations.selectTemplate,
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.of(context).pop(),
-                  )
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: TextField(
-                controller: _searchController,
-                decoration: InputDecoration(
-                  hintText: localizations.searchTemplates,
-                  prefixIcon: const Icon(Icons.search),
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Expanded(
-              child: _filteredTemplates.isEmpty
-                  ? Center(child: Text(localizations.noTemplatesFound))
-                  : ListView.builder(
-                      itemCount: _filteredTemplates.length,
-                      itemBuilder: (context, index) {
-                        final template = _filteredTemplates[index];
-                        return ListTile(
-                          title: Text(template.name),
-                          subtitle: Text(
-                            template.prompt,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          onTap: () =>
-                              Navigator.of(context).pop(template.prompt),
-                        );
-                      },
-                    ),
-            ),
-          ],
-        ),
       ),
     );
   }

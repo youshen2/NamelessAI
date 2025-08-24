@@ -579,4 +579,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get expand => 'Expand';
+
+  @override
+  String get unsupportedModelTypeInChat =>
+      'This model type is not supported in chat.';
+
+  @override
+  String get modelTypeLanguage => 'Language';
+
+  @override
+  String get modelTypeImage => 'Image';
+
+  @override
+  String get modelTypeVideo => 'Video';
+
+  @override
+  String get modelTypeTts => 'TTS';
 }

@@ -567,4 +567,19 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get expand => '展开';
+
+  @override
+  String get unsupportedModelTypeInChat => '此模型类型不支持聊天。';
+
+  @override
+  String get modelTypeLanguage => '语言';
+
+  @override
+  String get modelTypeImage => '图像';
+
+  @override
+  String get modelTypeVideo => '视频';
+
+  @override
+  String get modelTypeTts => '语音合成';
 }

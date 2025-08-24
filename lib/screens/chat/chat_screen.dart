@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nameless_ai/data/models/model.dart';
 import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/models/api_provider.dart';
 import 'package:nameless_ai/data/models/chat_message.dart';
@@ -212,8 +213,8 @@ class _ChatScreenState extends State<ChatScreen> {
     setState(() {
       _userScrolledUp = false;
     });
-    await chatSessionManager.sendMessage(
-        messageText, selectedProvider, selectedModel);
+    await chatSessionManager.sendMessage(messageText, selectedProvider,
+        selectedModel, localizations.unsupportedModelTypeInChat);
   }
 
   KeyEventResult _handleKeyEvent(FocusNode node, RawKeyEvent event) {
@@ -317,12 +318,17 @@ class _ChatScreenState extends State<ChatScreen> {
       showSnackBar(context, localizations.selectModel, isError: true);
       return;
     }
+
     FocusScope.of(context).unfocus();
     setState(() {
       _userScrolledUp = false;
     });
     await chatSessionManager.resubmitMessage(
-        message.id, newContent, selectedProvider, selectedModel);
+        message.id,
+        newContent,
+        selectedProvider,
+        selectedModel,
+        localizations.unsupportedModelTypeInChat);
   }
 
   void _regenerateResponse(ChatMessage message) async {
@@ -339,11 +345,12 @@ class _ChatScreenState extends State<ChatScreen> {
       showSnackBar(context, localizations.selectModel, isError: true);
       return;
     }
+
     setState(() {
       _userScrolledUp = false;
     });
-    await chatSessionManager.regenerateResponse(
-        message.id, selectedProvider, selectedModel);
+    await chatSessionManager.regenerateResponse(message.id, selectedProvider,
+        selectedModel, localizations.unsupportedModelTypeInChat);
   }
 
   void _deleteMessage(ChatMessage message) async {
