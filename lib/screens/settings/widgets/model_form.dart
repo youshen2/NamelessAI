@@ -16,9 +16,14 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _modelNameController;
   late TextEditingController _maxTokensController;
+  late TextEditingController _imaginePathController;
+  late TextEditingController _fetchPathController;
+
   late bool _isStreamable;
   late bool _supportsThinking;
   late ModelType _modelType;
+  late ImageGenerationMode _imageGenerationMode;
+  late AsyncImageType _asyncImageType;
 
   @override
   void initState() {
@@ -29,17 +34,27 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
     _isStreamable = widget.model?.isStreamable ?? true;
     _supportsThinking = widget.model?.supportsThinking ?? false;
     _modelType = widget.model?.modelType ?? ModelType.language;
+    _imageGenerationMode =
+        widget.model?.imageGenerationMode ?? ImageGenerationMode.instant;
+    _asyncImageType = widget.model?.asyncImageType ?? AsyncImageType.midjourney;
+    _imaginePathController =
+        TextEditingController(text: widget.model?.imaginePath);
+    _fetchPathController = TextEditingController(text: widget.model?.fetchPath);
   }
 
   @override
   void dispose() {
     _modelNameController.dispose();
     _maxTokensController.dispose();
+    _imaginePathController.dispose();
+    _fetchPathController.dispose();
     super.dispose();
   }
 
   void _save() {
     if (_formKey.currentState!.validate()) {
+      final imaginePath = _imaginePathController.text.trim();
+      final fetchPath = _fetchPathController.text.trim();
       final newModel = Model(
         id: widget.model?.id,
         name: _modelNameController.text,
@@ -47,6 +62,10 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
         isStreamable: _isStreamable,
         supportsThinking: _supportsThinking,
         modelType: _modelType,
+        imageGenerationMode: _imageGenerationMode,
+        asyncImageType: _asyncImageType,
+        imaginePath: imaginePath.isEmpty ? null : imaginePath,
+        fetchPath: fetchPath.isEmpty ? null : fetchPath,
       );
       Navigator.pop(context, newModel);
     }
@@ -109,26 +128,11 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
                   value!.isEmpty ? localizations.modelNameRequired : null,
             ),
             const SizedBox(height: 16),
-            TextFormField(
-              controller: _maxTokensController,
-              decoration: InputDecoration(labelText: localizations.maxTokens),
-              keyboardType: TextInputType.number,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            ),
-            const SizedBox(height: 8),
-            SwitchListTile(
-              title: Text(localizations.isStreamable),
-              value: _isStreamable,
-              onChanged: (value) => setState(() => _isStreamable = value),
-              contentPadding: EdgeInsets.zero,
-            ),
-            SwitchListTile(
-              title: Text(localizations.supportsThinking),
-              subtitle: Text(localizations.supportsThinkingHint),
-              value: _supportsThinking,
-              onChanged: (value) => setState(() => _supportsThinking = value),
-              contentPadding: EdgeInsets.zero,
-            ),
+            if (_modelType == ModelType.image) ...[
+              _buildImageModelSettings(localizations),
+            ] else ...[
+              _buildLanguageModelSettings(localizations),
+            ],
             const SizedBox(height: 24),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -147,6 +151,108 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildLanguageModelSettings(AppLocalizations localizations) {
+    return Column(
+      children: [
+        TextFormField(
+          controller: _maxTokensController,
+          decoration: InputDecoration(labelText: localizations.maxTokens),
+          keyboardType: TextInputType.number,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        ),
+        const SizedBox(height: 8),
+        SwitchListTile(
+          title: Text(localizations.isStreamable),
+          value: _isStreamable,
+          onChanged: (value) => setState(() => _isStreamable = value),
+          contentPadding: EdgeInsets.zero,
+        ),
+        SwitchListTile(
+          title: Text(localizations.supportsThinking),
+          subtitle: Text(localizations.supportsThinkingHint),
+          value: _supportsThinking,
+          onChanged: (value) => setState(() => _supportsThinking = value),
+          contentPadding: EdgeInsets.zero,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildImageModelSettings(AppLocalizations localizations) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        DropdownButtonFormField<ImageGenerationMode>(
+          value: _imageGenerationMode,
+          decoration:
+              InputDecoration(labelText: localizations.imageGenerationMode),
+          items: [
+            DropdownMenuItem(
+              value: ImageGenerationMode.instant,
+              child: Text(localizations.instant),
+            ),
+            DropdownMenuItem(
+              value: ImageGenerationMode.asynchronous,
+              child: Text(localizations.asynchronous),
+            ),
+          ],
+          onChanged: (value) {
+            if (value != null) {
+              setState(() {
+                _imageGenerationMode = value;
+              });
+            }
+          },
+        ),
+        const SizedBox(height: 16),
+        if (_imageGenerationMode == ImageGenerationMode.asynchronous) ...[
+          DropdownButtonFormField<AsyncImageType>(
+            value: _asyncImageType,
+            decoration:
+                InputDecoration(labelText: localizations.asyncImageType),
+            items: [
+              DropdownMenuItem(
+                value: AsyncImageType.midjourney,
+                child: Text(localizations.midjourney),
+              ),
+            ],
+            onChanged: (value) {
+              if (value != null) {
+                setState(() {
+                  _asyncImageType = value;
+                });
+              }
+            },
+          ),
+          const SizedBox(height: 16),
+          TextFormField(
+            controller: _imaginePathController,
+            decoration: InputDecoration(
+              labelText: localizations.imaginePath,
+              hintText: localizations.asyncImaginePathHint,
+            ),
+          ),
+          const SizedBox(height: 16),
+          TextFormField(
+            controller: _fetchPathController,
+            decoration: InputDecoration(
+              labelText: localizations.fetchPath,
+              hintText: localizations.asyncFetchPathHint('{taskId}'),
+            ),
+          ),
+        ] else ...[
+          TextFormField(
+            controller: _imaginePathController,
+            decoration: InputDecoration(
+              labelText: localizations.imaginePath,
+              hintText: '/v1/images/generations',
+            ),
+          ),
+        ],
+      ],
     );
   }
 }

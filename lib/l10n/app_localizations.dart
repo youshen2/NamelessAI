@@ -1255,6 +1255,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Natural'**
   String get styleNatural;
+
+  /// No description provided for @imageGenerationMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Image Generation Mode'**
+  String get imageGenerationMode;
+
+  /// No description provided for @instant.
+  ///
+  /// In en, this message translates to:
+  /// **'Instant'**
+  String get instant;
+
+  /// No description provided for @asynchronous.
+  ///
+  /// In en, this message translates to:
+  /// **'Asynchronous'**
+  String get asynchronous;
+
+  /// No description provided for @asyncImageType.
+  ///
+  /// In en, this message translates to:
+  /// **'Asynchronous Type'**
+  String get asyncImageType;
+
+  /// No description provided for @midjourney.
+  ///
+  /// In en, this message translates to:
+  /// **'Midjourney'**
+  String get midjourney;
+
+  /// No description provided for @imaginePath.
+  ///
+  /// In en, this message translates to:
+  /// **'Imagine Path (Optional)'**
+  String get imaginePath;
+
+  /// No description provided for @fetchPath.
+  ///
+  /// In en, this message translates to:
+  /// **'Fetch Path (Optional)'**
+  String get fetchPath;
+
+  /// No description provided for @taskSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Task submitted'**
+  String get taskSubmitted;
+
+  /// No description provided for @taskInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'In Progress'**
+  String get taskInProgress;
+
+  /// No description provided for @taskFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get taskFailed;
+
+  /// No description provided for @taskSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Success'**
+  String get taskSuccess;
+
+  /// No description provided for @refresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get refresh;
+
+  /// No description provided for @imageGenerationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Image generation failed'**
+  String get imageGenerationFailed;
+
+  /// No description provided for @failedToLoadImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load image'**
+  String get failedToLoadImage;
+
+  /// No description provided for @requestError.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Error'**
+  String get requestError;
+
+  /// No description provided for @unknownErrorOccurred.
+  ///
+  /// In en, this message translates to:
+  /// **'An unknown error occurred'**
+  String get unknownErrorOccurred;
+
+  /// No description provided for @cancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get cancelled;
+
+  /// No description provided for @ok.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get ok;
+
+  /// No description provided for @asyncImaginePathHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., /mj/submit/imagine'**
+  String get asyncImaginePathHint;
+
+  /// No description provided for @asyncFetchPathHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., /mj/task/{taskId}/fetch'**
+  String asyncFetchPathHint(String taskId);
+
+  /// No description provided for @taskStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get taskStatus;
+
+  /// No description provided for @midjourneyPromptHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter prompt, you can add parameters like --ar 16:9'**
+  String get midjourneyPromptHint;
 }
 
 class _AppLocalizationsDelegate

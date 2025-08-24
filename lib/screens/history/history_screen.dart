@@ -327,6 +327,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     activeBranchIndex: 0,
                     onBranchChange: (_) {},
                     animatedMessageIds: const {},
+                    onRefresh: (ChatMessage p1) {},
                   );
                 },
               );

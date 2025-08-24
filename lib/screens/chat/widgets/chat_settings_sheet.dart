@@ -246,7 +246,7 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
                   ),
                 const SizedBox(height: 24),
                 if (selectedModel?.modelType == ModelType.image)
-                  _buildImageSettings(localizations)
+                  _buildImageSettings(localizations, selectedModel)
                 else
                   _buildLanguageSettings(localizations),
                 const Divider(height: 32),
@@ -417,7 +417,17 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
     );
   }
 
-  Widget _buildImageSettings(AppLocalizations localizations) {
+  Widget _buildImageSettings(AppLocalizations localizations, Model? model) {
+    if (model?.imageGenerationMode == ImageGenerationMode.asynchronous) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(localizations.midjourneyPromptHint,
+              style: Theme.of(context).textTheme.bodyMedium),
+        ],
+      );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

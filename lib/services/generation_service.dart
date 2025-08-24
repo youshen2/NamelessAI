@@ -62,8 +62,9 @@ class GenerationService {
           } catch (_) {
             errorMessage += '\n\n```\n${e.response!.data.toString()}\n```';
           }
-        } else if (e.message != null) {
-          errorMessage += '\n\n${e.message}';
+        } else {
+          errorMessage +=
+              '\n\n${e.message ?? 'Code: ${e.response?.statusCode}'}';
         }
         messageToUpdate.content = errorMessage;
         messageToUpdate.isError = true;
@@ -73,7 +74,9 @@ class GenerationService {
       messageToUpdate.isError = true;
     } finally {
       stopwatch.stop();
-      messageToUpdate.isLoading = false;
+      if (messageToUpdate.asyncTaskStatus == AsyncTaskStatus.none) {
+        messageToUpdate.isLoading = false;
+      }
       messageToUpdate.completionTimeMs = stopwatch.elapsedMilliseconds;
       messageToUpdate.firstChunkTimeMs = firstChunkTimeMs;
       messageToUpdate.outputCharacters = (messageToUpdate.content).length;
@@ -218,12 +221,20 @@ class GenerationService {
   }
 
   Future<void> _generateImage() async {
+    if (model.imageGenerationMode == ImageGenerationMode.instant) {
+      await _generateInstantImage();
+    } else {
+      await _submitAsyncImageTask();
+    }
+  }
+
+  Future<void> _generateInstantImage() async {
     final apiService = ApiService(provider);
     final userPrompt = messagesForApi.last.content;
 
     final request = api_models.ImageGenerationRequest(
       prompt: userPrompt,
-      model: model.name,
+      modelSettings: model,
       size: session.imageSize ?? '1024x1024',
       quality: session.imageQuality,
       style: session.imageStyle,
@@ -234,6 +245,36 @@ class GenerationService {
       messageToUpdate.content = response.data.first.url!;
     } else {
       throw Exception("Image generation failed: No image URL in response.");
+    }
+  }
+
+  Future<void> _submitAsyncImageTask() async {
+    if (model.asyncImageType == AsyncImageType.midjourney) {
+      await _submitMidjourneyTask();
+    } else {
+      throw Exception("Unsupported asynchronous image model type.");
+    }
+  }
+
+  Future<void> _submitMidjourneyTask() async {
+    final apiService = ApiService(provider);
+    final userPrompt = messagesForApi.last.content;
+
+    final request = api_models.MidjourneyImagineRequest(
+      prompt: userPrompt,
+      modelSettings: model,
+    );
+    final response =
+        await apiService.submitMidjourneyTask(request, cancelToken);
+
+    if (response.code == 1 && response.result != null) {
+      messageToUpdate.taskId = response.result;
+      messageToUpdate.asyncTaskStatus = AsyncTaskStatus.submitted;
+      messageToUpdate.content = 'Task Submitted: ${response.description}';
+      messageToUpdate.isLoading = false;
+    } else {
+      throw Exception(
+          "Midjourney task submission failed: ${response.description} (Code: ${response.code})");
     }
   }
 

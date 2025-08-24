@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:nameless_ai/api/models.dart';
 import 'package:nameless_ai/data/models/api_provider.dart';
+import 'package:nameless_ai/data/models/model.dart';
 import 'package:uuid/uuid.dart';
 
 class ApiService {
@@ -169,14 +170,69 @@ class ApiService {
     try {
       debugPrint(
           "NamelessAI - Sending Image Request: ${jsonEncode(request.toJson())}");
+      final path = request.modelSettings.imaginePath;
+      final endpoint =
+          (path != null && path.isNotEmpty) ? path : '/v1/images/generations';
       final response = await _dio.post(
-        provider.imageGenerationPath ?? '/v1/images/generations',
+        endpoint,
         data: request.toJson(),
         cancelToken: cancelToken,
       );
       debugPrint(
           "NamelessAI - Received Image Response: ${jsonEncode(response.data)}");
       return ImageGenerationResponse.fromJson(response.data);
+    } on DioException {
+      rethrow;
+    }
+  }
+
+  Future<MidjourneyImagineResponse> submitMidjourneyTask(
+      MidjourneyImagineRequest request,
+      [CancelToken? cancelToken]) async {
+    try {
+      debugPrint(
+          "NamelessAI - Submitting Midjourney Task: ${jsonEncode(request.toJson())}");
+      final imaginePath = request.modelSettings.imaginePath;
+      final endpoint = (imaginePath != null && imaginePath.isNotEmpty)
+          ? imaginePath
+          : '/mj/submit/imagine';
+
+      final response = await _dio.post(
+        endpoint,
+        data: request.toJson(),
+        cancelToken: cancelToken,
+      );
+      debugPrint(
+          "NamelessAI - Received Midjourney Task Response: ${response.data}");
+
+      // Handle cases where the response is a JSON string instead of a map
+      final data = response.data;
+      final jsonData = data is String ? jsonDecode(data) : data;
+
+      return MidjourneyImagineResponse.fromJson(jsonData);
+    } on DioException {
+      rethrow;
+    }
+  }
+
+  Future<MidjourneyFetchResponse> fetchMidjourneyTask(
+      String taskId, Model model,
+      [CancelToken? cancelToken]) async {
+    try {
+      final fetchPath = model.fetchPath;
+      final baseEndpoint = (fetchPath != null && fetchPath.isNotEmpty)
+          ? fetchPath
+          : '/mj/task/{taskId}/fetch';
+
+      final path = baseEndpoint.replaceAll('{taskId}', taskId);
+      debugPrint("NamelessAI - Fetching Midjourney Task: $path");
+      final response = await _dio.get(
+        path,
+        cancelToken: cancelToken,
+      );
+      debugPrint(
+          "NamelessAI - Received Midjourney Fetch Response: ${jsonEncode(response.data)}");
+      return MidjourneyFetchResponse.fromJson(response.data);
     } on DioException {
       rethrow;
     }

@@ -23,14 +23,13 @@ class APIProviderAdapter extends TypeAdapter<APIProvider> {
       apiKey: fields[3] as String,
       models: (fields[4] as List?)?.cast<Model>(),
       chatCompletionPath: fields[5] as String?,
-      imageGenerationPath: fields[6] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, APIProvider obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -42,9 +41,7 @@ class APIProviderAdapter extends TypeAdapter<APIProvider> {
       ..writeByte(4)
       ..write(obj.models)
       ..writeByte(5)
-      ..write(obj.chatCompletionPath)
-      ..writeByte(6)
-      ..write(obj.imageGenerationPath);
+      ..write(obj.chatCompletionPath);
   }
 
   @override

@@ -18,13 +18,36 @@ class AppDatabase {
   static late Box appConfigBox;
 
   static Future<void> registerAdapters() async {
-    Hive.registerAdapter(APIProviderAdapter());
-    Hive.registerAdapter(ModelAdapter());
-    Hive.registerAdapter(ChatMessageAdapter());
-    Hive.registerAdapter(ChatSessionAdapter());
-    Hive.registerAdapter(SystemPromptTemplateAdapter());
-    Hive.registerAdapter(ModelTypeAdapter());
-    Hive.registerAdapter(MessageTypeAdapter());
+    if (!Hive.isAdapterRegistered(APIProviderAdapter().typeId)) {
+      Hive.registerAdapter(APIProviderAdapter());
+    }
+    if (!Hive.isAdapterRegistered(ModelAdapter().typeId)) {
+      Hive.registerAdapter(ModelAdapter());
+    }
+    if (!Hive.isAdapterRegistered(ChatMessageAdapter().typeId)) {
+      Hive.registerAdapter(ChatMessageAdapter());
+    }
+    if (!Hive.isAdapterRegistered(ChatSessionAdapter().typeId)) {
+      Hive.registerAdapter(ChatSessionAdapter());
+    }
+    if (!Hive.isAdapterRegistered(SystemPromptTemplateAdapter().typeId)) {
+      Hive.registerAdapter(SystemPromptTemplateAdapter());
+    }
+    if (!Hive.isAdapterRegistered(ModelTypeAdapter().typeId)) {
+      Hive.registerAdapter(ModelTypeAdapter());
+    }
+    if (!Hive.isAdapterRegistered(MessageTypeAdapter().typeId)) {
+      Hive.registerAdapter(MessageTypeAdapter());
+    }
+    if (!Hive.isAdapterRegistered(ImageGenerationModeAdapter().typeId)) {
+      Hive.registerAdapter(ImageGenerationModeAdapter());
+    }
+    if (!Hive.isAdapterRegistered(AsyncImageTypeAdapter().typeId)) {
+      Hive.registerAdapter(AsyncImageTypeAdapter());
+    }
+    if (!Hive.isAdapterRegistered(AsyncTaskStatusAdapter().typeId)) {
+      Hive.registerAdapter(AsyncTaskStatusAdapter());
+    }
   }
 
   static Future<void> openBoxes() async {

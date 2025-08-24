@@ -1,3 +1,6 @@
+import 'package:dio/dio.dart';
+import 'package:nameless_ai/data/models/model.dart';
+
 class ChatCompletionRequest {
   final String model;
   final List<Map<String, String>> messages;
@@ -190,7 +193,7 @@ class ChatDelta {
 
 class ImageGenerationRequest {
   final String prompt;
-  final String? model;
+  final Model modelSettings;
   final int? n;
   final String? size;
   final String? quality;
@@ -198,7 +201,7 @@ class ImageGenerationRequest {
 
   ImageGenerationRequest({
     required this.prompt,
-    this.model,
+    required this.modelSettings,
     this.n = 1,
     this.size = '1024x1024',
     this.quality,
@@ -210,10 +213,8 @@ class ImageGenerationRequest {
       'prompt': prompt,
       'n': n,
       'size': size,
+      'model': modelSettings.name,
     };
-    if (model != null) {
-      data['model'] = model;
-    }
     if (quality != null) {
       data['quality'] = quality;
     }
@@ -234,8 +235,20 @@ class ImageGenerationResponse {
   });
 
   factory ImageGenerationResponse.fromJson(Map<String, dynamic> json) {
+    // Handle API error responses that don't contain 'data'
+    if (json.containsKey('error') && json['error'] != null) {
+      final errorData = json['error'];
+      final message = errorData['message'] ?? 'Unknown image generation error';
+      throw DioException(
+        requestOptions: RequestOptions(path: ''),
+        message: message.toString(),
+        response:
+            Response(requestOptions: RequestOptions(path: ''), data: json),
+      );
+    }
+
     return ImageGenerationResponse(
-      created: json['created'],
+      created: json['created'] ?? DateTime.now().millisecondsSinceEpoch ~/ 1000,
       data: (json['data'] as List).map((e) => ImageData.fromJson(e)).toList(),
     );
   }
@@ -251,6 +264,107 @@ class ImageData {
     return ImageData(
       url: json['url'],
       b64Json: json['b64_json'],
+    );
+  }
+}
+
+class MidjourneyImagineRequest {
+  final String prompt;
+  final Model modelSettings;
+
+  MidjourneyImagineRequest({required this.prompt, required this.modelSettings});
+
+  Map<String, dynamic> toJson() => {
+        'prompt': prompt,
+        'model': modelSettings.name,
+      };
+}
+
+class MidjourneyImagineResponse {
+  final int code;
+  final String description;
+  final String? result;
+
+  MidjourneyImagineResponse(
+      {required this.code, required this.description, this.result});
+
+  factory MidjourneyImagineResponse.fromJson(Map<String, dynamic> json) {
+    return MidjourneyImagineResponse(
+      code: json['code'],
+      description: json['description'],
+      result: json['result'],
+    );
+  }
+}
+
+class MidjourneyFetchResponse {
+  final String? action;
+  final String? id;
+  final String? prompt;
+  final String? promptEn;
+  final String? description;
+  final String? state;
+  final int? submitTime;
+  final int? startTime;
+  final int? finishTime;
+  final String? imageUrl;
+  final String? status;
+  final String? progress;
+  final String? failReason;
+  final Map<String, dynamic>? properties;
+
+  MidjourneyFetchResponse({
+    this.action,
+    this.id,
+    this.prompt,
+    this.promptEn,
+    this.description,
+    this.state,
+    this.submitTime,
+    this.startTime,
+    this.finishTime,
+    this.imageUrl,
+    this.status,
+    this.progress,
+    this.failReason,
+    this.properties,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'action': action,
+      'id': id,
+      'prompt': prompt,
+      'promptEn': promptEn,
+      'description': description,
+      'state': state,
+      'submitTime': submitTime,
+      'startTime': startTime,
+      'finishTime': finishTime,
+      'imageUrl': imageUrl,
+      'status': status,
+      'progress': progress,
+      'failReason': failReason,
+      'properties': properties,
+    };
+  }
+
+  factory MidjourneyFetchResponse.fromJson(Map<String, dynamic> json) {
+    return MidjourneyFetchResponse(
+      action: json['action'],
+      id: json['id'],
+      prompt: json['prompt'],
+      promptEn: json['promptEn'],
+      description: json['description'],
+      state: json['state'],
+      submitTime: json['submitTime'],
+      startTime: json['startTime'],
+      finishTime: json['finishTime'],
+      imageUrl: json['imageUrl'],
+      status: json['status'],
+      progress: json['progress'],
+      failReason: json['failReason'],
+      properties: json['properties'],
     );
   }
 }

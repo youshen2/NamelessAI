@@ -241,5 +241,34 @@
   "qualityStandard": "标准",
   "qualityHD": "高清",
   "styleVivid": "鲜艳",
-  "styleNatural": "自然"
+  "styleNatural": "自然",
+  "imageGenerationMode": "图像生成模式",
+  "instant": "即时",
+  "asynchronous": "异步",
+  "asyncImageType": "异步类型",
+  "midjourney": "Midjourney",
+  "imaginePath": "Imagine 路径 (可选)",
+  "fetchPath": "Fetch 路径 (可选)",
+  "taskSubmitted": "任务已提交",
+  "taskInProgress": "处理中",
+  "taskFailed": "失败",
+  "taskSuccess": "成功",
+  "refresh": "刷新",
+  "imageGenerationFailed": "图像生成失败",
+  "failedToLoadImage": "加载图像失败",
+  "requestError": "请求错误",
+  "unknownErrorOccurred": "发生未知错误",
+  "cancelled": "已取消",
+  "ok": "好的",
+  "asyncImaginePathHint": "例如 /mj/submit/imagine",
+  "asyncFetchPathHint": "例如 /mj/task/{taskId}/fetch",
+  "@asyncFetchPathHint": {
+    "placeholders": {
+      "taskId": {
+        "type": "String"
+      }
+    }
+  },
+  "taskStatus": "状态",
+  "midjourneyPromptHint": "输入提示词，可附带 --ar 16:9 等参数"
 }

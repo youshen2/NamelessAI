@@ -603,4 +603,72 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get styleNatural => '自然';
+
+  @override
+  String get imageGenerationMode => '图像生成模式';
+
+  @override
+  String get instant => '即时';
+
+  @override
+  String get asynchronous => '异步';
+
+  @override
+  String get asyncImageType => '异步类型';
+
+  @override
+  String get midjourney => 'Midjourney';
+
+  @override
+  String get imaginePath => 'Imagine 路径 (可选)';
+
+  @override
+  String get fetchPath => 'Fetch 路径 (可选)';
+
+  @override
+  String get taskSubmitted => '任务已提交';
+
+  @override
+  String get taskInProgress => '处理中';
+
+  @override
+  String get taskFailed => '失败';
+
+  @override
+  String get taskSuccess => '成功';
+
+  @override
+  String get refresh => '刷新';
+
+  @override
+  String get imageGenerationFailed => '图像生成失败';
+
+  @override
+  String get failedToLoadImage => '加载图像失败';
+
+  @override
+  String get requestError => '请求错误';
+
+  @override
+  String get unknownErrorOccurred => '发生未知错误';
+
+  @override
+  String get cancelled => '已取消';
+
+  @override
+  String get ok => '好的';
+
+  @override
+  String get asyncImaginePathHint => '例如 /mj/submit/imagine';
+
+  @override
+  String asyncFetchPathHint(String taskId) {
+    return '例如 /mj/task/$taskId/fetch';
+  }
+
+  @override
+  String get taskStatus => '状态';
+
+  @override
+  String get midjourneyPromptHint => '输入提示词，可附带 --ar 16:9 等参数';
 }

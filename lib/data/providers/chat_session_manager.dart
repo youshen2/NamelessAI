@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:nameless_ai/api/api_service.dart';
+import 'package:nameless_ai/api/models.dart';
 import 'package:nameless_ai/data/app_database.dart';
 import 'package:nameless_ai/data/models/api_provider.dart';
 import 'package:nameless_ai/data/models/chat_message.dart';
@@ -503,6 +506,53 @@ class ChatSessionManager extends ChangeNotifier {
       _currentSession = session;
     }
     notifyListeners();
+  }
+
+  Future<void> refreshAsyncTaskStatus(
+      String messageId, APIProvider provider, Model model) async {
+    if (_currentSession == null) return;
+    final session = _currentSession!;
+    final message = _findMessageInSession(session, messageId);
+
+    if (message == null ||
+        message.taskId == null ||
+        model.asyncImageType != AsyncImageType.midjourney) {
+      return;
+    }
+
+    message.isLoading = true;
+    notifyListeners();
+
+    try {
+      final apiService = ApiService(provider);
+      final response =
+          await apiService.fetchMidjourneyTask(message.taskId!, model);
+
+      message.asyncTaskFullResponse = jsonEncode(response);
+
+      if (response.status == 'SUCCESS') {
+        message.asyncTaskStatus = AsyncTaskStatus.success;
+        message.content = response.imageUrl ?? message.content;
+        message.asyncTaskProgress = '100%';
+      } else if (response.status == 'FAILURE') {
+        message.asyncTaskStatus = AsyncTaskStatus.failure;
+        message.isError = true;
+        message.content = response.failReason ?? 'Task failed without reason.';
+      } else if (response.status == 'IN_PROGRESS') {
+        message.asyncTaskStatus = AsyncTaskStatus.inProgress;
+        message.asyncTaskProgress = response.progress;
+      } else {
+        message.asyncTaskStatus = AsyncTaskStatus.submitted;
+        message.asyncTaskProgress = response.progress;
+      }
+    } catch (e) {
+      message.isError = true;
+      message.content = e.toString();
+      message.asyncTaskStatus = AsyncTaskStatus.failure;
+    } finally {
+      message.isLoading = false;
+      await updateCurrentSession(session);
+    }
   }
 
   void _addMessageToActivePath(ChatSession session, ChatMessage message) {

@@ -34,13 +34,19 @@ class ChatMessageAdapter extends TypeAdapter<ChatMessage> {
       thinkingDurationMs: fields[14] as int?,
       messageType:
           fields[15] == null ? MessageType.text : fields[15] as MessageType,
+      taskId: fields[16] as String?,
+      asyncTaskStatus: fields[17] == null
+          ? AsyncTaskStatus.none
+          : fields[17] as AsyncTaskStatus,
+      asyncTaskProgress: fields[18] as String?,
+      asyncTaskFullResponse: fields[19] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ChatMessage obj) {
     writer
-      ..writeByte(16)
+      ..writeByte(20)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -72,7 +78,15 @@ class ChatMessageAdapter extends TypeAdapter<ChatMessage> {
       ..writeByte(14)
       ..write(obj.thinkingDurationMs)
       ..writeByte(15)
-      ..write(obj.messageType);
+      ..write(obj.messageType)
+      ..writeByte(16)
+      ..write(obj.taskId)
+      ..writeByte(17)
+      ..write(obj.asyncTaskStatus)
+      ..writeByte(18)
+      ..write(obj.asyncTaskProgress)
+      ..writeByte(19)
+      ..write(obj.asyncTaskFullResponse);
   }
 
   @override
@@ -121,6 +135,60 @@ class MessageTypeAdapter extends TypeAdapter<MessageType> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is MessageTypeAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class AsyncTaskStatusAdapter extends TypeAdapter<AsyncTaskStatus> {
+  @override
+  final int typeId = 18;
+
+  @override
+  AsyncTaskStatus read(BinaryReader reader) {
+    switch (reader.readByte()) {
+      case 0:
+        return AsyncTaskStatus.none;
+      case 1:
+        return AsyncTaskStatus.submitted;
+      case 2:
+        return AsyncTaskStatus.inProgress;
+      case 3:
+        return AsyncTaskStatus.failure;
+      case 4:
+        return AsyncTaskStatus.success;
+      default:
+        return AsyncTaskStatus.none;
+    }
+  }
+
+  @override
+  void write(BinaryWriter writer, AsyncTaskStatus obj) {
+    switch (obj) {
+      case AsyncTaskStatus.none:
+        writer.writeByte(0);
+        break;
+      case AsyncTaskStatus.submitted:
+        writer.writeByte(1);
+        break;
+      case AsyncTaskStatus.inProgress:
+        writer.writeByte(2);
+        break;
+      case AsyncTaskStatus.failure:
+        writer.writeByte(3);
+        break;
+      case AsyncTaskStatus.success:
+        writer.writeByte(4);
+        break;
+    }
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AsyncTaskStatusAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

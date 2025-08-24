@@ -4,6 +4,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nameless_ai/data/models/model.dart';
+import 'package:nameless_ai/data/models/model_type.dart';
 import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/models/api_provider.dart';
 import 'package:nameless_ai/data/models/chat_message.dart';
@@ -353,6 +354,23 @@ class _ChatScreenState extends State<ChatScreen> {
         selectedModel, localizations.unsupportedModelTypeInChat);
   }
 
+  void _refreshAsyncTask(ChatMessage message) async {
+    final chatSessionManager =
+        Provider.of<ChatSessionManager>(context, listen: false);
+    final apiProviderManager =
+        Provider.of<APIProviderManager>(context, listen: false);
+
+    final selectedProvider = apiProviderManager.selectedProvider;
+    final selectedModel = apiProviderManager.selectedModel;
+
+    if (selectedProvider == null || selectedModel == null) {
+      return;
+    }
+
+    await chatSessionManager.refreshAsyncTaskStatus(
+        message.id, selectedProvider, selectedModel);
+  }
+
   void _deleteMessage(ChatMessage message) async {
     final localizations = AppLocalizations.of(context)!;
     final confirmed = await showConfirmDialog(context, localizations.message);
@@ -509,6 +527,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               onDelete: _deleteMessage,
                               onResubmit: _resubmitMessage,
                               onRegenerate: _regenerateResponse,
+                              onRefresh: _refreshAsyncTask,
                               onCopy: (text) => copyToClipboard(context, text),
                               branchCount: branchCount,
                               activeBranchIndex: activeBranchIndex,
@@ -599,6 +618,11 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildInputArea(AppLocalizations localizations, bool isLoading) {
+    final apiManager = Provider.of<APIProviderManager>(context, listen: false);
+    final selectedModel = apiManager.selectedModel;
+    final isMidjourney = selectedModel?.modelType == ModelType.image &&
+        selectedModel?.imageGenerationMode == ImageGenerationMode.asynchronous;
+
     return Focus(
       focusNode: _inputFocusNode,
       onKey: _handleKeyEvent,
@@ -635,7 +659,9 @@ class _ChatScreenState extends State<ChatScreen> {
                 child: TextField(
                   controller: _messageController,
                   decoration: InputDecoration(
-                    hintText: localizations.sendMessage,
+                    hintText: isMidjourney
+                        ? localizations.midjourneyPromptHint
+                        : localizations.sendMessage,
                     border: Theme.of(context).inputDecorationTheme.border,
                     contentPadding: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 14),

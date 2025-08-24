@@ -24,6 +24,7 @@ class MessageBubble extends StatefulWidget {
   final Function(ChatMessage) onDelete;
   final Function(ChatMessage, String) onResubmit;
   final Function(ChatMessage) onRegenerate;
+  final Function(ChatMessage) onRefresh;
   final Function(String) onCopy;
   final bool isReadOnly;
   final int branchCount;
@@ -39,6 +40,7 @@ class MessageBubble extends StatefulWidget {
     required this.onDelete,
     required this.onResubmit,
     required this.onRegenerate,
+    required this.onRefresh,
     required this.onCopy,
     this.isReadOnly = false,
     this.branchCount = 0,
@@ -188,6 +190,7 @@ class _MessageBubbleState extends State<MessageBubble>
                     onRegenerate: () => widget.onRegenerate(widget.message),
                     onEdit: () => widget.onEdit(widget.message, true),
                     onDelete: () => widget.onDelete(widget.message),
+                    onRefresh: () => widget.onRefresh(widget.message),
                   ),
                 if (widget.branchCount > 1)
                   MessageBranchNavigator(
@@ -243,23 +246,25 @@ class _MessageBubbleState extends State<MessageBubble>
                 child: _buildEditModeContent(context, textColor),
               )
             else
-              _buildDisplayModeContent(context, textColor, isError),
+              _buildDisplayModeContent(context, textColor),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildDisplayModeContent(
-      BuildContext context, Color textColor, bool isError) {
+  Widget _buildDisplayModeContent(BuildContext context, Color textColor) {
     if (widget.message.messageType == MessageType.image) {
       return _buildImageContent(context, textColor);
     }
-    return _buildTextContent(context, textColor, isError);
+    return _buildTextContent(context, textColor);
   }
 
   Widget _buildImageContent(BuildContext context, Color textColor) {
-    if (widget.message.isLoading) {
+    final localizations = AppLocalizations.of(context)!;
+    final message = widget.message;
+
+    if (message.isLoading && message.asyncTaskStatus == AsyncTaskStatus.none) {
       return const SizedBox(
         width: 256,
         height: 256,
@@ -267,31 +272,18 @@ class _MessageBubbleState extends State<MessageBubble>
       );
     }
 
-    if (widget.message.isError || widget.message.content.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.error_outline, color: textColor, size: 20),
-            const SizedBox(width: 8),
-            Flexible(
-              child: Text(
-                widget.message.content.isEmpty
-                    ? "Image generation failed"
-                    : widget.message.content,
-                style: TextStyle(color: textColor),
-              ),
-            ),
-          ],
-        ),
-      );
+    if (message.asyncTaskStatus != AsyncTaskStatus.none &&
+        message.asyncTaskStatus != AsyncTaskStatus.success) {
+      return _buildAsyncTaskStatus(context, textColor, localizations);
     }
 
-    String imageUrl = widget.message.content;
+    if (message.isError || message.content.isEmpty) {
+      return _buildTextContent(context, textColor);
+    }
+
+    String imageUrl = message.content;
     try {
-      final decoded = jsonDecode(widget.message.content);
+      final decoded = jsonDecode(message.content);
       if (decoded is Map<String, dynamic> && decoded.containsKey('data')) {
         final data = decoded['data'];
         if (data is List && data.isNotEmpty) {
@@ -325,7 +317,8 @@ class _MessageBubbleState extends State<MessageBubble>
               Icon(Icons.broken_image,
                   size: 48, color: textColor.withOpacity(0.7)),
               const SizedBox(height: 8),
-              Text("Failed to load image", style: TextStyle(color: textColor)),
+              Text(localizations.failedToLoadImage,
+                  style: TextStyle(color: textColor)),
             ],
           ),
         );
@@ -333,9 +326,58 @@ class _MessageBubbleState extends State<MessageBubble>
     );
   }
 
-  Widget _buildTextContent(
-      BuildContext context, Color textColor, bool isError) {
+  Widget _buildAsyncTaskStatus(
+      BuildContext context, Color textColor, AppLocalizations localizations) {
+    final message = widget.message;
+    String statusText;
+    IconData statusIcon;
+
+    switch (message.asyncTaskStatus) {
+      case AsyncTaskStatus.submitted:
+        statusText = localizations.taskSubmitted;
+        statusIcon = Icons.check_circle_outline;
+        break;
+      case AsyncTaskStatus.inProgress:
+        statusText =
+            '${localizations.taskInProgress} ${message.asyncTaskProgress ?? ''}';
+        statusIcon = Icons.hourglass_bottom_outlined;
+        break;
+      case AsyncTaskStatus.failure:
+        return _buildTextContent(context, textColor);
+      default:
+        statusText = localizations.taskStatus;
+        statusIcon = Icons.info_outline;
+    }
+
+    return SizedBox(
+      width: 256,
+      height: 256,
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (message.isLoading)
+                const CircularProgressIndicator()
+              else
+                Icon(statusIcon, size: 48, color: textColor.withOpacity(0.8)),
+              const SizedBox(height: 16),
+              Text(
+                statusText,
+                style: TextStyle(color: textColor, fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextContent(BuildContext context, Color textColor) {
     final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
+    final isError = widget.message.isError;
     double fontSize;
     switch (appConfig.fontSize) {
       case FontSize.small:
@@ -416,7 +458,8 @@ class _MessageBubbleState extends State<MessageBubble>
             )
           else
             markdownContent,
-          if (widget.message.isLoading)
+          if (widget.message.isLoading &&
+              widget.message.asyncTaskStatus == AsyncTaskStatus.none)
             const Padding(
               padding: EdgeInsets.only(top: 8.0),
               child: TypingIndicator(isInline: true),

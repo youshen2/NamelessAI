@@ -11,6 +11,20 @@ enum MessageType {
   image,
 }
 
+@HiveType(typeId: 18)
+enum AsyncTaskStatus {
+  @HiveField(0)
+  none,
+  @HiveField(1)
+  submitted,
+  @HiveField(2)
+  inProgress,
+  @HiveField(3)
+  failure,
+  @HiveField(4)
+  success,
+}
+
 @HiveType(typeId: 2)
 class ChatMessage extends HiveObject {
   @HiveField(0)
@@ -61,6 +75,18 @@ class ChatMessage extends HiveObject {
   @HiveField(15, defaultValue: MessageType.text)
   MessageType messageType;
 
+  @HiveField(16)
+  String? taskId;
+
+  @HiveField(17, defaultValue: AsyncTaskStatus.none)
+  AsyncTaskStatus asyncTaskStatus;
+
+  @HiveField(18)
+  String? asyncTaskProgress;
+
+  @HiveField(19)
+  String? asyncTaskFullResponse;
+
   DateTime? thinkingStartTime;
 
   ChatMessage({
@@ -81,6 +107,10 @@ class ChatMessage extends HiveObject {
     this.thinkingDurationMs,
     this.thinkingStartTime,
     this.messageType = MessageType.text,
+    this.taskId,
+    this.asyncTaskStatus = AsyncTaskStatus.none,
+    this.asyncTaskProgress,
+    this.asyncTaskFullResponse,
   })  : id = id ?? const Uuid().v4(),
         timestamp = timestamp ?? DateTime.now();
 
@@ -102,6 +132,10 @@ class ChatMessage extends HiveObject {
     int? thinkingDurationMs,
     DateTime? thinkingStartTime,
     MessageType? messageType,
+    String? taskId,
+    AsyncTaskStatus? asyncTaskStatus,
+    String? asyncTaskProgress,
+    String? asyncTaskFullResponse,
   }) {
     return ChatMessage(
       id: id ?? this.id,
@@ -121,6 +155,11 @@ class ChatMessage extends HiveObject {
       thinkingDurationMs: thinkingDurationMs ?? this.thinkingDurationMs,
       thinkingStartTime: thinkingStartTime ?? this.thinkingStartTime,
       messageType: messageType ?? this.messageType,
+      taskId: taskId ?? this.taskId,
+      asyncTaskStatus: asyncTaskStatus ?? this.asyncTaskStatus,
+      asyncTaskProgress: asyncTaskProgress ?? this.asyncTaskProgress,
+      asyncTaskFullResponse:
+          asyncTaskFullResponse ?? this.asyncTaskFullResponse,
     );
   }
 
@@ -141,6 +180,10 @@ class ChatMessage extends HiveObject {
         'thinkingContent': thinkingContent,
         'thinkingDurationMs': thinkingDurationMs,
         'messageType': messageType.name,
+        'taskId': taskId,
+        'asyncTaskStatus': asyncTaskStatus.name,
+        'asyncTaskProgress': asyncTaskProgress,
+        'asyncTaskFullResponse': asyncTaskFullResponse,
       };
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) => ChatMessage(
@@ -162,5 +205,11 @@ class ChatMessage extends HiveObject {
         messageType: MessageType.values.firstWhere(
             (e) => e.name == json['messageType'],
             orElse: () => MessageType.text),
+        taskId: json['taskId'],
+        asyncTaskStatus: AsyncTaskStatus.values.firstWhere(
+            (e) => e.name == json['asyncTaskStatus'],
+            orElse: () => AsyncTaskStatus.none),
+        asyncTaskProgress: json['asyncTaskProgress'],
+        asyncTaskFullResponse: json['asyncTaskFullResponse'],
       );
 }

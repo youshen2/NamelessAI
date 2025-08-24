@@ -241,5 +241,34 @@
   "qualityStandard": "Standard",
   "qualityHD": "HD",
   "styleVivid": "Vivid",
-  "styleNatural": "Natural"
+  "styleNatural": "Natural",
+  "imageGenerationMode": "Image Generation Mode",
+  "instant": "Instant",
+  "asynchronous": "Asynchronous",
+  "asyncImageType": "Asynchronous Type",
+  "midjourney": "Midjourney",
+  "imaginePath": "Imagine Path (Optional)",
+  "fetchPath": "Fetch Path (Optional)",
+  "taskSubmitted": "Task submitted",
+  "taskInProgress": "In Progress",
+  "taskFailed": "Failed",
+  "taskSuccess": "Success",
+  "refresh": "Refresh",
+  "imageGenerationFailed": "Image generation failed",
+  "failedToLoadImage": "Failed to load image",
+  "requestError": "Request Error",
+  "unknownErrorOccurred": "An unknown error occurred",
+  "cancelled": "Cancelled",
+  "ok": "OK",
+  "asyncImaginePathHint": "e.g., /mj/submit/imagine",
+  "asyncFetchPathHint": "e.g., /mj/task/{taskId}/fetch",
+  "@asyncFetchPathHint": {
+    "placeholders": {
+      "taskId": {
+        "type": "String"
+      }
+    }
+  },
+  "taskStatus": "Status",
+  "midjourneyPromptHint": "Enter prompt, you can add parameters like --ar 16:9"
 }

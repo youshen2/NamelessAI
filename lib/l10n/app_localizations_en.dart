@@ -616,4 +616,73 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get styleNatural => 'Natural';
+
+  @override
+  String get imageGenerationMode => 'Image Generation Mode';
+
+  @override
+  String get instant => 'Instant';
+
+  @override
+  String get asynchronous => 'Asynchronous';
+
+  @override
+  String get asyncImageType => 'Asynchronous Type';
+
+  @override
+  String get midjourney => 'Midjourney';
+
+  @override
+  String get imaginePath => 'Imagine Path (Optional)';
+
+  @override
+  String get fetchPath => 'Fetch Path (Optional)';
+
+  @override
+  String get taskSubmitted => 'Task submitted';
+
+  @override
+  String get taskInProgress => 'In Progress';
+
+  @override
+  String get taskFailed => 'Failed';
+
+  @override
+  String get taskSuccess => 'Success';
+
+  @override
+  String get refresh => 'Refresh';
+
+  @override
+  String get imageGenerationFailed => 'Image generation failed';
+
+  @override
+  String get failedToLoadImage => 'Failed to load image';
+
+  @override
+  String get requestError => 'Request Error';
+
+  @override
+  String get unknownErrorOccurred => 'An unknown error occurred';
+
+  @override
+  String get cancelled => 'Cancelled';
+
+  @override
+  String get ok => 'OK';
+
+  @override
+  String get asyncImaginePathHint => 'e.g., /mj/submit/imagine';
+
+  @override
+  String asyncFetchPathHint(String taskId) {
+    return 'e.g., /mj/task/$taskId/fetch';
+  }
+
+  @override
+  String get taskStatus => 'Status';
+
+  @override
+  String get midjourneyPromptHint =>
+      'Enter prompt, you can add parameters like --ar 16:9';
 }

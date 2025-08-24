@@ -12,6 +12,7 @@ class MessageActionBar extends StatelessWidget {
   final VoidCallback onRegenerate;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
+  final VoidCallback onRefresh;
 
   const MessageActionBar({
     super.key,
@@ -21,6 +22,7 @@ class MessageActionBar extends StatelessWidget {
     required this.onRegenerate,
     required this.onEdit,
     required this.onDelete,
+    required this.onRefresh,
   });
 
   void _showDebugInfo(BuildContext context) {
@@ -37,7 +39,7 @@ class MessageActionBar extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
+            child: Text(localizations.ok),
           ),
         ],
       ),
@@ -70,6 +72,9 @@ class MessageActionBar extends StatelessWidget {
     final isUser = message.role == 'user';
     final isAiImage =
         message.role == 'assistant' && message.messageType == MessageType.image;
+    final isAsyncTask = isAiImage && message.taskId != null;
+    final isTaskFinished = message.asyncTaskStatus == AsyncTaskStatus.success ||
+        message.asyncTaskStatus == AsyncTaskStatus.failure;
 
     return AnimatedOpacity(
       opacity: isHovering || isTouchDevice ? 1.0 : 0.0,
@@ -79,8 +84,9 @@ class MessageActionBar extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _actionButton(context, Icons.copy_all_outlined,
-                localizations.copyMessage, onCopy, appConfig.compactMode),
+            if (!isAsyncTask || isTaskFinished)
+              _actionButton(context, Icons.copy_all_outlined,
+                  localizations.copyMessage, onCopy, appConfig.compactMode),
             if (!isUser)
               _actionButton(
                   context,
@@ -88,6 +94,9 @@ class MessageActionBar extends StatelessWidget {
                   localizations.regenerateResponse,
                   onRegenerate,
                   appConfig.compactMode),
+            if (isAsyncTask && !isTaskFinished)
+              _actionButton(context, Icons.sync, localizations.refresh,
+                  onRefresh, appConfig.compactMode),
             if (!isAiImage)
               _actionButton(context, Icons.edit_outlined,
                   localizations.editMessage, onEdit, appConfig.compactMode),

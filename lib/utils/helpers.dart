@@ -9,7 +9,7 @@ void showSnackBar(BuildContext context, String message,
       content: Text(message),
       backgroundColor: isError
           ? Theme.of(context).colorScheme.error
-          : Theme.of(context).colorScheme.primary,
+          : Theme.of(context).snackBarTheme.backgroundColor,
       behavior: SnackBarBehavior.floating,
       duration: const Duration(seconds: 2),
     ),
