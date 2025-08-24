@@ -1,7 +1,8 @@
 import 'dart:typed_data';
+import 'dart:ui';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:gal/gal.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
 import 'package:nameless_ai/utils/helpers.dart';
@@ -30,22 +31,12 @@ class _ImageViewerScreenState extends State<ImageViewerScreen> {
         widget.imageUrl,
         options: Options(responseType: ResponseType.bytes),
       );
-      final result = await ImageGallerySaver.saveImage(
+      await Gal.putImageBytes(
         Uint8List.fromList(response.data),
-        quality: 100,
         name: "namelessai_${DateTime.now().millisecondsSinceEpoch}",
       );
-
       if (mounted) {
-        if (result['isSuccess']) {
-          showSnackBar(context, localizations.saveSuccess);
-        } else {
-          showSnackBar(
-              context,
-              localizations
-                  .saveError(result['errorMessage'] ?? 'Unknown error'),
-              isError: true);
-        }
+        showSnackBar(context, localizations.saveSuccess);
       }
     } catch (e) {
       if (mounted) {
@@ -63,7 +54,7 @@ class _ImageViewerScreenState extends State<ImageViewerScreen> {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.black.withOpacity(0.5),
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -104,29 +95,43 @@ class _ImageViewerScreenState extends State<ImageViewerScreen> {
             ),
         ],
       ),
-      body: Hero(
-        tag: widget.heroTag,
-        child: PhotoView(
-          imageProvider: NetworkImage(widget.imageUrl),
-          minScale: PhotoViewComputedScale.contained,
-          maxScale: PhotoViewComputedScale.covered * 2.5,
-          loadingBuilder: (context, event) => const Center(
-            child: CircularProgressIndicator(color: Colors.white),
-          ),
-          errorBuilder: (context, error, stackTrace) => Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.broken_image, color: Colors.white70, size: 64),
-                const SizedBox(height: 16),
-                Text(
-                  localizations.failedToLoadImage,
-                  style: const TextStyle(color: Colors.white70, fontSize: 16),
-                ),
-              ],
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Container(
+                color: Colors.black.withOpacity(0.1),
+              ),
             ),
           ),
-        ),
+          Hero(
+            tag: widget.heroTag,
+            child: PhotoView(
+              imageProvider: NetworkImage(widget.imageUrl),
+              minScale: PhotoViewComputedScale.contained,
+              maxScale: PhotoViewComputedScale.covered * 2.5,
+              loadingBuilder: (context, event) => const Center(
+                child: CircularProgressIndicator(color: Colors.white),
+              ),
+              errorBuilder: (context, error, stackTrace) => Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.broken_image,
+                        color: Colors.white70, size: 64),
+                    const SizedBox(height: 16),
+                    Text(
+                      localizations.failedToLoadImage,
+                      style:
+                          const TextStyle(color: Colors.white70, fontSize: 16),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
