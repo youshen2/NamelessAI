@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "appName": "NamelessAI",
+  "appName": "Nameless AI Box",
   "chat": "Chat",
   "history": "History",
   "settings": "Settings",
@@ -287,5 +287,8 @@
     }
   },
   "taskStatus": "Status",
-  "midjourneyPromptHint": "Enter prompt, you can add parameters like --ar 16:9"
+  "midjourneyPromptHint": "Enter prompt, you can add parameters like --ar 16:9",
+  "clearHistory": "Clear History",
+  "clearHistoryConfirmation": "Are you sure you want to delete all chat history? This action cannot be undone.",
+  "jsonDebugViewer": "JSON Viewer"
 }

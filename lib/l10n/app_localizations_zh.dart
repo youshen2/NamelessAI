@@ -9,7 +9,7 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
-  String get appName => 'NamelessAI';
+  String get appName => 'Nameless AI Box';
 
   @override
   String get chat => '聊天';
@@ -703,4 +703,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get midjourneyPromptHint => '输入提示词，可附带 --ar 16:9 等参数';
+
+  @override
+  String get clearHistory => '清空历史记录';
+
+  @override
+  String get clearHistoryConfirmation => '您确定要删除所有聊天记录吗？此操作无法撤销。';
+
+  @override
+  String get jsonDebugViewer => 'JSON 查看器';
 }

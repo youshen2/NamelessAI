@@ -222,6 +222,16 @@ class ChatSessionManager extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> clearAllHistory() async {
+    await AppDatabase.chatSessionsBox.clear();
+    _loadSessions();
+    startNewSession(
+      providerId: _apiProviderManager?.selectedProvider?.id,
+      modelId: _apiProviderManager?.selectedModel?.id,
+    );
+    notifyListeners();
+  }
+
   void toggleMessageEditing(String messageId, bool isEditing) {
     if (_currentSession == null) return;
     final message = _findMessageInSession(_currentSession!, messageId);

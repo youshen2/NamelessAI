@@ -420,10 +420,7 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
     if (model?.imageGenerationMode == ImageGenerationMode.asynchronous) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(localizations.midjourneyPromptHint,
-              style: Theme.of(context).textTheme.bodyMedium),
-        ],
+        children: [],
       );
     }
 

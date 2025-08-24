@@ -85,6 +85,41 @@ class _HistoryScreenState extends State<HistoryScreen> {
     }
   }
 
+  Future<void> _clearHistory() async {
+    final localizations = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(localizations.clearHistory),
+        content: Text(localizations.clearHistoryConfirmation),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(localizations.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: FilledButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.error),
+            child: Text(localizations.delete),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      final manager = Provider.of<ChatSessionManager>(context, listen: false);
+      await manager.clearAllHistory();
+      if (mounted) {
+        showSnackBar(context, localizations.history);
+        setState(() {
+          _selectedSessionForPreview = null;
+          _previewMessagesFuture = null;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
@@ -93,6 +128,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(localizations.history),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.delete_sweep_outlined),
+            tooltip: localizations.clearHistory,
+            onPressed: _clearHistory,
+          ),
+        ],
       ),
       body: Consumer<ChatSessionManager>(
         builder: (context, manager, child) {

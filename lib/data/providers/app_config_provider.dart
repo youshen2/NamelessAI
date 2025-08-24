@@ -35,6 +35,7 @@ class AppConfigProvider extends ChangeNotifier {
   bool _showDebugButton = false;
   bool _checkForUpdatesOnStartup = true;
   int _midjourneyRefreshInterval = 10;
+  bool _isFirstLaunch = true;
 
   AppConfigProvider() {
     _loadConfig();
@@ -67,6 +68,7 @@ class AppConfigProvider extends ChangeNotifier {
   bool get showDebugButton => _showDebugButton;
   bool get checkForUpdatesOnStartup => _checkForUpdatesOnStartup;
   int get midjourneyRefreshInterval => _midjourneyRefreshInterval;
+  bool get isFirstLaunch => _isFirstLaunch;
 
   void _loadConfig() {
     final box = AppDatabase.appConfigBox;
@@ -109,6 +111,7 @@ class AppConfigProvider extends ChangeNotifier {
         box.get('checkForUpdatesOnStartup', defaultValue: true);
     _midjourneyRefreshInterval =
         box.get('midjourneyRefreshInterval', defaultValue: 10);
+    _isFirstLaunch = box.get('isFirstLaunch', defaultValue: true);
 
     notifyListeners();
   }
@@ -276,6 +279,13 @@ class AppConfigProvider extends ChangeNotifier {
     if (_midjourneyRefreshInterval != interval) {
       _midjourneyRefreshInterval = interval;
       _updateValue('midjourneyRefreshInterval', interval);
+    }
+  }
+
+  Future<void> completeOnboarding() async {
+    if (_isFirstLaunch) {
+      _isFirstLaunch = false;
+      await _updateValue('isFirstLaunch', false);
     }
   }
 }

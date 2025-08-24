@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_highlight/flutter_highlight.dart';
 import 'package:flutter_highlight/theme_map.dart';
 import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/providers/app_config_provider.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
+import 'package:nameless_ai/screens/chat/widgets/markdown_code_block.dart';
 
 class DisplaySettingsScreen extends StatelessWidget {
   const DisplaySettingsScreen({super.key});
@@ -41,20 +41,13 @@ void main() {
 }
 ''';
     return IgnorePointer(
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-        decoration: BoxDecoration(
-          color: theme['root']?.backgroundColor,
-          borderRadius: BorderRadius.circular(8.0),
-          border: Border.all(
-              color: Theme.of(context).colorScheme.outline.withOpacity(0.5)),
-        ),
-        child: HighlightView(
-          codeSnippet,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        child: CollapsibleCodeBlock(
           language: 'dart',
+          code: codeSnippet,
           theme: theme,
-          padding: const EdgeInsets.all(12.0),
-          textStyle: const TextStyle(fontFamily: 'monospace', fontSize: 12),
+          isReadOnly: true,
         ),
       ),
     );

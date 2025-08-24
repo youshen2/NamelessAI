@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/models/chat_message.dart';
 import 'package:nameless_ai/data/providers/app_config_provider.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
+import 'package:nameless_ai/widgets/json_viewer.dart';
 
 class MessageActionBar extends StatelessWidget {
   final ChatMessage message;
@@ -38,14 +39,14 @@ class MessageActionBar extends StatelessWidget {
       }
     }
 
-    final jsonString = const JsonEncoder.withIndent('  ').convert(messageJson);
-
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(localizations.debugInfo),
-        content: SingleChildScrollView(
-          child: SelectableText(jsonString),
+        content: SizedBox(
+          width: MediaQuery.of(context).size.width * 0.8,
+          height: MediaQuery.of(context).size.height * 0.7,
+          child: JsonViewer(json: messageJson),
         ),
         actions: [
           TextButton(

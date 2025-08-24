@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appName => 'NamelessAI';
+  String get appName => 'Nameless AI Box';
 
   @override
   String get chat => 'Chat';
@@ -718,4 +718,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get midjourneyPromptHint =>
       'Enter prompt, you can add parameters like --ar 16:9';
+
+  @override
+  String get clearHistory => 'Clear History';
+
+  @override
+  String get clearHistoryConfirmation =>
+      'Are you sure you want to delete all chat history? This action cannot be undone.';
+
+  @override
+  String get jsonDebugViewer => 'JSON Viewer';
 }

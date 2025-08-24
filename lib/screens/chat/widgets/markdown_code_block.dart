@@ -14,8 +14,13 @@ void _showFreeCopyDialog(BuildContext context, String code) {
     context: context,
     builder: (context) => AlertDialog(
       title: Text(localizations.copyCode),
-      content: SingleChildScrollView(
-        child: SelectableText(code),
+      insetPadding: const EdgeInsets.all(20),
+      content: SizedBox(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height * 0.6,
+        child: SingleChildScrollView(
+          child: SelectableText(code),
+        ),
       ),
       actions: [
         TextButton(
@@ -40,7 +45,7 @@ class MarkdownCodeBlockBuilder extends MarkdownElementBuilder {
       final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
       final theme = themeMap[appConfig.codeTheme] ?? themeMap['github-dark']!;
 
-      return _CollapsibleCodeBlock(
+      return CollapsibleCodeBlock(
         language: language,
         code: code,
         theme: theme,
@@ -50,22 +55,25 @@ class MarkdownCodeBlockBuilder extends MarkdownElementBuilder {
   }
 }
 
-class _CollapsibleCodeBlock extends StatefulWidget {
+class CollapsibleCodeBlock extends StatefulWidget {
   final String language;
   final String code;
   final Map<String, TextStyle> theme;
+  final bool isReadOnly;
 
-  const _CollapsibleCodeBlock({
+  const CollapsibleCodeBlock({
+    super.key,
     required this.language,
     required this.code,
     required this.theme,
+    this.isReadOnly = false,
   });
 
   @override
-  State<_CollapsibleCodeBlock> createState() => _CollapsibleCodeBlockState();
+  State<CollapsibleCodeBlock> createState() => _CollapsibleCodeBlockState();
 }
 
-class _CollapsibleCodeBlockState extends State<_CollapsibleCodeBlock> {
+class _CollapsibleCodeBlockState extends State<CollapsibleCodeBlock> {
   bool _isExpanded = true;
 
   @override
@@ -102,60 +110,61 @@ class _CollapsibleCodeBlockState extends State<_CollapsibleCodeBlock> {
                     fontSize: 12,
                   ),
                 ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.content_paste_go_outlined,
-                          size: 18,
-                          color: widget.theme['root']?.color
-                                  ?.withOpacity(0.7) ??
-                              Theme.of(context).colorScheme.onSurfaceVariant),
-                      tooltip: localizations.freeCopy,
-                      onPressed: () =>
-                          _showFreeCopyDialog(context, widget.code),
-                      style: IconButton.styleFrom(
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        minimumSize: Size.zero,
-                        padding: const EdgeInsets.symmetric(horizontal: 6),
+                if (!widget.isReadOnly)
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.content_paste_go_outlined,
+                            size: 18,
+                            color: widget.theme['root']?.color
+                                    ?.withOpacity(0.7) ??
+                                Theme.of(context).colorScheme.onSurfaceVariant),
+                        tooltip: localizations.freeCopy,
+                        onPressed: () =>
+                            _showFreeCopyDialog(context, widget.code),
+                        style: IconButton.styleFrom(
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          minimumSize: Size.zero,
+                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                        ),
                       ),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.copy,
-                          size: 18,
-                          color: widget.theme['root']?.color
-                                  ?.withOpacity(0.7) ??
-                              Theme.of(context).colorScheme.onSurfaceVariant),
-                      tooltip: localizations.copyCode,
-                      onPressed: () => copyToClipboard(context, widget.code),
-                      style: IconButton.styleFrom(
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        minimumSize: Size.zero,
-                        padding: const EdgeInsets.symmetric(horizontal: 6),
+                      IconButton(
+                        icon: Icon(Icons.copy,
+                            size: 18,
+                            color: widget.theme['root']?.color
+                                    ?.withOpacity(0.7) ??
+                                Theme.of(context).colorScheme.onSurfaceVariant),
+                        tooltip: localizations.copyCode,
+                        onPressed: () => copyToClipboard(context, widget.code),
+                        style: IconButton.styleFrom(
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          minimumSize: Size.zero,
+                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                        ),
                       ),
-                    ),
-                    IconButton(
-                      icon: Icon(
-                          _isExpanded
-                              ? Icons.unfold_less_outlined
-                              : Icons.unfold_more_outlined,
-                          size: 18,
-                          color: widget.theme['root']?.color
-                                  ?.withOpacity(0.7) ??
-                              Theme.of(context).colorScheme.onSurfaceVariant),
-                      tooltip: _isExpanded
-                          ? localizations.collapse
-                          : localizations.expand,
-                      onPressed: () =>
-                          setState(() => _isExpanded = !_isExpanded),
-                      style: IconButton.styleFrom(
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        minimumSize: Size.zero,
-                        padding: const EdgeInsets.symmetric(horizontal: 6),
+                      IconButton(
+                        icon: Icon(
+                            _isExpanded
+                                ? Icons.unfold_less_outlined
+                                : Icons.unfold_more_outlined,
+                            size: 18,
+                            color: widget.theme['root']?.color
+                                    ?.withOpacity(0.7) ??
+                                Theme.of(context).colorScheme.onSurfaceVariant),
+                        tooltip: _isExpanded
+                            ? localizations.collapse
+                            : localizations.expand,
+                        onPressed: () =>
+                            setState(() => _isExpanded = !_isExpanded),
+                        style: IconButton.styleFrom(
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          minimumSize: Size.zero,
+                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
               ],
             ),
           ),

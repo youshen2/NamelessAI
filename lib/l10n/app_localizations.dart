@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// No description provided for @appName.
   ///
   /// In en, this message translates to:
-  /// **'NamelessAI'**
+  /// **'Nameless AI Box'**
   String get appName;
 
   /// No description provided for @chat.
@@ -1447,6 +1447,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter prompt, you can add parameters like --ar 16:9'**
   String get midjourneyPromptHint;
+
+  /// No description provided for @clearHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear History'**
+  String get clearHistory;
+
+  /// No description provided for @clearHistoryConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete all chat history? This action cannot be undone.'**
+  String get clearHistoryConfirmation;
+
+  /// No description provided for @jsonDebugViewer.
+  ///
+  /// In en, this message translates to:
+  /// **'JSON Viewer'**
+  String get jsonDebugViewer;
 }
 
 class _AppLocalizationsDelegate

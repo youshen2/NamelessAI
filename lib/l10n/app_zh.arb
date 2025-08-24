@@ -1,6 +1,6 @@
 {
   "@@locale": "zh",
-  "appName": "NamelessAI",
+  "appName": "Nameless AI Box",
   "chat": "聊天",
   "history": "历史",
   "settings": "设置",
@@ -287,5 +287,8 @@
     }
   },
   "taskStatus": "状态",
-  "midjourneyPromptHint": "输入提示词，可附带 --ar 16:9 等参数"
+  "midjourneyPromptHint": "输入提示词，可附带 --ar 16:9 等参数",
+  "clearHistory": "清空历史记录",
+  "clearHistoryConfirmation": "您确定要删除所有聊天记录吗？此操作无法撤销。",
+  "jsonDebugViewer": "JSON 查看器"
 }
