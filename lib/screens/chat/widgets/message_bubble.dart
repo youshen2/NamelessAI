@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -288,8 +289,25 @@ class _MessageBubbleState extends State<MessageBubble>
       );
     }
 
+    String imageUrl = widget.message.content;
+    try {
+      final decoded = jsonDecode(widget.message.content);
+      if (decoded is Map<String, dynamic> && decoded.containsKey('data')) {
+        final data = decoded['data'];
+        if (data is List && data.isNotEmpty) {
+          final firstItem = data.first;
+          if (firstItem is Map<String, dynamic> &&
+              firstItem.containsKey('url')) {
+            imageUrl = firstItem['url'];
+          }
+        }
+      }
+    } catch (e) {
+      // Not a JSON or not the expected format, assume content is the URL.
+    }
+
     return Image.network(
-      widget.message.content,
+      imageUrl,
       fit: BoxFit.cover,
       loadingBuilder: (context, child, loadingProgress) {
         if (loadingProgress == null) return child;
