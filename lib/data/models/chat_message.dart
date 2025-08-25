@@ -98,6 +98,9 @@ class ChatMessage extends HiveObject {
   @HiveField(22)
   String? videoUrl;
 
+  @HiveField(23)
+  DateTime? nextRefreshTime;
+
   DateTime? thinkingStartTime;
 
   ChatMessage({
@@ -125,6 +128,7 @@ class ChatMessage extends HiveObject {
     this.rawResponseJson,
     this.enhancedPrompt,
     this.videoUrl,
+    this.nextRefreshTime,
   })  : id = id ?? const Uuid().v4(),
         timestamp = timestamp ?? DateTime.now();
 
@@ -153,6 +157,7 @@ class ChatMessage extends HiveObject {
     String? rawResponseJson,
     String? enhancedPrompt,
     String? videoUrl,
+    DateTime? nextRefreshTime,
   }) {
     return ChatMessage(
       id: id ?? this.id,
@@ -180,6 +185,7 @@ class ChatMessage extends HiveObject {
       rawResponseJson: rawResponseJson ?? this.rawResponseJson,
       enhancedPrompt: enhancedPrompt ?? this.enhancedPrompt,
       videoUrl: videoUrl ?? this.videoUrl,
+      nextRefreshTime: nextRefreshTime ?? this.nextRefreshTime,
     );
   }
 
@@ -207,6 +213,7 @@ class ChatMessage extends HiveObject {
         'rawResponseJson': rawResponseJson,
         'enhancedPrompt': enhancedPrompt,
         'videoUrl': videoUrl,
+        'nextRefreshTime': nextRefreshTime?.toIso8601String(),
       };
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) => ChatMessage(
@@ -237,5 +244,8 @@ class ChatMessage extends HiveObject {
         rawResponseJson: json['rawResponseJson'],
         enhancedPrompt: json['enhancedPrompt'],
         videoUrl: json['videoUrl'],
+        nextRefreshTime: json['nextRefreshTime'] == null
+            ? null
+            : DateTime.parse(json['nextRefreshTime']),
       );
 }

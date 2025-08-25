@@ -629,21 +629,33 @@ class ChatSessionManager extends ChangeNotifier {
         await apiService.fetchMidjourneyTask(message.taskId!, model);
     message.rawResponseJson = response.rawResponse;
     message.asyncTaskFullResponse = jsonEncode(response.toJson());
+    final interval = AppDatabase.appConfigBox
+        .get('asyncTaskRefreshInterval', defaultValue: 10) as int;
 
     if (response.status == 'SUCCESS') {
       message.asyncTaskStatus = AsyncTaskStatus.success;
       message.content = response.imageUrl ?? message.content;
       message.asyncTaskProgress = '100%';
+      message.nextRefreshTime = null;
     } else if (response.status == 'FAILURE') {
       message.asyncTaskStatus = AsyncTaskStatus.failure;
       message.isError = true;
       message.content = response.failReason ?? 'Task failed without reason.';
+      message.nextRefreshTime = null;
     } else if (response.status == 'IN_PROGRESS') {
       message.asyncTaskStatus = AsyncTaskStatus.inProgress;
       message.asyncTaskProgress = response.progress;
+      if (interval > 0) {
+        message.nextRefreshTime =
+            DateTime.now().add(Duration(seconds: interval));
+      }
     } else {
       message.asyncTaskStatus = AsyncTaskStatus.submitted;
       message.asyncTaskProgress = response.progress;
+      if (interval > 0) {
+        message.nextRefreshTime =
+            DateTime.now().add(Duration(seconds: interval));
+      }
     }
   }
 
@@ -653,6 +665,8 @@ class ChatSessionManager extends ChangeNotifier {
     final response = await apiService.queryVideoTask(message.taskId!, model);
     message.rawResponseJson = response.rawResponse;
     message.asyncTaskFullResponse = jsonEncode(response.toJson());
+    final interval = AppDatabase.appConfigBox
+        .get('asyncTaskRefreshInterval', defaultValue: 10) as int;
 
     final status = response.status.toUpperCase();
     if (status == 'SUCCESS' || status == 'COMPLETED') {
@@ -660,16 +674,26 @@ class ChatSessionManager extends ChangeNotifier {
       message.videoUrl = response.videoUrl;
       message.content = 'Video generated successfully.';
       message.asyncTaskProgress = '100%';
+      message.nextRefreshTime = null;
     } else if (status == 'FAILURE' || status == 'FAILED') {
       message.asyncTaskStatus = AsyncTaskStatus.failure;
       message.isError = true;
       message.content = 'Video generation failed.';
+      message.nextRefreshTime = null;
     } else if (status == 'IN_PROGRESS' || status == 'PROCESSING') {
       message.asyncTaskStatus = AsyncTaskStatus.inProgress;
       message.content = 'Video generation in progress...';
+      if (interval > 0) {
+        message.nextRefreshTime =
+            DateTime.now().add(Duration(seconds: interval));
+      }
     } else {
       message.asyncTaskStatus = AsyncTaskStatus.submitted;
       message.content = 'Video task submitted: ${response.status}';
+      if (interval > 0) {
+        message.nextRefreshTime =
+            DateTime.now().add(Duration(seconds: interval));
+      }
     }
   }
 

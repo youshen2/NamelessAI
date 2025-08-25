@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:nameless_ai/api/api_service.dart';
 import 'package:nameless_ai/api/models.dart' as api_models;
+import 'package:nameless_ai/data/app_database.dart';
 import 'package:nameless_ai/data/models/api_provider.dart';
 import 'package:nameless_ai/data/models/chat_message.dart';
 import 'package:nameless_ai/data/models/chat_session.dart';
@@ -268,6 +269,12 @@ class GenerationService {
       messageToUpdate.asyncTaskStatus = AsyncTaskStatus.submitted;
       messageToUpdate.content = 'Task Submitted: ${response.description}';
       messageToUpdate.isLoading = false;
+      final interval = AppDatabase.appConfigBox
+          .get('asyncTaskRefreshInterval', defaultValue: 10) as int;
+      if (interval > 0) {
+        messageToUpdate.nextRefreshTime =
+            DateTime.now().add(Duration(seconds: interval));
+      }
     } else {
       throw Exception(
           "Midjourney task submission failed: ${response.description} (Code: ${response.code})");
@@ -290,6 +297,12 @@ class GenerationService {
     messageToUpdate.asyncTaskStatus = AsyncTaskStatus.submitted;
     messageToUpdate.content = 'Task Submitted: ${response.status}';
     messageToUpdate.isLoading = false;
+    final interval = AppDatabase.appConfigBox
+        .get('asyncTaskRefreshInterval', defaultValue: 10) as int;
+    if (interval > 0) {
+      messageToUpdate.nextRefreshTime =
+          DateTime.now().add(Duration(seconds: interval));
+    }
   }
 
   List<Map<String, String>> _formatMessages(

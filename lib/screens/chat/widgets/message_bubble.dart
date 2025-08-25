@@ -64,10 +64,6 @@ class _MessageBubbleState extends State<MessageBubble>
   late final Animation<Offset> _slideAnimation;
   late final Animation<double> _fadeAnimation;
 
-  Timer? _countdownTimer;
-  int _countdown = 0;
-  late AppConfigProvider _appConfig;
-
   @override
   bool get wantKeepAlive => true;
 
@@ -75,7 +71,6 @@ class _MessageBubbleState extends State<MessageBubble>
   void initState() {
     super.initState();
     _editController = TextEditingController(text: widget.message.content);
-    _appConfig = Provider.of<AppConfigProvider>(context, listen: false);
 
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 400),
@@ -96,8 +91,6 @@ class _MessageBubbleState extends State<MessageBubble>
     } else {
       _animationController.value = 1.0;
     }
-
-    _setupTimer();
   }
 
   @override
@@ -112,18 +105,6 @@ class _MessageBubbleState extends State<MessageBubble>
         _editFocusNode.requestFocus();
       }
     }
-
-    final bool statusChanged =
-        oldWidget.message.asyncTaskStatus != widget.message.asyncTaskStatus;
-    final bool needsTimerNow = widget.message.taskId != null &&
-        (widget.message.asyncTaskStatus == AsyncTaskStatus.submitted ||
-            widget.message.asyncTaskStatus == AsyncTaskStatus.inProgress);
-    final bool justFinishedLoading =
-        oldWidget.message.isLoading && !widget.message.isLoading;
-
-    if (statusChanged || (needsTimerNow && justFinishedLoading)) {
-      _setupTimer();
-    }
   }
 
   @override
@@ -131,43 +112,7 @@ class _MessageBubbleState extends State<MessageBubble>
     _editController.dispose();
     _editFocusNode.dispose();
     _animationController.dispose();
-    _countdownTimer?.cancel();
     super.dispose();
-  }
-
-  void _setupTimer() {
-    _countdownTimer?.cancel();
-
-    final needsTimer = widget.message.taskId != null &&
-        (widget.message.asyncTaskStatus == AsyncTaskStatus.submitted ||
-            widget.message.asyncTaskStatus == AsyncTaskStatus.inProgress);
-
-    if (needsTimer && _appConfig.asyncTaskRefreshInterval > 0) {
-      _countdown = _appConfig.asyncTaskRefreshInterval;
-      _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-        if (!mounted) {
-          timer.cancel();
-          return;
-        }
-
-        final newCountdown = _countdown - 1;
-        setState(() {
-          _countdown = newCountdown;
-        });
-
-        if (newCountdown <= 0) {
-          timer.cancel();
-          widget.onRefresh(widget.message);
-        }
-      });
-      if (mounted) {
-        setState(() {});
-      }
-    } else {
-      if (mounted) {
-        setState(() {});
-      }
-    }
   }
 
   void _handleEditKeyEvent(RawKeyEvent event) {
@@ -518,6 +463,7 @@ class _MessageBubbleState extends State<MessageBubble>
   Widget _buildAsyncTaskStatus(
       BuildContext context, Color textColor, AppLocalizations localizations) {
     final message = widget.message;
+    final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
     String statusText;
     IconData statusIcon;
 
@@ -538,6 +484,13 @@ class _MessageBubbleState extends State<MessageBubble>
         statusIcon = Icons.info_outline;
     }
 
+    final bool needsTimer = message.nextRefreshTime != null &&
+        message.nextRefreshTime!.isAfter(DateTime.now()) &&
+        appConfig.asyncTaskRefreshInterval > 0 &&
+        !message.isLoading &&
+        (message.asyncTaskStatus == AsyncTaskStatus.submitted ||
+            message.asyncTaskStatus == AsyncTaskStatus.inProgress);
+
     return SizedBox(
       width: 256,
       height: 256,
@@ -549,6 +502,17 @@ class _MessageBubbleState extends State<MessageBubble>
             children: [
               if (message.isLoading)
                 const CircularProgressIndicator()
+              else if (needsTimer)
+                _CircularCountdownTimer(
+                  nextRefreshTime: message.nextRefreshTime!,
+                  totalDurationSeconds: appConfig.asyncTaskRefreshInterval,
+                  onFinished: () {
+                    if (mounted) {
+                      widget.onRefresh(widget.message);
+                    }
+                  },
+                  color: textColor,
+                )
               else
                 Icon(statusIcon, size: 48, color: textColor.withOpacity(0.8)),
               const SizedBox(height: 16),
@@ -579,16 +543,6 @@ class _MessageBubbleState extends State<MessageBubble>
                       textAlign: TextAlign.center,
                     ),
                   ),
-                ),
-              ],
-              if (_countdownTimer?.isActive ?? false) ...[
-                const SizedBox(height: 8),
-                Text(
-                  localizations.refreshingIn(_countdown.toString()),
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall
-                      ?.copyWith(color: textColor.withOpacity(0.7)),
                 ),
               ],
             ],
@@ -742,6 +696,102 @@ class _MessageBubbleState extends State<MessageBubble>
                       widget.onResubmit(widget.message, _editController.text),
                 ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CircularCountdownTimer extends StatefulWidget {
+  final DateTime nextRefreshTime;
+  final int totalDurationSeconds;
+  final VoidCallback onFinished;
+  final Color color;
+
+  const _CircularCountdownTimer({
+    required this.nextRefreshTime,
+    required this.totalDurationSeconds,
+    required this.onFinished,
+    required this.color,
+  });
+
+  @override
+  State<_CircularCountdownTimer> createState() =>
+      _CircularCountdownTimerState();
+}
+
+class _CircularCountdownTimerState extends State<_CircularCountdownTimer> {
+  Timer? _timer;
+  Duration _remaining = Duration.zero;
+
+  @override
+  void initState() {
+    super.initState();
+    _updateRemaining();
+    _timer = Timer.periodic(const Duration(milliseconds: 100), (_) {
+      _updateRemaining();
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void _updateRemaining() {
+    if (!mounted) {
+      _timer?.cancel();
+      return;
+    }
+    final now = DateTime.now();
+    final remaining = widget.nextRefreshTime.difference(now);
+
+    if (remaining.isNegative) {
+      setState(() {
+        _remaining = Duration.zero;
+      });
+      _timer?.cancel();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          widget.onFinished();
+        }
+      });
+    } else {
+      setState(() {
+        _remaining = remaining;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final progress = widget.totalDurationSeconds > 0
+        ? _remaining.inMilliseconds / (widget.totalDurationSeconds * 1000)
+        : 0.0;
+
+    return SizedBox(
+      width: 40,
+      height: 40,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          CircularProgressIndicator(
+            value: progress,
+            strokeWidth: 3,
+            color: widget.color,
+            backgroundColor: widget.color.withOpacity(0.2),
+          ),
+          Center(
+            child: Text(
+              '${_remaining.inSeconds + 1}',
+              style: TextStyle(
+                color: widget.color,
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
+            ),
           ),
         ],
       ),
