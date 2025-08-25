@@ -351,5 +351,19 @@
   "hapticSliderChanged": "Slider Change",
   "hapticsNotSupported": "Haptic feedback is not supported on this platform.",
   "hapticStreamOutput": "Stream Output",
-  "hapticThinking": "Thinking"
+  "hapticThinking": "Thinking",
+  "importFromNamelessAI": "From NamelessAI",
+  "importFromChatBox": "From ChatBox",
+  "importPreview": "Import Preview",
+  "selectItemsToImport": "Select items to import:",
+  "importMode": "Import Mode",
+  "mergeData": "Merge",
+  "replaceData": "Replace",
+  "mergeDataHint": "Add data to existing content.",
+  "replaceDataHint": "Delete existing data before importing.",
+  "skipped": "Skipped",
+  "warning": "Warning",
+  "unsupportedData": "Unsupported data type, will be skipped.",
+  "noSystemPrompt": "No system prompt",
+  "import": "Import"
 }

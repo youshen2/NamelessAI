@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
 import 'package:nameless_ai/screens/settings/widgets/export_options_sheet.dart';
+import 'package:nameless_ai/screens/settings/widgets/import_confirmation_dialog.dart';
 import 'package:nameless_ai/services/backup_service.dart';
 import 'package:nameless_ai/services/haptic_service.dart';
+import 'package:nameless_ai/services/import_service.dart';
 import 'package:nameless_ai/utils/helpers.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -15,6 +17,7 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   final BackupService _backupService = BackupService();
+  final ImportService _importService = ImportService();
   bool _isWorking = false;
 
   Future<void> _exportData() async {
@@ -56,7 +59,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  Future<void> _importData() async {
+  Future<void> _importFromNamelessAI() async {
     HapticService.onButtonPress(context);
     final localizations = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
@@ -89,7 +92,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     setState(() => _isWorking = true);
     try {
-      await _backupService.importData(context);
+      final success = await _backupService.importData(context);
+      if (!success) {
+        if (mounted) setState(() => _isWorking = false);
+        return;
+      }
       if (mounted) {
         showDialog(
           context: context,
@@ -121,9 +128,68 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  Future<void> _importFromChatBox() async {
+    HapticService.onButtonPress(context);
+    final localizations = AppLocalizations.of(context)!;
+
+    setState(() => _isWorking = true);
+    try {
+      final backupData = await _importService.pickAndParseChatBoxFile();
+      if (backupData == null) {
+        if (mounted) setState(() => _isWorking = false);
+        return;
+      }
+
+      if (mounted) {
+        final result = await showDialog<Map<String, dynamic>>(
+          context: context,
+          builder: (context) =>
+              ImportConfirmationDialog(backupData: backupData),
+        );
+
+        if (result != null) {
+          final mode = result['mode'] as ImportMode;
+          final categories = result['categories'] as Set<String>;
+          await _importService.importFromChatBox(
+              context, backupData, mode, categories);
+
+          if (mounted) {
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => AlertDialog(
+                title: Text(localizations.importSuccess.split('.').first),
+                content: Text(localizations.importSuccess),
+                actions: [
+                  FilledButton(
+                    onPressed: () {
+                      HapticService.onButtonPress(context);
+                      Navigator.of(context).pop();
+                    },
+                    child: Text(localizations.ok),
+                  )
+                ],
+              ),
+            );
+          }
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        showSnackBar(context, localizations.importError(e.toString()),
+            isError: true);
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isWorking = false);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -198,19 +264,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               Card(
                 margin: const EdgeInsets.only(bottom: 16),
-                child: Column(
-                  children: [
-                    ListTile(
-                      leading: const Icon(Icons.upload_file_outlined),
-                      title: Text(localizations.exportData),
-                      onTap: _isWorking ? null : _exportData,
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.download_done_outlined),
-                      title: Text(localizations.importData),
-                      onTap: _isWorking ? null : _importData,
-                    ),
-                  ],
+                child: ListTile(
+                  leading: const Icon(Icons.upload_file_outlined),
+                  title: Text(localizations.exportData),
+                  onTap: _isWorking ? null : _exportData,
+                ),
+              ),
+              Card(
+                margin: const EdgeInsets.only(bottom: 16),
+                child: ListTile(
+                  tileColor:
+                      theme.colorScheme.secondaryContainer.withOpacity(0.3),
+                  leading: const Icon(Icons.download_done_outlined),
+                  title: Text(localizations.importData),
+                  subtitle: Text(localizations.importFromNamelessAI),
+                  onTap: _isWorking ? null : _importFromNamelessAI,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+              Card(
+                margin: const EdgeInsets.only(bottom: 16),
+                child: ListTile(
+                  tileColor:
+                      theme.colorScheme.tertiaryContainer.withOpacity(0.3),
+                  leading: const Icon(Icons.move_down_outlined),
+                  title: Text(localizations.importData),
+                  subtitle: Text(localizations.importFromChatBox),
+                  onTap: _isWorking ? null : _importFromChatBox,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
               Card(

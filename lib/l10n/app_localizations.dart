@@ -1789,6 +1789,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Thinking'**
   String get hapticThinking;
+
+  /// No description provided for @importFromNamelessAI.
+  ///
+  /// In en, this message translates to:
+  /// **'From NamelessAI'**
+  String get importFromNamelessAI;
+
+  /// No description provided for @importFromChatBox.
+  ///
+  /// In en, this message translates to:
+  /// **'From ChatBox'**
+  String get importFromChatBox;
+
+  /// No description provided for @importPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Import Preview'**
+  String get importPreview;
+
+  /// No description provided for @selectItemsToImport.
+  ///
+  /// In en, this message translates to:
+  /// **'Select items to import:'**
+  String get selectItemsToImport;
+
+  /// No description provided for @importMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Import Mode'**
+  String get importMode;
+
+  /// No description provided for @mergeData.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge'**
+  String get mergeData;
+
+  /// No description provided for @replaceData.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace'**
+  String get replaceData;
+
+  /// No description provided for @mergeDataHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add data to existing content.'**
+  String get mergeDataHint;
+
+  /// No description provided for @replaceDataHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete existing data before importing.'**
+  String get replaceDataHint;
+
+  /// No description provided for @skipped.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped'**
+  String get skipped;
+
+  /// No description provided for @warning.
+  ///
+  /// In en, this message translates to:
+  /// **'Warning'**
+  String get warning;
+
+  /// No description provided for @unsupportedData.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsupported data type, will be skipped.'**
+  String get unsupportedData;
+
+  /// No description provided for @noSystemPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'No system prompt'**
+  String get noSystemPrompt;
+
+  /// No description provided for @import.
+  ///
+  /// In en, this message translates to:
+  /// **'Import'**
+  String get import;
 }
 
 class _AppLocalizationsDelegate

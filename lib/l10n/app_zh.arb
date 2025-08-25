@@ -351,5 +351,20 @@
   "hapticSliderChanged": "滑块更改",
   "hapticsNotSupported": "此平台不支持振动反馈。",
   "hapticStreamOutput": "流式输出",
-  "hapticThinking": "思考时"
+  "hapticThinking": "思考时",
+  "importFromNamelessAI": "从 NamelessAI",
+  "importFromChatBox": "从 ChatBox",
+  "importPreview": "导入预览",
+  "dataToImport": "待导入数据",
+  "selectItemsToImport": "选择要导入的项目：",
+  "importMode": "导入模式",
+  "mergeData": "合并",
+  "replaceData": "替换",
+  "mergeDataHint": "将数据追加到现有内容中。",
+  "replaceDataHint": "导入前删除现有数据。",
+  "skipped": "已跳过",
+  "warning": "警告",
+  "unsupportedData": "不支持的数据类型，将被跳过。",
+  "noSystemPrompt": "无系统提示词",
+  "import": "导入"
 }

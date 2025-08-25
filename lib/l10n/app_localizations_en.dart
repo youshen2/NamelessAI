@@ -900,4 +900,46 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hapticThinking => 'Thinking';
+
+  @override
+  String get importFromNamelessAI => 'From NamelessAI';
+
+  @override
+  String get importFromChatBox => 'From ChatBox';
+
+  @override
+  String get importPreview => 'Import Preview';
+
+  @override
+  String get selectItemsToImport => 'Select items to import:';
+
+  @override
+  String get importMode => 'Import Mode';
+
+  @override
+  String get mergeData => 'Merge';
+
+  @override
+  String get replaceData => 'Replace';
+
+  @override
+  String get mergeDataHint => 'Add data to existing content.';
+
+  @override
+  String get replaceDataHint => 'Delete existing data before importing.';
+
+  @override
+  String get skipped => 'Skipped';
+
+  @override
+  String get warning => 'Warning';
+
+  @override
+  String get unsupportedData => 'Unsupported data type, will be skipped.';
+
+  @override
+  String get noSystemPrompt => 'No system prompt';
+
+  @override
+  String get import => 'Import';
 }

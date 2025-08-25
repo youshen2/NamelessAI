@@ -59,14 +59,14 @@ class BackupService {
     }
   }
 
-  Future<void> importData(BuildContext context) async {
+  Future<bool> importData(BuildContext context) async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['json'],
     );
 
     if (result == null || result.files.single.path == null) {
-      return;
+      return false;
     }
 
     final filePath = result.files.single.path!;
@@ -108,5 +108,6 @@ class BackupService {
         await AppDatabase.appConfigBox.put(entry.key, entry.value);
       }
     }
+    return true;
   }
 }

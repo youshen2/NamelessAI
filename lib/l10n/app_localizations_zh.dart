@@ -876,4 +876,46 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get hapticThinking => '思考时';
+
+  @override
+  String get importFromNamelessAI => '从 NamelessAI';
+
+  @override
+  String get importFromChatBox => '从 ChatBox';
+
+  @override
+  String get importPreview => '导入预览';
+
+  @override
+  String get selectItemsToImport => '选择要导入的项目：';
+
+  @override
+  String get importMode => '导入模式';
+
+  @override
+  String get mergeData => '合并';
+
+  @override
+  String get replaceData => '替换';
+
+  @override
+  String get mergeDataHint => '将数据追加到现有内容中。';
+
+  @override
+  String get replaceDataHint => '导入前删除现有数据。';
+
+  @override
+  String get skipped => '已跳过';
+
+  @override
+  String get warning => '警告';
+
+  @override
+  String get unsupportedData => '不支持的数据类型，将被跳过。';
+
+  @override
+  String get noSystemPrompt => '无系统提示词';
+
+  @override
+  String get import => '导入';
 }
