@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nameless_ai/data/models/model.dart';
 import 'package:nameless_ai/data/models/model_type.dart';
+import 'package:nameless_ai/services/haptic_service.dart';
 import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/models/api_provider.dart';
 import 'package:nameless_ai/data/models/chat_message.dart';
@@ -148,6 +149,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void _scrollToTop() {
+    HapticService.onButtonPress(context);
     _scrollController.animateTo(
       0,
       duration: const Duration(milliseconds: 500),
@@ -156,6 +158,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void _scrollPageUp() {
+    HapticService.onButtonPress(context);
     _scrollController.animateTo(
       (_scrollController.offset - _scrollController.position.viewportDimension)
           .clamp(0.0, _scrollController.position.maxScrollExtent),
@@ -188,6 +191,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> _sendMessage() async {
+    HapticService.onButtonPress(context);
     final localizations = AppLocalizations.of(context)!;
     final chatSessionManager =
         Provider.of<ChatSessionManager>(context, listen: false);
@@ -262,6 +266,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> _startNewChat() async {
+    HapticService.onButtonPress(context);
     final chatSessionManager =
         Provider.of<ChatSessionManager>(context, listen: false);
 
@@ -334,6 +339,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void _refreshAsyncTask(ChatMessage message) async {
+    HapticService.onButtonPress(context);
     final chatSessionManager =
         Provider.of<ChatSessionManager>(context, listen: false);
     final apiProviderManager =
@@ -360,11 +366,13 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void _onBranchChange(String aiMessageId, int newIndex) {
+    HapticService.onButtonPress(context);
     Provider.of<ChatSessionManager>(context, listen: false)
         .switchActiveBranch(aiMessageId, newIndex);
   }
 
   void _showChatSettings() {
+    HapticService.onButtonPress(context);
     final manager = Provider.of<ChatSessionManager>(context, listen: false);
     if (manager.currentSession != null) {
       showModalBottomSheet(
@@ -424,6 +432,7 @@ class _ChatScreenState extends State<ChatScreen> {
               onTap: () {
                 if (manager.currentSession != null &&
                     (manager.currentSession?.name.isNotEmpty ?? false)) {
+                  HapticService.onButtonPress(context);
                   showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
@@ -431,7 +440,10 @@ class _ChatScreenState extends State<ChatScreen> {
                       content: SelectableText(manager.currentSession!.name),
                       actions: [
                         TextButton(
-                          onPressed: () => Navigator.of(context).pop(),
+                          onPressed: () {
+                            HapticService.onButtonPress(context);
+                            Navigator.of(context).pop();
+                          },
                           child: Text(localizations.close),
                         ),
                       ],
@@ -553,6 +565,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         child: _buildScrollButton(
                           icon: Icons.arrow_downward,
                           onPressed: () {
+                            HapticService.onButtonPress(context);
                             setState(() {
                               _userScrolledUp = false;
                             });
@@ -676,6 +689,7 @@ class _ChatScreenState extends State<ChatScreen> {
       height: 48,
       child: FilledButton(
         onPressed: () {
+          HapticService.onButtonPress(context);
           if (_chatSessionManager.currentSession != null) {
             _chatSessionManager
                 .cancelGeneration(_chatSessionManager.currentSession!.id);
@@ -715,6 +729,7 @@ class _ChatScreenState extends State<ChatScreen> {
     if (providers.isEmpty) {
       return TextButton.icon(
         onPressed: () {
+          HapticService.onButtonPress(context);
           context.go('/settings/api_providers');
         },
         icon: const Icon(Icons.warning_amber_rounded),
@@ -725,6 +740,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return PopupMenuButton<dynamic>(
       tooltip: localizations.modelSelection,
       onSelected: (value) {
+        HapticService.onButtonPress(context);
         if (value is Model) {
           APIProvider? providerOfSelectedModel;
           for (var p in providers) {

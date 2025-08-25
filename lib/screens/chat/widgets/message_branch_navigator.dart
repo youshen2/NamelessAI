@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nameless_ai/services/haptic_service.dart';
 
 class MessageBranchNavigator extends StatelessWidget {
   final int branchCount;
@@ -22,7 +23,10 @@ class MessageBranchNavigator extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.chevron_left, size: 20),
             onPressed: activeBranchIndex > 0
-                ? () => onBranchChange(activeBranchIndex - 1)
+                ? () {
+                    HapticService.onButtonPress(context);
+                    onBranchChange(activeBranchIndex - 1);
+                  }
                 : null,
             splashRadius: 18,
             padding: const EdgeInsets.all(4),
@@ -35,7 +39,10 @@ class MessageBranchNavigator extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.chevron_right, size: 20),
             onPressed: activeBranchIndex < branchCount - 1
-                ? () => onBranchChange(activeBranchIndex + 1)
+                ? () {
+                    HapticService.onButtonPress(context);
+                    onBranchChange(activeBranchIndex + 1);
+                  }
                 : null,
             splashRadius: 18,
             padding: const EdgeInsets.all(4),

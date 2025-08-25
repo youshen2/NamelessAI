@@ -7,6 +7,7 @@ import 'package:nameless_ai/data/models/chat_session.dart';
 import 'package:nameless_ai/data/providers/chat_session_manager.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
 import 'package:nameless_ai/screens/chat/widgets/message_bubble.dart';
+import 'package:nameless_ai/services/haptic_service.dart';
 import 'package:nameless_ai/utils/helpers.dart';
 
 class HistoryScreen extends StatefulWidget {
@@ -63,6 +64,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   Future<void> _editSessionName(
       ChatSession session, AppLocalizations localizations) async {
+    HapticService.onButtonPress(context);
     final manager = Provider.of<ChatSessionManager>(context, listen: false);
     final newName = await showTextInputDialog(
       context,
@@ -86,6 +88,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   Future<void> _clearHistory() async {
+    HapticService.onButtonPress(context);
     final localizations = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
@@ -94,11 +97,17 @@ class _HistoryScreenState extends State<HistoryScreen> {
         content: Text(localizations.clearHistoryConfirmation),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
+            onPressed: () {
+              HapticService.onButtonPress(context);
+              Navigator.of(context).pop(false);
+            },
             child: Text(localizations.cancel),
           ),
           FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
+            onPressed: () {
+              HapticService.onButtonPress(context);
+              Navigator.of(context).pop(true);
+            },
             style: FilledButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.error),
             child: Text(localizations.delete),
@@ -205,6 +214,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               ? IconButton(
                   icon: const Icon(Icons.clear),
                   onPressed: () {
+                    HapticService.onButtonPress(context);
                     _searchController.clear();
                   },
                 )
@@ -253,6 +263,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       color: Theme.of(context).colorScheme.error),
                   tooltip: localizations.delete,
                   onPressed: () async {
+                    HapticService.onButtonPress(context);
                     final confirmed =
                         await showConfirmDialog(context, localizations.chat);
                     if (confirmed == true) {
@@ -275,6 +286,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               ],
             ),
             onTap: () {
+              HapticService.onButtonPress(context);
               final freshSession = AppDatabase.chatSessionsBox.get(session.id);
               if (freshSession != null) {
                 _selectSessionForPreview(freshSession);
@@ -321,6 +333,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 alignment: Alignment.centerRight,
                 child: FilledButton.icon(
                   onPressed: () {
+                    HapticService.onButtonPress(context);
                     Provider.of<ChatSessionManager>(context, listen: false)
                         .loadSession(_selectedSessionForPreview!.id);
                     context.go('/');

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/providers/app_config_provider.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
 import 'package:nameless_ai/screens/chat/widgets/markdown_code_block.dart';
+import 'package:nameless_ai/services/haptic_service.dart';
 
 class DisplaySettingsScreen extends StatelessWidget {
   const DisplaySettingsScreen({super.key});
@@ -26,7 +27,10 @@ class DisplaySettingsScreen extends StatelessWidget {
               title: Text(option.$1),
               value: option.$2,
               groupValue: groupValue,
-              onChanged: onChanged,
+              onChanged: (value) {
+                HapticService.onSwitchToggle(context);
+                onChanged(value);
+              },
               activeColor: Theme.of(context).colorScheme.primary,
             )),
       ],
@@ -98,7 +102,10 @@ void main() {
                   title: Text(localizations.enableMonet),
                   subtitle: Text(localizations.monetTheming),
                   value: appConfig.enableMonet,
-                  onChanged: (value) => appConfig.setEnableMonet(value),
+                  onChanged: (value) {
+                    HapticService.onSwitchToggle(context);
+                    appConfig.setEnableMonet(value);
+                  },
                   activeColor: Theme.of(context).colorScheme.primary,
                 ),
               ],
@@ -137,6 +144,7 @@ void main() {
                             child: Text(localizations.large)),
                       ],
                       onChanged: (value) {
+                        HapticService.onSwitchToggle(context);
                         if (value != null) appConfig.setFontSize(value);
                       },
                     ),
@@ -160,6 +168,7 @@ void main() {
                             child: Text(localizations.center)),
                       ],
                       onChanged: (value) {
+                        HapticService.onSwitchToggle(context);
                         if (value != null) {
                           appConfig.setChatBubbleAlignment(value);
                         }
@@ -171,27 +180,39 @@ void main() {
                     title: Text(localizations.reverseBubbleAlignment),
                     subtitle: Text(localizations.reverseBubbleAlignmentHint),
                     value: appConfig.reverseBubbleAlignment,
-                    onChanged: appConfig.setReverseBubbleAlignment,
+                    onChanged: (value) {
+                      HapticService.onSwitchToggle(context);
+                      appConfig.setReverseBubbleAlignment(value);
+                    },
                     activeColor: Theme.of(context).colorScheme.primary,
                   ),
                   SwitchListTile(
                     title: Text(localizations.showTimestamps),
                     value: appConfig.showTimestamps,
-                    onChanged: appConfig.setShowTimestamps,
+                    onChanged: (value) {
+                      HapticService.onSwitchToggle(context);
+                      appConfig.setShowTimestamps(value);
+                    },
                     activeColor: Theme.of(context).colorScheme.primary,
                   ),
                   SwitchListTile(
                     title: Text(localizations.showModelName),
                     subtitle: Text(localizations.showModelNameHint),
                     value: appConfig.showModelName,
-                    onChanged: appConfig.setShowModelName,
+                    onChanged: (value) {
+                      HapticService.onSwitchToggle(context);
+                      appConfig.setShowModelName(value);
+                    },
                     activeColor: Theme.of(context).colorScheme.primary,
                   ),
                   SwitchListTile(
                     title: Text(localizations.compactMode),
                     subtitle: Text(localizations.compactModeHint),
                     value: appConfig.compactMode,
-                    onChanged: appConfig.setCompactMode,
+                    onChanged: (value) {
+                      HapticService.onSwitchToggle(context);
+                      appConfig.setCompactMode(value);
+                    },
                     activeColor: Theme.of(context).colorScheme.primary,
                   ),
                   Padding(
@@ -205,7 +226,10 @@ void main() {
                     max: 1.0,
                     divisions: 5,
                     label: '${(appConfig.chatBubbleWidth * 100).round()}%',
-                    onChanged: appConfig.setChatBubbleWidth,
+                    onChanged: (value) {
+                      HapticService.onSliderChange(context);
+                      appConfig.setChatBubbleWidth(value);
+                    },
                   ),
                 ],
               ),
@@ -239,6 +263,7 @@ void main() {
                               ))
                           .toList(),
                       onChanged: (value) {
+                        HapticService.onSwitchToggle(context);
                         if (value != null) appConfig.setCodeTheme(value);
                       },
                     ),
@@ -264,25 +289,37 @@ void main() {
                   SwitchListTile(
                     title: Text(localizations.showTotalTime),
                     value: appConfig.showTotalTime,
-                    onChanged: appConfig.setShowTotalTime,
+                    onChanged: (value) {
+                      HapticService.onSwitchToggle(context);
+                      appConfig.setShowTotalTime(value);
+                    },
                     activeColor: Theme.of(context).colorScheme.primary,
                   ),
                   SwitchListTile(
                     title: Text(localizations.showFirstChunkTime),
                     value: appConfig.showFirstChunkTime,
-                    onChanged: appConfig.setShowFirstChunkTime,
+                    onChanged: (value) {
+                      HapticService.onSwitchToggle(context);
+                      appConfig.setShowFirstChunkTime(value);
+                    },
                     activeColor: Theme.of(context).colorScheme.primary,
                   ),
                   SwitchListTile(
                     title: Text(localizations.showTokenUsage),
                     value: appConfig.showTokenUsage,
-                    onChanged: appConfig.setShowTokenUsage,
+                    onChanged: (value) {
+                      HapticService.onSwitchToggle(context);
+                      appConfig.setShowTokenUsage(value);
+                    },
                     activeColor: Theme.of(context).colorScheme.primary,
                   ),
                   SwitchListTile(
                     title: Text(localizations.showOutputCharacters),
                     value: appConfig.showOutputCharacters,
-                    onChanged: appConfig.setShowOutputCharacters,
+                    onChanged: (value) {
+                      HapticService.onSwitchToggle(context);
+                      appConfig.setShowOutputCharacters(value);
+                    },
                     activeColor: Theme.of(context).colorScheme.primary,
                   ),
                 ],

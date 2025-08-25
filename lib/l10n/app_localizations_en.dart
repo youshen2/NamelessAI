@@ -848,4 +848,50 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get videoExpirationWarning =>
       'File is valid for 2 days, please download it in time.';
+
+  @override
+  String get hapticSettings => 'Haptic Feedback';
+
+  @override
+  String get enableHapticFeedback => 'Enable Haptic Feedback';
+
+  @override
+  String get hapticIntensity => 'Haptic Intensity';
+
+  @override
+  String get hapticIntensityNone => 'None';
+
+  @override
+  String get hapticIntensityLight => 'Light';
+
+  @override
+  String get hapticIntensityMedium => 'Medium';
+
+  @override
+  String get hapticIntensityHeavy => 'Heavy';
+
+  @override
+  String get hapticIntensitySelection => 'Default';
+
+  @override
+  String get hapticButtonPress => 'Button Press';
+
+  @override
+  String get hapticSwitchToggle => 'Switch Toggle';
+
+  @override
+  String get hapticLongPress => 'Long Press';
+
+  @override
+  String get hapticSliderChanged => 'Slider Change';
+
+  @override
+  String get hapticsNotSupported =>
+      'Haptic feedback is not supported on this platform.';
+
+  @override
+  String get hapticStreamOutput => 'Stream Output';
+
+  @override
+  String get hapticThinking => 'Thinking';
 }

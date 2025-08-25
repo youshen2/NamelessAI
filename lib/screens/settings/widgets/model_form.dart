@@ -4,6 +4,7 @@ import 'package:nameless_ai/data/models/model.dart';
 import 'package:nameless_ai/data/models/model_type.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
 import 'package:nameless_ai/screens/settings/widgets/api_path_template_selection_sheet.dart';
+import 'package:nameless_ai/services/haptic_service.dart';
 
 class ModelFormSheet extends StatefulWidget {
   final Model? model;
@@ -67,6 +68,7 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
   }
 
   void _save() {
+    HapticService.onButtonPress(context);
     if (_formKey.currentState!.validate()) {
       final imaginePath = _imaginePathController.text.trim();
       final fetchPath = _fetchPathController.text.trim();
@@ -181,6 +183,7 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
   }
 
   void _showTemplateSelection() async {
+    HapticService.onButtonPress(context);
     final result = await showModalBottomSheet<ApiPathTemplate>(
       context: context,
       isScrollControlled: true,
@@ -240,6 +243,7 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
                   .toList(),
               onChanged: (value) {
                 if (value != null) {
+                  HapticService.onSwitchToggle(context);
                   setState(() {
                     _modelType = value;
                     _autoPopulatePaths();
@@ -297,7 +301,10 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 TextButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () {
+                    HapticService.onButtonPress(context);
+                    Navigator.pop(context);
+                  },
                   child: Text(localizations.cancel),
                 ),
                 const SizedBox(width: 8),
@@ -326,13 +333,18 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
         SwitchListTile(
           title: Text(localizations.isStreamable),
           value: _isStreamable,
-          onChanged: (value) => setState(() => _isStreamable = value),
+          onChanged: (value) {
+            HapticService.onSwitchToggle(context);
+            setState(() => _isStreamable = value);
+          },
           contentPadding: EdgeInsets.zero,
         ),
         const SizedBox(height: 8),
         ExpansionTile(
           title: Text(localizations.advancedSettings,
               style: Theme.of(context).textTheme.titleSmall),
+          onExpansionChanged: (isExpanded) =>
+              HapticService.onSwitchToggle(context),
           initiallyExpanded: false,
           childrenPadding: const EdgeInsets.only(top: 8, bottom: 8),
           children: [
@@ -382,6 +394,7 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
           ],
           onChanged: (value) {
             if (value != null) {
+              HapticService.onSwitchToggle(context);
               setState(() {
                 _imageGenerationMode = value;
                 _autoPopulatePaths();
@@ -403,6 +416,7 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
             ],
             onChanged: (value) {
               if (value != null) {
+                HapticService.onSwitchToggle(context);
                 setState(() {
                   _compatibilityMode = value;
                 });
@@ -414,6 +428,8 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
         ExpansionTile(
           title: Text(localizations.advancedSettings,
               style: Theme.of(context).textTheme.titleSmall),
+          onExpansionChanged: (isExpanded) =>
+              HapticService.onSwitchToggle(context),
           initiallyExpanded: false,
           childrenPadding: const EdgeInsets.only(top: 8, bottom: 8),
           children: [
@@ -468,6 +484,8 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
         ExpansionTile(
           title: Text(localizations.advancedSettings,
               style: Theme.of(context).textTheme.titleSmall),
+          onExpansionChanged: (isExpanded) =>
+              HapticService.onSwitchToggle(context),
           initiallyExpanded: true,
           childrenPadding: const EdgeInsets.only(top: 8, bottom: 8),
           children: [

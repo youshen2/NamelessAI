@@ -4,6 +4,7 @@ import 'package:nameless_ai/data/models/api_provider.dart';
 import 'package:nameless_ai/data/providers/api_provider_manager.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
 import 'package:nameless_ai/screens/settings/widgets/api_provider_form.dart';
+import 'package:nameless_ai/services/haptic_service.dart';
 import 'package:nameless_ai/utils/helpers.dart';
 
 class APIProviderSettingsScreen extends StatefulWidget {
@@ -25,7 +26,10 @@ class _APIProviderSettingsScreenState extends State<APIProviderSettingsScreen> {
           IconButton(
             icon: const Icon(Icons.add),
             tooltip: localizations.addProvider,
-            onPressed: () => _showProviderForm(context),
+            onPressed: () {
+              HapticService.onButtonPress(context);
+              _showProviderForm(context);
+            },
           ),
         ],
       ),
@@ -76,14 +80,17 @@ class _APIProviderSettingsScreenState extends State<APIProviderSettingsScreen> {
                           IconButton(
                             icon: const Icon(Icons.edit_outlined),
                             tooltip: localizations.editProvider,
-                            onPressed: () =>
-                                _showProviderForm(context, provider: provider),
+                            onPressed: () {
+                              HapticService.onButtonPress(context);
+                              _showProviderForm(context, provider: provider);
+                            },
                           ),
                           IconButton(
                             icon: Icon(Icons.delete_outline,
                                 color: Theme.of(context).colorScheme.error),
                             tooltip: localizations.delete,
                             onPressed: () async {
+                              HapticService.onButtonPress(context);
                               final confirmed = await showConfirmDialog(
                                   context, localizations.apiProviderSettings);
                               if (confirmed == true) {

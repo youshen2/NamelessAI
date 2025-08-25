@@ -1687,6 +1687,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'File is valid for 2 days, please download it in time.'**
   String get videoExpirationWarning;
+
+  /// No description provided for @hapticSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Haptic Feedback'**
+  String get hapticSettings;
+
+  /// No description provided for @enableHapticFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Haptic Feedback'**
+  String get enableHapticFeedback;
+
+  /// No description provided for @hapticIntensity.
+  ///
+  /// In en, this message translates to:
+  /// **'Haptic Intensity'**
+  String get hapticIntensity;
+
+  /// No description provided for @hapticIntensityNone.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get hapticIntensityNone;
+
+  /// No description provided for @hapticIntensityLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get hapticIntensityLight;
+
+  /// No description provided for @hapticIntensityMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get hapticIntensityMedium;
+
+  /// No description provided for @hapticIntensityHeavy.
+  ///
+  /// In en, this message translates to:
+  /// **'Heavy'**
+  String get hapticIntensityHeavy;
+
+  /// No description provided for @hapticIntensitySelection.
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get hapticIntensitySelection;
+
+  /// No description provided for @hapticButtonPress.
+  ///
+  /// In en, this message translates to:
+  /// **'Button Press'**
+  String get hapticButtonPress;
+
+  /// No description provided for @hapticSwitchToggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch Toggle'**
+  String get hapticSwitchToggle;
+
+  /// No description provided for @hapticLongPress.
+  ///
+  /// In en, this message translates to:
+  /// **'Long Press'**
+  String get hapticLongPress;
+
+  /// No description provided for @hapticSliderChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Slider Change'**
+  String get hapticSliderChanged;
+
+  /// No description provided for @hapticsNotSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Haptic feedback is not supported on this platform.'**
+  String get hapticsNotSupported;
+
+  /// No description provided for @hapticStreamOutput.
+  ///
+  /// In en, this message translates to:
+  /// **'Stream Output'**
+  String get hapticStreamOutput;
+
+  /// No description provided for @hapticThinking.
+  ///
+  /// In en, this message translates to:
+  /// **'Thinking'**
+  String get hapticThinking;
 }
 
 class _AppLocalizationsDelegate

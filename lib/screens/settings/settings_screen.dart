@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
 import 'package:nameless_ai/screens/settings/widgets/export_options_sheet.dart';
 import 'package:nameless_ai/services/backup_service.dart';
+import 'package:nameless_ai/services/haptic_service.dart';
 import 'package:nameless_ai/utils/helpers.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -17,6 +18,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _isWorking = false;
 
   Future<void> _exportData() async {
+    HapticService.onButtonPress(context);
     final localizations = AppLocalizations.of(context)!;
     final isDesktop = MediaQuery.of(context).size.width >= 600;
 
@@ -55,6 +57,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _importData() async {
+    HapticService.onButtonPress(context);
     final localizations = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
@@ -63,11 +66,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
         content: Text(localizations.importConfirmation),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
+            onPressed: () {
+              HapticService.onButtonPress(context);
+              Navigator.of(context).pop(false);
+            },
             child: Text(localizations.cancel),
           ),
           FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
+            onPressed: () {
+              HapticService.onButtonPress(context);
+              Navigator.of(context).pop(true);
+            },
             style: FilledButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.error),
             child: Text(localizations.importData),
@@ -90,7 +99,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             content: Text(localizations.importSuccess),
             actions: [
               FilledButton(
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () {
+                  HapticService.onButtonPress(context);
+                  Navigator.of(context).pop();
+                },
                 child: Text(localizations.ok),
               )
             ],
@@ -129,17 +141,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ListTile(
                       leading: const Icon(Icons.apps),
                       title: Text(localizations.appSettings),
-                      onTap: () => context.go('/settings/app'),
+                      onTap: () {
+                        HapticService.onButtonPress(context);
+                        context.go('/settings/app');
+                      },
                     ),
                     ListTile(
                       leading: const Icon(Icons.tune),
                       title: Text(localizations.generalSettings),
-                      onTap: () => context.go('/settings/general'),
+                      onTap: () {
+                        HapticService.onButtonPress(context);
+                        context.go('/settings/general');
+                      },
                     ),
                     ListTile(
                       leading: const Icon(Icons.palette_outlined),
                       title: Text(localizations.appearanceSettings),
-                      onTap: () => context.go('/settings/display'),
+                      onTap: () {
+                        HapticService.onButtonPress(context);
+                        context.go('/settings/display');
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.vibration),
+                      title: Text(localizations.hapticSettings),
+                      onTap: () {
+                        HapticService.onButtonPress(context);
+                        context.go('/settings/haptics');
+                      },
                     ),
                   ],
                 ),
@@ -151,12 +180,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ListTile(
                       leading: const Icon(Icons.api),
                       title: Text(localizations.apiProviderSettings),
-                      onTap: () => context.go('/settings/api_providers'),
+                      onTap: () {
+                        HapticService.onButtonPress(context);
+                        context.go('/settings/api_providers');
+                      },
                     ),
                     ListTile(
                       leading: const Icon(Icons.library_books),
                       title: Text(localizations.systemPromptTemplates),
-                      onTap: () => context.go('/settings/system_prompts'),
+                      onTap: () {
+                        HapticService.onButtonPress(context);
+                        context.go('/settings/system_prompts');
+                      },
                     ),
                   ],
                 ),
@@ -183,7 +218,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: ListTile(
                   leading: const Icon(Icons.info_outline),
                   title: Text(localizations.about),
-                  onTap: () => context.go('/settings/about'),
+                  onTap: () {
+                    HapticService.onButtonPress(context);
+                    context.go('/settings/about');
+                  },
                 ),
               ),
             ],

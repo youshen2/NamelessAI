@@ -825,4 +825,49 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get videoExpirationWarning => '文件有效期2天，请及时下载。';
+
+  @override
+  String get hapticSettings => '振动反馈';
+
+  @override
+  String get enableHapticFeedback => '启用振动反馈';
+
+  @override
+  String get hapticIntensity => '振动强度';
+
+  @override
+  String get hapticIntensityNone => '无';
+
+  @override
+  String get hapticIntensityLight => '轻';
+
+  @override
+  String get hapticIntensityMedium => '中';
+
+  @override
+  String get hapticIntensityHeavy => '重';
+
+  @override
+  String get hapticIntensitySelection => '默认';
+
+  @override
+  String get hapticButtonPress => '按钮点按';
+
+  @override
+  String get hapticSwitchToggle => '开关切换';
+
+  @override
+  String get hapticLongPress => '长按';
+
+  @override
+  String get hapticSliderChanged => '滑块更改';
+
+  @override
+  String get hapticsNotSupported => '此平台不支持振动反馈。';
+
+  @override
+  String get hapticStreamOutput => '流式输出';
+
+  @override
+  String get hapticThinking => '思考时';
 }

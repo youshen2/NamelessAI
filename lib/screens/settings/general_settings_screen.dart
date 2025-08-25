@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/providers/app_config_provider.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
+import 'package:nameless_ai/services/haptic_service.dart';
 
 class GeneralSettingsScreen extends StatelessWidget {
   const GeneralSettingsScreen({super.key});
@@ -37,7 +38,10 @@ class GeneralSettingsScreen extends StatelessWidget {
                     title: Text(localizations.useFirstSentenceAsTitle),
                     subtitle: Text(localizations.useFirstSentenceAsTitleHint),
                     value: appConfig.useFirstSentenceAsTitle,
-                    onChanged: appConfig.setUseFirstSentenceAsTitle,
+                    onChanged: (value) {
+                      HapticService.onSwitchToggle(context);
+                      appConfig.setUseFirstSentenceAsTitle(value);
+                    },
                     activeColor: Theme.of(context).colorScheme.primary,
                   ),
                 ],
@@ -59,15 +63,19 @@ class GeneralSettingsScreen extends StatelessWidget {
                   SwitchListTile(
                     title: Text(localizations.disableAutoScrollOnUp),
                     value: appConfig.disableAutoScrollOnUp,
-                    onChanged: (value) =>
-                        appConfig.setDisableAutoScrollOnUp(value),
+                    onChanged: (value) {
+                      HapticService.onSwitchToggle(context);
+                      appConfig.setDisableAutoScrollOnUp(value);
+                    },
                     activeColor: Theme.of(context).colorScheme.primary,
                   ),
                   SwitchListTile(
                     title: Text(localizations.resumeAutoScrollOnBottom),
                     value: appConfig.resumeAutoScrollOnBottom,
-                    onChanged: (value) =>
-                        appConfig.setResumeAutoScrollOnBottom(value),
+                    onChanged: (value) {
+                      HapticService.onSwitchToggle(context);
+                      appConfig.setResumeAutoScrollOnBottom(value);
+                    },
                     activeColor: Theme.of(context).colorScheme.primary,
                   ),
                 ],
@@ -127,29 +135,40 @@ class GeneralSettingsScreen extends StatelessWidget {
                     title: Text(localizations.sendWithEnter),
                     value: SendKeyOption.enter,
                     groupValue: appConfig.sendKeyOption,
-                    onChanged: (value) => appConfig.setSendKeyOption(value!),
+                    onChanged: (value) {
+                      HapticService.onSwitchToggle(context);
+                      appConfig.setSendKeyOption(value!);
+                    },
                     activeColor: Theme.of(context).colorScheme.primary,
                   ),
                   RadioListTile<SendKeyOption>(
                     title: Text(localizations.sendWithCtrlEnter),
                     value: SendKeyOption.ctrlEnter,
                     groupValue: appConfig.sendKeyOption,
-                    onChanged: (value) => appConfig.setSendKeyOption(value!),
+                    onChanged: (value) {
+                      HapticService.onSwitchToggle(context);
+                      appConfig.setSendKeyOption(value!);
+                    },
                     activeColor: Theme.of(context).colorScheme.primary,
                   ),
                   RadioListTile<SendKeyOption>(
                     title: Text(localizations.sendWithShiftCtrlEnter),
                     value: SendKeyOption.shiftCtrlEnter,
                     groupValue: appConfig.sendKeyOption,
-                    onChanged: (value) => appConfig.setSendKeyOption(value!),
+                    onChanged: (value) {
+                      HapticService.onSwitchToggle(context);
+                      appConfig.setSendKeyOption(value!);
+                    },
                     activeColor: Theme.of(context).colorScheme.primary,
                   ),
                   const Divider(),
                   SwitchListTile(
                     title: Text(localizations.shortcutInEditMode),
                     value: appConfig.useSendKeyInEditMode,
-                    onChanged: (value) =>
-                        appConfig.setUseSendKeyInEditMode(value),
+                    onChanged: (value) {
+                      HapticService.onSwitchToggle(context);
+                      appConfig.setUseSendKeyInEditMode(value);
+                    },
                     activeColor: Theme.of(context).colorScheme.primary,
                   ),
                 ],

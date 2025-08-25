@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/providers/app_config_provider.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
+import 'package:nameless_ai/services/haptic_service.dart';
 import 'package:nameless_ai/services/update_service.dart';
 import 'package:nameless_ai/widgets/responsive_layout.dart';
 
@@ -46,6 +47,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _onItemTapped(int index, BuildContext context) {
+    HapticService.onButtonPress(context);
     switch (index) {
       case 0:
         context.go('/');

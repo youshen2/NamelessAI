@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:nameless_ai/data/models/chat_message.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
+import 'package:nameless_ai/services/haptic_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ThinkingContentWidget extends StatelessWidget {
@@ -32,6 +33,8 @@ class ThinkingContentWidget extends StatelessWidget {
       child: ExpansionTile(
         key: ValueKey(
             'thinking_tile_${message.id}_${message.thinkingDurationMs != null}'),
+        onExpansionChanged: (isExpanded) =>
+            HapticService.onSwitchToggle(context),
         backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
         collapsedBackgroundColor:
             Theme.of(context).colorScheme.surfaceContainerHigh,
@@ -63,6 +66,7 @@ class ThinkingContentWidget extends StatelessWidget {
               styleSheet: markdownStyleSheet,
               onTapLink: (text, href, title) {
                 if (href != null) {
+                  HapticService.onButtonPress(context);
                   launchUrl(Uri.parse(href));
                 }
               },

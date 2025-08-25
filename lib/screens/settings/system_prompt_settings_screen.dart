@@ -4,6 +4,7 @@ import 'package:nameless_ai/data/models/system_prompt_template.dart';
 import 'package:nameless_ai/data/providers/system_prompt_template_manager.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
 import 'package:nameless_ai/screens/settings/widgets/system_prompt_form.dart';
+import 'package:nameless_ai/services/haptic_service.dart';
 import 'package:nameless_ai/utils/helpers.dart';
 
 class SystemPromptSettingsScreen extends StatefulWidget {
@@ -26,7 +27,10 @@ class _SystemPromptSettingsScreenState
           IconButton(
             icon: const Icon(Icons.add),
             tooltip: localizations.addTemplate,
-            onPressed: () => _showTemplateForm(context),
+            onPressed: () {
+              HapticService.onButtonPress(context);
+              _showTemplateForm(context);
+            },
           ),
         ],
       ),
@@ -63,14 +67,17 @@ class _SystemPromptSettingsScreenState
                           IconButton(
                             icon: const Icon(Icons.edit_outlined),
                             tooltip: localizations.editTemplate,
-                            onPressed: () =>
-                                _showTemplateForm(context, template: template),
+                            onPressed: () {
+                              HapticService.onButtonPress(context);
+                              _showTemplateForm(context, template: template);
+                            },
                           ),
                           IconButton(
                             icon: Icon(Icons.delete_outline,
                                 color: Theme.of(context).colorScheme.error),
                             tooltip: localizations.delete,
                             onPressed: () async {
+                              HapticService.onButtonPress(context);
                               final confirmed = await showConfirmDialog(
                                   context, localizations.systemPromptTemplates);
                               if (confirmed == true) {

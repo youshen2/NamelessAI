@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nameless_ai/data/models/api_provider.dart';
 import 'package:nameless_ai/data/models/model.dart';
+import 'package:nameless_ai/services/haptic_service.dart';
 import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/models/chat_session.dart';
 import 'package:nameless_ai/data/models/model_type.dart';
@@ -74,6 +75,7 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
   }
 
   void _showTemplateSelection() async {
+    HapticService.onButtonPress(context);
     final selectedPrompt = await showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
@@ -218,6 +220,7 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
                           ))
                       .toList(),
                   onChanged: (value) {
+                    HapticService.onSwitchToggle(context);
                     setState(() {
                       _selectedProviderId = value;
                       _selectedModelId = null;
@@ -237,6 +240,7 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
                             ))
                         .toList(),
                     onChanged: (value) {
+                      HapticService.onSwitchToggle(context);
                       setState(() {
                         _selectedModelId = value;
                       });
@@ -270,12 +274,16 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () {
+                    HapticService.onButtonPress(context);
+                    Navigator.of(context).pop();
+                  },
                   child: Text(localizations.cancel),
                 ),
                 const SizedBox(width: 8),
                 FilledButton(
                   onPressed: () {
+                    HapticService.onButtonPress(context);
                     final maxContext = int.tryParse(_maxContextController.text);
                     final settings = {
                       'providerId': _selectedProviderId,
@@ -344,6 +352,7 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
           divisions: 200,
           controller: _temperatureController,
           onSliderChanged: (value) {
+            HapticService.onSliderChange(context);
             setState(() {
               _temperature = value;
               _temperatureController.text = value.toStringAsFixed(2);
@@ -368,6 +377,7 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
           divisions: 100,
           controller: _topPController,
           onSliderChanged: (value) {
+            HapticService.onSliderChange(context);
             setState(() {
               _topP = value;
               _topPController.text = value.toStringAsFixed(2);
@@ -407,6 +417,7 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
             ),
           ],
           onChanged: (value) {
+            HapticService.onSwitchToggle(context);
             setState(() {
               _useStreaming = value;
             });
@@ -436,6 +447,7 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
               .map((size) => DropdownMenuItem(value: size, child: Text(size)))
               .toList(),
           onChanged: (value) {
+            HapticService.onSwitchToggle(context);
             if (value != null) setState(() => _imageSize = value);
           },
           decoration: const InputDecoration(),
@@ -452,6 +464,7 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
             DropdownMenuItem(value: 'hd', child: Text(localizations.qualityHD)),
           ],
           onChanged: (value) {
+            HapticService.onSwitchToggle(context);
             if (value != null) setState(() => _imageQuality = value);
           },
           decoration: const InputDecoration(),
@@ -469,6 +482,7 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
                 value: 'natural', child: Text(localizations.styleNatural)),
           ],
           onChanged: (value) {
+            HapticService.onSwitchToggle(context);
             if (value != null) setState(() => _imageStyle = value);
           },
           decoration: const InputDecoration(),

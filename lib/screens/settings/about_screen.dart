@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
+import 'package:nameless_ai/services/haptic_service.dart';
 import 'package:nameless_ai/services/update_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -39,6 +40,7 @@ class _AboutScreenState extends State<AboutScreen> {
   }
 
   void _handleTap() {
+    HapticService.onButtonPress(context);
     setState(() {
       _tapCount++;
     });
@@ -51,6 +53,7 @@ class _AboutScreenState extends State<AboutScreen> {
   }
 
   Future<void> _checkForUpdate() async {
+    HapticService.onButtonPress(context);
     if (mounted) {
       setState(() {
         _isCheckingForUpdate = true;
@@ -118,29 +121,35 @@ class _AboutScreenState extends State<AboutScreen> {
                     leading: const Icon(Icons.code_rounded),
                     title: Text(localizations.sourceCode),
                     subtitle: Text(localizations.sourceCodeUrl),
-                    onTap: () => launchUrl(
-                        Uri.parse('https://${localizations.sourceCodeUrl}')),
+                    onTap: () {
+                      HapticService.onButtonPress(context);
+                      launchUrl(
+                          Uri.parse('https://${localizations.sourceCodeUrl}'));
+                    },
                     trailing: const Icon(Icons.open_in_new_rounded),
                   ),
                   const Divider(height: 1, indent: 16, endIndent: 16),
                   ListTile(
                     leading: const Icon(Icons.gavel_rounded),
                     title: Text(localizations.openSourceLicenses),
-                    onTap: () => showLicensePage(
-                      context: context,
-                      applicationName: "Nameless AI Box",
-                      applicationVersion: _packageInfo.version,
-                      applicationIcon: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: SvgPicture.asset(
-                          'assets/icon/icon.svg',
-                          colorFilter: ColorFilter.mode(
-                            theme.colorScheme.primary,
-                            BlendMode.srcIn,
+                    onTap: () {
+                      HapticService.onButtonPress(context);
+                      showLicensePage(
+                        context: context,
+                        applicationName: "Nameless AI Box",
+                        applicationVersion: _packageInfo.version,
+                        applicationIcon: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: SvgPicture.asset(
+                            'assets/icon/icon.svg',
+                            colorFilter: ColorFilter.mode(
+                              theme.colorScheme.primary,
+                              BlendMode.srcIn,
+                            ),
                           ),
                         ),
-                      ),
-                    ),
+                      );
+                    },
                     trailing: const Icon(Icons.chevron_right_rounded),
                   ),
                   const Divider(height: 1, indent: 16, endIndent: 16),

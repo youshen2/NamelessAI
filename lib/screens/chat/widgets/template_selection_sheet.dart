@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/models/system_prompt_template.dart';
 import 'package:nameless_ai/data/providers/system_prompt_template_manager.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
+import 'package:nameless_ai/services/haptic_service.dart';
 import 'package:nameless_ai/utils/helpers.dart';
 
 class TemplateSelectionSheet extends StatefulWidget {
@@ -76,7 +77,10 @@ class _TemplateSelectionSheetState extends State<TemplateSelectionSheet> {
                   ),
                   IconButton(
                     icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.of(context).pop(),
+                    onPressed: () {
+                      HapticService.onButtonPress(context);
+                      Navigator.of(context).pop();
+                    },
                   )
                 ],
               ),
@@ -106,8 +110,10 @@ class _TemplateSelectionSheetState extends State<TemplateSelectionSheet> {
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          onTap: () =>
-                              Navigator.of(context).pop(template.prompt),
+                          onTap: () {
+                            HapticService.onButtonPress(context);
+                            Navigator.of(context).pop(template.prompt);
+                          },
                         );
                       },
                     ),

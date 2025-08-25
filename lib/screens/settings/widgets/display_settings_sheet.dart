@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/providers/app_config_provider.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
+import 'package:nameless_ai/services/haptic_service.dart';
 
 class DisplaySettingsSheet extends StatelessWidget {
   final ScrollController scrollController;
@@ -21,10 +22,16 @@ class DisplaySettingsSheet extends StatelessWidget {
       title: Text(title),
       trailing: Switch(
         value: value,
-        onChanged: onChanged,
+        onChanged: (newValue) {
+          HapticService.onSwitchToggle(context);
+          onChanged(newValue);
+        },
         activeColor: Theme.of(context).colorScheme.primary,
       ),
-      onTap: () => onChanged(!value),
+      onTap: () {
+        HapticService.onSwitchToggle(context);
+        onChanged(!value);
+      },
     );
   }
 

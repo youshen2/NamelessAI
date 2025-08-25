@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nameless_ai/data/models/model.dart';
 import 'package:nameless_ai/data/models/model_type.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
+import 'package:nameless_ai/services/haptic_service.dart';
 
 class ApiPathTemplate {
   final String name;
@@ -138,7 +139,10 @@ class _ApiPathTemplateSelectionSheetState
                   ),
                   IconButton(
                     icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.of(context).pop(),
+                    onPressed: () {
+                      HapticService.onButtonPress(context);
+                      Navigator.of(context).pop();
+                    },
                   )
                 ],
               ),
@@ -179,7 +183,10 @@ class _ApiPathTemplateSelectionSheetState
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          onTap: () => Navigator.of(context).pop(template),
+                          onTap: () {
+                            HapticService.onButtonPress(context);
+                            Navigator.of(context).pop(template);
+                          },
                         );
                       },
                     ),

@@ -9,6 +9,7 @@ import 'package:nameless_ai/screens/settings/app_settings_screen.dart';
 import 'package:nameless_ai/screens/settings/developer_options_screen.dart';
 import 'package:nameless_ai/screens/settings/display_settings_screen.dart';
 import 'package:nameless_ai/screens/settings/general_settings_screen.dart';
+import 'package:nameless_ai/screens/settings/haptic_settings_screen.dart';
 import 'package:nameless_ai/screens/settings/settings_screen.dart';
 import 'package:nameless_ai/screens/settings/system_prompt_settings_screen.dart';
 
@@ -68,6 +69,11 @@ class AppRouter {
                 path: 'app',
                 name: 'app_settings',
                 builder: (context, state) => const AppSettingsScreen(),
+              ),
+              GoRoute(
+                path: 'haptics',
+                name: 'haptic_settings',
+                builder: (context, state) => const HapticSettingsScreen(),
               ),
             ],
           ),

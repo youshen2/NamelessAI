@@ -334,5 +334,20 @@
   "playVideo": "播放视频",
   "videoGenerationFailed": "视频生成失败",
   "failedToLoadVideo": "加载视频失败",
-  "videoExpirationWarning": "文件有效期2天，请及时下载。"
+  "videoExpirationWarning": "文件有效期2天，请及时下载。",
+  "hapticSettings": "振动反馈",
+  "enableHapticFeedback": "启用振动反馈",
+  "hapticIntensity": "振动强度",
+  "hapticIntensityNone": "无",
+  "hapticIntensityLight": "轻",
+  "hapticIntensityMedium": "中",
+  "hapticIntensityHeavy": "重",
+  "hapticIntensitySelection": "默认",
+  "hapticButtonPress": "按钮点按",
+  "hapticSwitchToggle": "开关切换",
+  "hapticLongPress": "长按",
+  "hapticSliderChanged": "滑块更改",
+  "hapticsNotSupported": "此平台不支持振动反馈。",
+  "hapticStreamOutput": "流式输出",
+  "hapticThinking": "思考时"
 }

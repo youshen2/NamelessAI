@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/models/chat_message.dart';
 import 'package:nameless_ai/data/providers/app_config_provider.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
+import 'package:nameless_ai/services/haptic_service.dart';
 import 'package:nameless_ai/widgets/json_viewer.dart';
 
 class MessageActionBar extends StatelessWidget {
@@ -27,6 +28,7 @@ class MessageActionBar extends StatelessWidget {
   });
 
   void _showDebugInfo(BuildContext context) {
+    HapticService.onButtonPress(context);
     final localizations = AppLocalizations.of(context)!;
     final messageJson = message.toJson();
 
@@ -50,7 +52,10 @@ class MessageActionBar extends StatelessWidget {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () {
+              HapticService.onButtonPress(context);
+              Navigator.of(context).pop();
+            },
             child: Text(localizations.ok),
           ),
         ],
@@ -64,7 +69,10 @@ class MessageActionBar extends StatelessWidget {
     final double padding = isCompact ? 4 : 6;
     return IconButton(
       icon: Icon(icon, size: iconSize),
-      onPressed: onPressed,
+      onPressed: () {
+        HapticService.onButtonPress(context);
+        onPressed();
+      },
       tooltip: tooltip,
       color: Theme.of(context).colorScheme.onSurfaceVariant,
       splashRadius: 18,

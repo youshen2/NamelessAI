@@ -6,6 +6,7 @@ import 'package:nameless_ai/data/models/model_type.dart';
 import 'package:nameless_ai/data/providers/api_provider_manager.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
 import 'package:nameless_ai/screens/settings/widgets/model_form.dart';
+import 'package:nameless_ai/services/haptic_service.dart';
 
 class APIProviderForm extends StatefulWidget {
   final APIProvider? provider;
@@ -43,6 +44,7 @@ class _APIProviderFormState extends State<APIProviderForm> {
   }
 
   void _addOrEditModel({Model? model, int? index}) async {
+    HapticService.onButtonPress(context);
     final result = await showModalBottomSheet<Model>(
       context: context,
       isScrollControlled: true,
@@ -65,12 +67,14 @@ class _APIProviderFormState extends State<APIProviderForm> {
   }
 
   void _deleteModel(int index) {
+    HapticService.onButtonPress(context);
     setState(() {
       _models.removeAt(index);
     });
   }
 
   Future<void> _saveProvider() async {
+    HapticService.onButtonPress(context);
     if (_formKey.currentState!.validate()) {
       final manager = Provider.of<APIProviderManager>(context, listen: false);
       final newProvider = APIProvider(
@@ -156,6 +160,7 @@ class _APIProviderFormState extends State<APIProviderForm> {
                               ? Icons.visibility_off
                               : Icons.visibility),
                           onPressed: () {
+                            HapticService.onButtonPress(context);
                             setState(() {
                               _isApiKeyObscured = !_isApiKeyObscured;
                             });
@@ -245,7 +250,10 @@ class _APIProviderFormState extends State<APIProviderForm> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 TextButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () {
+                    HapticService.onButtonPress(context);
+                    Navigator.pop(context);
+                  },
                   child: Text(localizations.cancel),
                 ),
                 const SizedBox(width: 8),

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/providers/app_config_provider.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
+import 'package:nameless_ai/services/haptic_service.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -23,6 +24,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   void _onFinish() {
+    HapticService.onButtonPress(context);
     final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
     appConfig.completeOnboarding();
     if (mounted) {
@@ -55,6 +57,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   child: PageView(
                     controller: _pageController,
                     onPageChanged: (index) {
+                      HapticService.onSwitchToggle(context);
                       setState(() {
                         _currentPage = index;
                       });
@@ -85,6 +88,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 )
               : TextButton(
                   onPressed: () {
+                    HapticService.onButtonPress(context);
                     _pageController.previousPage(
                       duration: const Duration(milliseconds: 300),
                       curve: Curves.ease,
@@ -110,6 +114,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           _currentPage < pageCount - 1
               ? FilledButton(
                   onPressed: () {
+                    HapticService.onButtonPress(context);
                     _pageController.nextPage(
                       duration: const Duration(milliseconds: 300),
                       curve: Curves.ease,
@@ -177,19 +182,28 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           title: Text(localizations.systemDefault),
           value: null,
           groupValue: appConfig.locale,
-          onChanged: (value) => appConfig.setLocale(value),
+          onChanged: (value) {
+            HapticService.onSwitchToggle(context);
+            appConfig.setLocale(value);
+          },
         ),
         RadioListTile<Locale?>(
           title: Text(localizations.english),
           value: const Locale('en'),
           groupValue: appConfig.locale,
-          onChanged: (value) => appConfig.setLocale(value),
+          onChanged: (value) {
+            HapticService.onSwitchToggle(context);
+            appConfig.setLocale(value);
+          },
         ),
         RadioListTile<Locale?>(
           title: Text(localizations.chinese),
           value: const Locale('zh'),
           groupValue: appConfig.locale,
-          onChanged: (value) => appConfig.setLocale(value),
+          onChanged: (value) {
+            HapticService.onSwitchToggle(context);
+            appConfig.setLocale(value);
+          },
         ),
         const SizedBox(height: 16),
         Text(localizations.theme,
@@ -198,19 +212,28 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           title: Text(localizations.systemDefault),
           value: ThemeMode.system,
           groupValue: appConfig.themeMode,
-          onChanged: (value) => appConfig.setThemeMode(value!),
+          onChanged: (value) {
+            HapticService.onSwitchToggle(context);
+            appConfig.setThemeMode(value!);
+          },
         ),
         RadioListTile<ThemeMode>(
           title: Text(localizations.light),
           value: ThemeMode.light,
           groupValue: appConfig.themeMode,
-          onChanged: (value) => appConfig.setThemeMode(value!),
+          onChanged: (value) {
+            HapticService.onSwitchToggle(context);
+            appConfig.setThemeMode(value!);
+          },
         ),
         RadioListTile<ThemeMode>(
           title: Text(localizations.dark),
           value: ThemeMode.dark,
           groupValue: appConfig.themeMode,
-          onChanged: (value) => appConfig.setThemeMode(value!),
+          onChanged: (value) {
+            HapticService.onSwitchToggle(context);
+            appConfig.setThemeMode(value!);
+          },
         ),
       ],
     );

@@ -7,6 +7,8 @@ enum ChatBubbleAlignment { normal, center }
 
 enum FontSize { small, medium, large }
 
+enum HapticIntensity { none, light, medium, heavy, selection }
+
 class AppConfigProvider extends ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.system;
   Locale? _locale;
@@ -36,6 +38,14 @@ class AppConfigProvider extends ChangeNotifier {
   bool _checkForUpdatesOnStartup = true;
   int _asyncTaskRefreshInterval = 10;
   bool _isFirstLaunch = true;
+
+  bool _hapticsEnabled = true;
+  HapticIntensity _buttonPressIntensity = HapticIntensity.light;
+  HapticIntensity _switchToggleIntensity = HapticIntensity.selection;
+  HapticIntensity _longPressIntensity = HapticIntensity.medium;
+  HapticIntensity _sliderChangeIntensity = HapticIntensity.selection;
+  HapticIntensity _streamOutputIntensity = HapticIntensity.none;
+  HapticIntensity _thinkingIntensity = HapticIntensity.none;
 
   AppConfigProvider() {
     _loadConfig();
@@ -69,6 +79,14 @@ class AppConfigProvider extends ChangeNotifier {
   bool get checkForUpdatesOnStartup => _checkForUpdatesOnStartup;
   int get asyncTaskRefreshInterval => _asyncTaskRefreshInterval;
   bool get isFirstLaunch => _isFirstLaunch;
+
+  bool get hapticsEnabled => _hapticsEnabled;
+  HapticIntensity get buttonPressIntensity => _buttonPressIntensity;
+  HapticIntensity get switchToggleIntensity => _switchToggleIntensity;
+  HapticIntensity get longPressIntensity => _longPressIntensity;
+  HapticIntensity get sliderChangeIntensity => _sliderChangeIntensity;
+  HapticIntensity get streamOutputIntensity => _streamOutputIntensity;
+  HapticIntensity get thinkingIntensity => _thinkingIntensity;
 
   void _loadConfig() {
     final box = AppDatabase.appConfigBox;
@@ -112,6 +130,24 @@ class AppConfigProvider extends ChangeNotifier {
     _asyncTaskRefreshInterval =
         box.get('asyncTaskRefreshInterval', defaultValue: 10);
     _isFirstLaunch = box.get('isFirstLaunch', defaultValue: true);
+
+    _hapticsEnabled = box.get('hapticsEnabled', defaultValue: true);
+    _buttonPressIntensity = HapticIntensity.values[box.get(
+        'buttonPressIntensity',
+        defaultValue: HapticIntensity.light.index)];
+    _switchToggleIntensity = HapticIntensity.values[box.get(
+        'switchToggleIntensity',
+        defaultValue: HapticIntensity.selection.index)];
+    _longPressIntensity = HapticIntensity.values[box.get('longPressIntensity',
+        defaultValue: HapticIntensity.medium.index)];
+    _sliderChangeIntensity = HapticIntensity.values[box.get(
+        'sliderChangeIntensity',
+        defaultValue: HapticIntensity.selection.index)];
+    _streamOutputIntensity = HapticIntensity.values[box.get(
+        'streamOutputIntensity',
+        defaultValue: HapticIntensity.none.index)];
+    _thinkingIntensity = HapticIntensity.values[
+        box.get('thinkingIntensity', defaultValue: HapticIntensity.none.index)];
 
     notifyListeners();
   }
@@ -279,6 +315,55 @@ class AppConfigProvider extends ChangeNotifier {
     if (_asyncTaskRefreshInterval != interval) {
       _asyncTaskRefreshInterval = interval;
       _updateValue('asyncTaskRefreshInterval', interval);
+    }
+  }
+
+  void setHapticsEnabled(bool enabled) {
+    if (_hapticsEnabled != enabled) {
+      _hapticsEnabled = enabled;
+      _updateValue('hapticsEnabled', enabled);
+    }
+  }
+
+  void setButtonPressIntensity(HapticIntensity intensity) {
+    if (_buttonPressIntensity != intensity) {
+      _buttonPressIntensity = intensity;
+      _updateValue('buttonPressIntensity', intensity.index);
+    }
+  }
+
+  void setSwitchToggleIntensity(HapticIntensity intensity) {
+    if (_switchToggleIntensity != intensity) {
+      _switchToggleIntensity = intensity;
+      _updateValue('switchToggleIntensity', intensity.index);
+    }
+  }
+
+  void setLongPressIntensity(HapticIntensity intensity) {
+    if (_longPressIntensity != intensity) {
+      _longPressIntensity = intensity;
+      _updateValue('longPressIntensity', intensity.index);
+    }
+  }
+
+  void setSliderChangeIntensity(HapticIntensity intensity) {
+    if (_sliderChangeIntensity != intensity) {
+      _sliderChangeIntensity = intensity;
+      _updateValue('sliderChangeIntensity', intensity.index);
+    }
+  }
+
+  void setStreamOutputIntensity(HapticIntensity intensity) {
+    if (_streamOutputIntensity != intensity) {
+      _streamOutputIntensity = intensity;
+      _updateValue('streamOutputIntensity', intensity.index);
+    }
+  }
+
+  void setThinkingIntensity(HapticIntensity intensity) {
+    if (_thinkingIntensity != intensity) {
+      _thinkingIntensity = intensity;
+      _updateValue('thinkingIntensity', intensity.index);
     }
   }
 

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:gal/gal.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
+import 'package:nameless_ai/services/haptic_service.dart';
 import 'package:nameless_ai/utils/helpers.dart';
 
 class ImageViewerScreen extends StatefulWidget {
@@ -23,6 +24,7 @@ class _ImageViewerScreenState extends State<ImageViewerScreen> {
 
   Future<void> _saveImage() async {
     if (_isSaving) return;
+    HapticService.onButtonPress(context);
     setState(() => _isSaving = true);
     final localizations = AppLocalizations.of(context)!;
 

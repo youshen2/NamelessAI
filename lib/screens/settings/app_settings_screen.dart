@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/providers/app_config_provider.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
+import 'package:nameless_ai/services/haptic_service.dart';
 import 'package:nameless_ai/services/update_service.dart';
 
 class AppSettingsScreen extends StatefulWidget {
@@ -15,6 +16,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
   bool _isCheckingForUpdate = false;
 
   Future<void> _checkForUpdate() async {
+    HapticService.onButtonPress(context);
     setState(() {
       _isCheckingForUpdate = true;
     });
@@ -45,7 +47,10 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                 SwitchListTile(
                   title: Text(localizations.checkForUpdatesOnStartup),
                   value: appConfig.checkForUpdatesOnStartup,
-                  onChanged: appConfig.setCheckForUpdatesOnStartup,
+                  onChanged: (value) {
+                    HapticService.onSwitchToggle(context);
+                    appConfig.setCheckForUpdatesOnStartup(value);
+                  },
                   activeColor: Theme.of(context).colorScheme.primary,
                 ),
                 ListTile(

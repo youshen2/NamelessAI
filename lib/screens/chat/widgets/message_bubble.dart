@@ -17,6 +17,7 @@ import 'package:nameless_ai/screens/chat/widgets/message_branch_navigator.dart';
 import 'package:nameless_ai/screens/chat/widgets/message_meta_info.dart';
 import 'package:nameless_ai/screens/chat/widgets/thinking_content_widget.dart';
 import 'package:nameless_ai/screens/chat/widgets/typing_indicator.dart';
+import 'package:nameless_ai/services/haptic_service.dart';
 
 class MessageBubble extends StatefulWidget {
   final ChatMessage message;
@@ -98,6 +99,17 @@ class _MessageBubbleState extends State<MessageBubble>
     super.didUpdateWidget(oldWidget);
     if (oldWidget.message.content != widget.message.content) {
       _editController.text = widget.message.content;
+      if (widget.message.isLoading &&
+          !widget.isReadOnly &&
+          widget.message.role == 'assistant' &&
+          widget.message.asyncTaskStatus == AsyncTaskStatus.none) {
+        HapticService.onStreamOutput(context);
+      }
+    }
+    if (oldWidget.message.thinkingContent != widget.message.thinkingContent) {
+      if (widget.message.isLoading && !widget.isReadOnly) {
+        HapticService.onThinking(context);
+      }
     }
     if (oldWidget.message.isEditing != widget.message.isEditing) {
       if (widget.message.isEditing) {
@@ -308,6 +320,7 @@ class _MessageBubbleState extends State<MessageBubble>
       children: [
         GestureDetector(
           onTap: () {
+            HapticService.onButtonPress(context);
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => ImageViewerScreen(
@@ -424,7 +437,10 @@ class _MessageBubbleState extends State<MessageBubble>
                   icon: const Icon(Icons.play_circle_outline,
                       color: Colors.white, size: 48),
                   tooltip: localizations.playVideo,
-                  onPressed: () => launchUrl(Uri.parse(message.videoUrl!)),
+                  onPressed: () {
+                    HapticService.onButtonPress(context);
+                    launchUrl(Uri.parse(message.videoUrl!));
+                  },
                 ),
               ),
             ),
@@ -610,6 +626,7 @@ class _MessageBubbleState extends State<MessageBubble>
         },
         onTapLink: (text, href, title) {
           if (href != null) {
+            HapticService.onButtonPress(context);
             launchUrl(Uri.parse(href));
           }
         },
@@ -679,21 +696,28 @@ class _MessageBubbleState extends State<MessageBubble>
               IconButton(
                 icon: const Icon(Icons.cancel_outlined),
                 tooltip: localizations.cancel,
-                onPressed: () => widget.onEdit(widget.message, false),
+                onPressed: () {
+                  HapticService.onButtonPress(context);
+                  widget.onEdit(widget.message, false);
+                },
               ),
               IconButton(
                 icon: const Icon(Icons.check_circle_outline),
                 tooltip: localizations.save,
-                onPressed: () =>
-                    widget.onSave(widget.message, _editController.text),
+                onPressed: () {
+                  HapticService.onButtonPress(context);
+                  widget.onSave(widget.message, _editController.text);
+                },
               ),
               if (isUser)
                 IconButton(
                   icon: const Icon(Icons.send_and_archive_outlined),
                   tooltip: localizations.saveAndResubmit,
                   color: Theme.of(context).colorScheme.primary,
-                  onPressed: () =>
-                      widget.onResubmit(widget.message, _editController.text),
+                  onPressed: () {
+                    HapticService.onButtonPress(context);
+                    widget.onResubmit(widget.message, _editController.text);
+                  },
                 ),
             ],
           ),

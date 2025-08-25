@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/app_database.dart';
 import 'package:nameless_ai/data/providers/app_config_provider.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
+import 'package:nameless_ai/services/haptic_service.dart';
 import 'package:nameless_ai/utils/helpers.dart';
 
 class DeveloperOptionsScreen extends StatefulWidget {
@@ -33,6 +34,7 @@ class _DeveloperOptionsScreenState extends State<DeveloperOptionsScreen> {
                   subtitle: Text(localizations.showDebugButtonHint),
                   value: appConfig.showDebugButton,
                   onChanged: (value) {
+                    HapticService.onSwitchToggle(context);
                     appConfig.setShowDebugButton(value);
                   },
                 ),
@@ -40,6 +42,7 @@ class _DeveloperOptionsScreenState extends State<DeveloperOptionsScreen> {
                   title: Text(localizations.resetOnboarding),
                   subtitle: Text(localizations.resetOnboardingHint),
                   onTap: () async {
+                    HapticService.onButtonPress(context);
                     final confirmed = await showDialog<bool>(
                       context: context,
                       builder: (context) => AlertDialog(
@@ -48,11 +51,17 @@ class _DeveloperOptionsScreenState extends State<DeveloperOptionsScreen> {
                             Text(localizations.resetOnboardingConfirmation),
                         actions: [
                           TextButton(
-                            onPressed: () => Navigator.of(context).pop(false),
+                            onPressed: () {
+                              HapticService.onButtonPress(context);
+                              Navigator.of(context).pop(false);
+                            },
                             child: Text(localizations.cancel),
                           ),
                           FilledButton(
-                            onPressed: () => Navigator.of(context).pop(true),
+                            onPressed: () {
+                              HapticService.onButtonPress(context);
+                              Navigator.of(context).pop(true);
+                            },
                             child: Text(localizations.reset),
                           ),
                         ],
@@ -83,6 +92,7 @@ class _DeveloperOptionsScreenState extends State<DeveloperOptionsScreen> {
                         color: Theme.of(context).colorScheme.onErrorContainer),
                   ),
                   onTap: () async {
+                    HapticService.onButtonPress(context);
                     final confirmed = await showDialog<bool>(
                       context: context,
                       builder: (context) => AlertDialog(
@@ -91,11 +101,17 @@ class _DeveloperOptionsScreenState extends State<DeveloperOptionsScreen> {
                             Text(localizations.reinitializeDatabaseWarning),
                         actions: [
                           TextButton(
-                            onPressed: () => Navigator.of(context).pop(false),
+                            onPressed: () {
+                              HapticService.onButtonPress(context);
+                              Navigator.of(context).pop(false);
+                            },
                             child: Text(localizations.cancel),
                           ),
                           FilledButton(
-                            onPressed: () => Navigator.of(context).pop(true),
+                            onPressed: () {
+                              HapticService.onButtonPress(context);
+                              Navigator.of(context).pop(true);
+                            },
                             style: FilledButton.styleFrom(
                                 backgroundColor:
                                     Theme.of(context).colorScheme.error),
@@ -122,6 +138,7 @@ class _DeveloperOptionsScreenState extends State<DeveloperOptionsScreen> {
                         color: Theme.of(context).colorScheme.onErrorContainer),
                   ),
                   onTap: () async {
+                    HapticService.onButtonPress(context);
                     final confirmed = await showDialog<bool>(
                       context: context,
                       builder: (context) => AlertDialog(
@@ -129,11 +146,17 @@ class _DeveloperOptionsScreenState extends State<DeveloperOptionsScreen> {
                         content: Text(localizations.clearDataConfirmation),
                         actions: [
                           TextButton(
-                            onPressed: () => Navigator.of(context).pop(false),
+                            onPressed: () {
+                              HapticService.onButtonPress(context);
+                              Navigator.of(context).pop(false);
+                            },
                             child: Text(localizations.cancel),
                           ),
                           FilledButton(
-                            onPressed: () => Navigator.of(context).pop(true),
+                            onPressed: () {
+                              HapticService.onButtonPress(context);
+                              Navigator.of(context).pop(true);
+                            },
                             style: FilledButton.styleFrom(
                                 backgroundColor:
                                     Theme.of(context).colorScheme.error),

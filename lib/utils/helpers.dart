@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
+import 'package:nameless_ai/services/haptic_service.dart';
 
 void showSnackBar(BuildContext context, String message,
     {bool isError = false}) {
@@ -25,11 +26,17 @@ Future<bool?> showConfirmDialog(BuildContext context, String itemType) async {
       content: Text(localizations.deleteConfirmation(itemType)),
       actions: [
         TextButton(
-          onPressed: () => Navigator.of(context).pop(false),
+          onPressed: () {
+            HapticService.onButtonPress(context);
+            Navigator.of(context).pop(false);
+          },
           child: Text(localizations.cancel),
         ),
         FilledButton(
-          onPressed: () => Navigator.of(context).pop(true),
+          onPressed: () {
+            HapticService.onButtonPress(context);
+            Navigator.of(context).pop(true);
+          },
           style: FilledButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.error),
           child: Text(localizations.delete),
@@ -56,11 +63,15 @@ Future<String?> showTextInputDialog(
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () {
+            HapticService.onButtonPress(context);
+            Navigator.of(context).pop();
+          },
           child: Text(localizations.cancel),
         ),
         FilledButton(
           onPressed: () {
+            HapticService.onButtonPress(context);
             if (controller.text.trim().isNotEmpty) {
               Navigator.of(context).pop(controller.text.trim());
             } else {
@@ -77,6 +88,7 @@ Future<String?> showTextInputDialog(
 
 void copyToClipboard(BuildContext context, String text) {
   Clipboard.setData(ClipboardData(text: text)).then((_) {
+    HapticService.onButtonPress(context);
     showSnackBar(context, AppLocalizations.of(context)!.copiedToClipboard);
   });
 }

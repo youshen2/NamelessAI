@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
+import 'package:nameless_ai/services/haptic_service.dart';
 
 class ExportOptionsSheet extends StatefulWidget {
   const ExportOptionsSheet({super.key});
@@ -34,37 +35,52 @@ class _ExportOptionsSheetState extends State<ExportOptionsSheet> {
             CheckboxListTile(
               title: Text(localizations.apiProviderSettings),
               value: _options['apiProviders'],
-              onChanged: (val) =>
-                  setState(() => _options['apiProviders'] = val!),
+              onChanged: (val) {
+                HapticService.onSwitchToggle(context);
+                setState(() => _options['apiProviders'] = val!);
+              },
             ),
             CheckboxListTile(
               title: Text(localizations.history),
               value: _options['chatSessions'],
-              onChanged: (val) =>
-                  setState(() => _options['chatSessions'] = val!),
+              onChanged: (val) {
+                HapticService.onSwitchToggle(context);
+                setState(() => _options['chatSessions'] = val!);
+              },
             ),
             CheckboxListTile(
               title: Text(localizations.systemPromptTemplates),
               value: _options['systemPromptTemplates'],
-              onChanged: (val) =>
-                  setState(() => _options['systemPromptTemplates'] = val!),
+              onChanged: (val) {
+                HapticService.onSwitchToggle(context);
+                setState(() => _options['systemPromptTemplates'] = val!);
+              },
             ),
             CheckboxListTile(
               title: Text(localizations.appSettings),
               value: _options['appConfig'],
-              onChanged: (val) => setState(() => _options['appConfig'] = val!),
+              onChanged: (val) {
+                HapticService.onSwitchToggle(context);
+                setState(() => _options['appConfig'] = val!);
+              },
             ),
             const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () {
+                    HapticService.onButtonPress(context);
+                    Navigator.of(context).pop();
+                  },
                   child: Text(localizations.cancel),
                 ),
                 const SizedBox(width: 8),
                 FilledButton(
-                  onPressed: () => Navigator.of(context).pop(_options),
+                  onPressed: () {
+                    HapticService.onButtonPress(context);
+                    Navigator.of(context).pop(_options);
+                  },
                   child: Text(localizations.exportData),
                 ),
               ],

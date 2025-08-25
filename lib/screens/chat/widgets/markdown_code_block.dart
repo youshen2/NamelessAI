@@ -6,6 +6,7 @@ import 'package:markdown/markdown.dart' as md;
 import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/providers/app_config_provider.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
+import 'package:nameless_ai/services/haptic_service.dart';
 import 'package:nameless_ai/utils/helpers.dart';
 
 void _showFreeCopyDialog(BuildContext context, String code) {
@@ -24,7 +25,10 @@ void _showFreeCopyDialog(BuildContext context, String code) {
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () {
+            HapticService.onButtonPress(context);
+            Navigator.of(context).pop();
+          },
           child: Text(localizations.close),
         ),
       ],
@@ -121,8 +125,10 @@ class _CollapsibleCodeBlockState extends State<CollapsibleCodeBlock> {
                                     ?.withOpacity(0.7) ??
                                 Theme.of(context).colorScheme.onSurfaceVariant),
                         tooltip: localizations.freeCopy,
-                        onPressed: () =>
-                            _showFreeCopyDialog(context, widget.code),
+                        onPressed: () {
+                          HapticService.onButtonPress(context);
+                          _showFreeCopyDialog(context, widget.code);
+                        },
                         style: IconButton.styleFrom(
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           minimumSize: Size.zero,
@@ -155,8 +161,10 @@ class _CollapsibleCodeBlockState extends State<CollapsibleCodeBlock> {
                         tooltip: _isExpanded
                             ? localizations.collapse
                             : localizations.expand,
-                        onPressed: () =>
-                            setState(() => _isExpanded = !_isExpanded),
+                        onPressed: () {
+                          HapticService.onButtonPress(context);
+                          setState(() => _isExpanded = !_isExpanded);
+                        },
                         style: IconButton.styleFrom(
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           minimumSize: Size.zero,

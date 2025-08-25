@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/models/system_prompt_template.dart';
 import 'package:nameless_ai/data/providers/system_prompt_template_manager.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
+import 'package:nameless_ai/services/haptic_service.dart';
 
 class SystemPromptTemplateForm extends StatefulWidget {
   final SystemPromptTemplate? template;
@@ -36,6 +37,7 @@ class _SystemPromptTemplateFormState extends State<SystemPromptTemplateForm> {
   }
 
   Future<void> _saveTemplate() async {
+    HapticService.onButtonPress(context);
     if (_formKey.currentState!.validate()) {
       final manager =
           Provider.of<SystemPromptTemplateManager>(context, listen: false);
@@ -120,7 +122,10 @@ class _SystemPromptTemplateFormState extends State<SystemPromptTemplateForm> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 TextButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () {
+                    HapticService.onButtonPress(context);
+                    Navigator.pop(context);
+                  },
                   child: Text(localizations.cancel),
                 ),
                 const SizedBox(width: 8),

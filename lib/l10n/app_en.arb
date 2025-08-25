@@ -334,5 +334,20 @@
   "playVideo": "Play Video",
   "videoGenerationFailed": "Video generation failed",
   "failedToLoadVideo": "Failed to load video",
-  "videoExpirationWarning": "File is valid for 2 days, please download it in time."
+  "videoExpirationWarning": "File is valid for 2 days, please download it in time.",
+  "hapticSettings": "Haptic Feedback",
+  "enableHapticFeedback": "Enable Haptic Feedback",
+  "hapticIntensity": "Haptic Intensity",
+  "hapticIntensityNone": "None",
+  "hapticIntensityLight": "Light",
+  "hapticIntensityMedium": "Medium",
+  "hapticIntensityHeavy": "Heavy",
+  "hapticIntensitySelection": "Default",
+  "hapticButtonPress": "Button Press",
+  "hapticSwitchToggle": "Switch Toggle",
+  "hapticLongPress": "Long Press",
+  "hapticSliderChanged": "Slider Change",
+  "hapticsNotSupported": "Haptic feedback is not supported on this platform.",
+  "hapticStreamOutput": "Stream Output",
+  "hapticThinking": "Thinking"
 }
