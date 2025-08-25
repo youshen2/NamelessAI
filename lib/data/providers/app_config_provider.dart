@@ -40,11 +40,17 @@ class AppConfigProvider extends ChangeNotifier {
   bool _isFirstLaunch = true;
 
   bool _hapticsEnabled = true;
+
   HapticIntensity _buttonPressIntensity = HapticIntensity.light;
+
   HapticIntensity _switchToggleIntensity = HapticIntensity.selection;
+
   HapticIntensity _longPressIntensity = HapticIntensity.medium;
+
   HapticIntensity _sliderChangeIntensity = HapticIntensity.selection;
+
   HapticIntensity _streamOutputIntensity = HapticIntensity.none;
+
   HapticIntensity _thinkingIntensity = HapticIntensity.none;
 
   AppConfigProvider() {
@@ -81,11 +87,17 @@ class AppConfigProvider extends ChangeNotifier {
   bool get isFirstLaunch => _isFirstLaunch;
 
   bool get hapticsEnabled => _hapticsEnabled;
+
   HapticIntensity get buttonPressIntensity => _buttonPressIntensity;
+
   HapticIntensity get switchToggleIntensity => _switchToggleIntensity;
+
   HapticIntensity get longPressIntensity => _longPressIntensity;
+
   HapticIntensity get sliderChangeIntensity => _sliderChangeIntensity;
+
   HapticIntensity get streamOutputIntensity => _streamOutputIntensity;
+
   HapticIntensity get thinkingIntensity => _thinkingIntensity;
 
   void _loadConfig() {

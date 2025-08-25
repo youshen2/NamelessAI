@@ -78,6 +78,7 @@ class HapticSettingsScreen extends StatelessWidget {
                         HapticService.onButtonPress(context);
                       },
                     ),
+                    const Divider(height: 1, indent: 16, endIndent: 16),
                     _buildIntensitySlider(
                       context: context,
                       title: localizations.hapticSwitchToggle,
@@ -87,6 +88,7 @@ class HapticSettingsScreen extends StatelessWidget {
                         HapticService.onSwitchToggle(context);
                       },
                     ),
+                    const Divider(height: 1, indent: 16, endIndent: 16),
                     _buildIntensitySlider(
                       context: context,
                       title: localizations.hapticLongPress,
@@ -96,6 +98,7 @@ class HapticSettingsScreen extends StatelessWidget {
                         HapticService.onLongPress(context);
                       },
                     ),
+                    const Divider(height: 1, indent: 16, endIndent: 16),
                     _buildIntensitySlider(
                       context: context,
                       title: localizations.hapticSliderChanged,
@@ -105,20 +108,24 @@ class HapticSettingsScreen extends StatelessWidget {
                         HapticService.onSliderChange(context);
                       },
                     ),
+                    const Divider(height: 1, indent: 16, endIndent: 16),
                     _buildIntensitySlider(
                       context: context,
                       title: localizations.hapticStreamOutput,
                       value: appConfig.streamOutputIntensity,
                       onChanged: (intensity) {
                         appConfig.setStreamOutputIntensity(intensity);
+                        HapticService.onSliderChange(context);
                       },
                     ),
+                    const Divider(height: 1, indent: 16, endIndent: 16),
                     _buildIntensitySlider(
                       context: context,
                       title: localizations.hapticThinking,
                       value: appConfig.thinkingIntensity,
                       onChanged: (intensity) {
                         appConfig.setThinkingIntensity(intensity);
+                        HapticService.onSliderChange(context);
                       },
                     ),
                   ],
@@ -151,7 +158,18 @@ class HapticSettingsScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: Theme.of(context).textTheme.titleMedium),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(title, style: Theme.of(context).textTheme.titleMedium),
+              Text(
+                intensityMap[value]!,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+              ),
+            ],
+          ),
           Slider(
             value: value.index.toDouble(),
             min: 0,

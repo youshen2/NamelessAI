@@ -65,6 +65,9 @@ class _MessageBubbleState extends State<MessageBubble>
   late final Animation<Offset> _slideAnimation;
   late final Animation<double> _fadeAnimation;
 
+  String? _currentContent;
+  String? _currentThinkingContent;
+
   @override
   bool get wantKeepAlive => true;
 
@@ -72,6 +75,9 @@ class _MessageBubbleState extends State<MessageBubble>
   void initState() {
     super.initState();
     _editController = TextEditingController(text: widget.message.content);
+
+    _currentContent = widget.message.content;
+    _currentThinkingContent = widget.message.thinkingContent;
 
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 400),
@@ -97,20 +103,6 @@ class _MessageBubbleState extends State<MessageBubble>
   @override
   void didUpdateWidget(covariant MessageBubble oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.message.content != widget.message.content) {
-      _editController.text = widget.message.content;
-      if (widget.message.isLoading &&
-          !widget.isReadOnly &&
-          widget.message.role == 'assistant' &&
-          widget.message.asyncTaskStatus == AsyncTaskStatus.none) {
-        HapticService.onStreamOutput(context);
-      }
-    }
-    if (oldWidget.message.thinkingContent != widget.message.thinkingContent) {
-      if (widget.message.isLoading && !widget.isReadOnly) {
-        HapticService.onThinking(context);
-      }
-    }
     if (oldWidget.message.isEditing != widget.message.isEditing) {
       if (widget.message.isEditing) {
         _editController.text = widget.message.content;
@@ -157,6 +149,24 @@ class _MessageBubbleState extends State<MessageBubble>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+
+    if (_currentContent != widget.message.content) {
+      _editController.text = widget.message.content;
+      if (widget.message.isLoading &&
+          !widget.isReadOnly &&
+          widget.message.role == 'assistant' &&
+          widget.message.asyncTaskStatus == AsyncTaskStatus.none) {
+        HapticService.onStreamOutput(context);
+      }
+      _currentContent = widget.message.content;
+    }
+    if (_currentThinkingContent != widget.message.thinkingContent) {
+      if (widget.message.isLoading && !widget.isReadOnly) {
+        HapticService.onThinking(context);
+      }
+      _currentThinkingContent = widget.message.thinkingContent;
+    }
+
     final appConfig = Provider.of<AppConfigProvider>(context);
     final isUser = widget.message.role == 'user';
 
