@@ -1592,6 +1592,18 @@ abstract class AppLocalizations {
   /// **'Standard OpenAI'**
   String get apiPathTemplateStandardOpenAI;
 
+  /// No description provided for @apiPathTemplateStandardInstantImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Standard Instant Image'**
+  String get apiPathTemplateStandardInstantImage;
+
+  /// No description provided for @apiPathTemplateStandardMidjourney.
+  ///
+  /// In en, this message translates to:
+  /// **'Standard Midjourney'**
+  String get apiPathTemplateStandardMidjourney;
+
   /// No description provided for @nonLanguageModelPathWarning.
   ///
   /// In en, this message translates to:

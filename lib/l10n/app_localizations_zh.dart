@@ -779,6 +779,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get apiPathTemplateStandardOpenAI => '标准 OpenAI';
 
   @override
+  String get apiPathTemplateStandardInstantImage => '通用即时生图';
+
+  @override
+  String get apiPathTemplateStandardMidjourney => '标准 Midjourney';
+
+  @override
   String get nonLanguageModelPathWarning => '使用前请确定接口路径是否正确。';
 
   @override

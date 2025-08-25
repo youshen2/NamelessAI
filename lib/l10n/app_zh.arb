@@ -319,6 +319,8 @@
   "selectApiPathTemplate": "选择模板",
   "apiPathTemplateQingyunTop": "青云Top",
   "apiPathTemplateStandardOpenAI": "标准 OpenAI",
+  "apiPathTemplateStandardInstantImage": "通用即时生图",
+  "apiPathTemplateStandardMidjourney": "标准 Midjourney",
   "nonLanguageModelPathWarning": "使用前请确定接口路径是否正确。",
   "noApiPathTemplatesFound": "未找到接口模板。",
   "searchApiPathTemplates": "搜索模板...",

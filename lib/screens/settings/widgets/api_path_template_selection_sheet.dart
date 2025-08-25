@@ -71,9 +71,20 @@ class _ApiPathTemplateSelectionSheetState
     final localizations = AppLocalizations.of(context)!;
     return [
       ApiPathTemplate(
+        name: localizations.apiPathTemplateStandardOpenAI,
+        modelType: ModelType.language,
+        chatPath: '/v1/chat/completions',
+      ),
+      ApiPathTemplate(
         name: localizations.apiPathTemplateQingyunTop,
         modelType: ModelType.language,
         chatPath: '/v1/chat/completions',
+      ),
+      ApiPathTemplate(
+        name: localizations.apiPathTemplateStandardInstantImage,
+        modelType: ModelType.image,
+        imageGenerationMode: ImageGenerationMode.instant,
+        imaginePath: '/v1/images/generations',
       ),
       ApiPathTemplate(
         name: localizations.apiPathTemplateQingyunTop,
@@ -82,16 +93,18 @@ class _ApiPathTemplateSelectionSheetState
         imaginePath: '/v1/images/generations',
       ),
       ApiPathTemplate(
-        name: localizations.apiPathTemplateQingyunTop,
+        name: localizations.apiPathTemplateStandardMidjourney,
         modelType: ModelType.image,
         imageGenerationMode: ImageGenerationMode.asynchronous,
         imaginePath: '/mj/submit/imagine',
         fetchPath: '/mj/task/{taskId}/fetch',
       ),
       ApiPathTemplate(
-        name: localizations.apiPathTemplateStandardOpenAI,
-        modelType: ModelType.language,
-        chatPath: '/v1/chat/completions',
+        name: localizations.apiPathTemplateQingyunTop,
+        modelType: ModelType.image,
+        imageGenerationMode: ImageGenerationMode.asynchronous,
+        imaginePath: '/mj/submit/imagine',
+        fetchPath: '/mj/task/{taskId}/fetch',
       ),
       ApiPathTemplate(
         name: localizations.apiPathTemplateQingyunTopVeo,

@@ -319,6 +319,8 @@
   "selectApiPathTemplate": "Select a Template",
   "apiPathTemplateQingyunTop": "Qingyun Top",
   "apiPathTemplateStandardOpenAI": "Standard OpenAI",
+  "apiPathTemplateStandardInstantImage": "Standard Instant Image",
+  "apiPathTemplateStandardMidjourney": "Standard Midjourney",
   "nonLanguageModelPathWarning": "Please ensure the API path is correct before use.",
   "noApiPathTemplatesFound": "No API path templates found.",
   "searchApiPathTemplates": "Search templates...",

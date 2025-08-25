@@ -800,6 +800,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get apiPathTemplateStandardOpenAI => 'Standard OpenAI';
 
   @override
+  String get apiPathTemplateStandardInstantImage => 'Standard Instant Image';
+
+  @override
+  String get apiPathTemplateStandardMidjourney => 'Standard Midjourney';
+
+  @override
   String get nonLanguageModelPathWarning =>
       'Please ensure the API path is correct before use.';
 
