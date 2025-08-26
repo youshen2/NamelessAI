@@ -248,7 +248,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
     if (sessions.isEmpty) {
       return Center(child: Text(localizations.noResultsFound));
     }
+    final isAndroid = Theme.of(context).platform == TargetPlatform.android;
     return ListView.builder(
+      physics: isAndroid
+          ? const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics())
+          : null,
       padding: EdgeInsets.only(bottom: isDesktop ? 16 : 96),
       itemCount: sessions.length,
       itemBuilder: (context, index) {

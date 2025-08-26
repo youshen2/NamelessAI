@@ -412,5 +412,9 @@
   "crashTestDescription": "点击以触发一次测试崩溃，并显示错误报告页面。",
   "anErrorOccurred": "发生了一个意外错误。",
   "submitIssue": "提交 Issue",
-  "submitIssueDescription": "为了帮助我们修复此问题，请在 GitHub 上提交一个 Issue。\n可以将复制的信息粘贴到问题描述中。"
+  "submitIssueDescription": "为了帮助我们修复此问题，请在 GitHub 上提交一个 Issue。\n可以将复制的信息粘贴到问题描述中。",
+  "developer": "开发者",
+  "developerName": "爅峫",
+  "developerUrl": "space.bilibili.com/394675616",
+  "easterEgg": "Ciallo～(∠・ω< )⌒★"
 }

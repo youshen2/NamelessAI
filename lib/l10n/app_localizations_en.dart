@@ -1070,5 +1070,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get submitIssueDescription =>
-      'To help us fix this bug, please consider submitting an issue on GitHub. You can paste the copied information into the issue description.';
+      'To help us fix this bug, please consider submitting an issue on GitHub.\nYou can paste the copied information into the issue description.';
+
+  @override
+  String get developer => 'Developer';
+
+  @override
+  String get developerName => 'Moye';
+
+  @override
+  String get developerUrl => 'space.bilibili.com/3946756160';
+
+  @override
+  String get easterEgg => 'Ciallo～(∠・ω< )⌒★';
 }

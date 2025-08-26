@@ -2111,8 +2111,32 @@ abstract class AppLocalizations {
   /// No description provided for @submitIssueDescription.
   ///
   /// In en, this message translates to:
-  /// **'To help us fix this bug, please consider submitting an issue on GitHub. You can paste the copied information into the issue description.'**
+  /// **'To help us fix this bug, please consider submitting an issue on GitHub.\nYou can paste the copied information into the issue description.'**
   String get submitIssueDescription;
+
+  /// No description provided for @developer.
+  ///
+  /// In en, this message translates to:
+  /// **'Developer'**
+  String get developer;
+
+  /// No description provided for @developerName.
+  ///
+  /// In en, this message translates to:
+  /// **'Moye'**
+  String get developerName;
+
+  /// No description provided for @developerUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'space.bilibili.com/3946756160'**
+  String get developerUrl;
+
+  /// No description provided for @easterEgg.
+  ///
+  /// In en, this message translates to:
+  /// **'Ciallo～(∠・ω< )⌒★'**
+  String get easterEgg;
 }
 
 class _AppLocalizationsDelegate

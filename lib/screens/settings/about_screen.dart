@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nameless_ai/services/update_service.dart';
+import 'package:nameless_ai/utils/helpers.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/providers/app_config_provider.dart';
@@ -17,7 +18,8 @@ class AboutScreen extends StatefulWidget {
   State<AboutScreen> createState() => _AboutScreenState();
 }
 
-class _AboutScreenState extends State<AboutScreen> {
+class _AboutScreenState extends State<AboutScreen>
+    with SingleTickerProviderStateMixin {
   PackageInfo _packageInfo = PackageInfo(
     appName: 'Unknown',
     packageName: 'Unknown',
@@ -27,10 +29,30 @@ class _AboutScreenState extends State<AboutScreen> {
   int _tapCount = 0;
   bool _isCheckingForUpdate = false;
 
+  late AnimationController _animationController;
+  late Animation<double> _rotationAnimation;
+
   @override
   void initState() {
     super.initState();
     _initPackageInfo();
+
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    );
+    _rotationAnimation = Tween<double>(begin: 0, end: 2 * 3.14159).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.elasticOut,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   Future<void> _initPackageInfo() async {
@@ -53,6 +75,12 @@ class _AboutScreenState extends State<AboutScreen> {
         context.go('/settings/developer_options');
       }
     }
+  }
+
+  void _handleLongPress() {
+    HapticService.onLongPress(context);
+    _animationController.forward(from: 0.0);
+    showSnackBar(context, AppLocalizations.of(context)!.easterEgg);
   }
 
   Future<void> _checkForUpdate() async {
@@ -101,14 +129,20 @@ class _AboutScreenState extends State<AboutScreen> {
         children: <Widget>[
           Column(
             children: [
-              SizedBox(
-                width: 120,
-                height: 120,
-                child: SvgPicture.asset(
-                  'assets/icon/icon.svg',
-                  colorFilter: ColorFilter.mode(
-                    theme.colorScheme.primary,
-                    BlendMode.srcIn,
+              GestureDetector(
+                onLongPress: _handleLongPress,
+                child: RotationTransition(
+                  turns: _rotationAnimation,
+                  child: SizedBox(
+                    width: 120,
+                    height: 120,
+                    child: SvgPicture.asset(
+                      'assets/icon/icon.svg',
+                      colorFilter: ColorFilter.mode(
+                        theme.colorScheme.primary,
+                        BlendMode.srcIn,
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -132,6 +166,22 @@ class _AboutScreenState extends State<AboutScreen> {
             ],
           ),
           const SizedBox(height: 32),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Card(
+              child: ListTile(
+                leading: const Icon(Icons.person_outline),
+                title: Text(localizations.developer),
+                subtitle: Text(localizations.developerName),
+                onTap: () {
+                  HapticService.onButtonPress(context);
+                  launchUrl(Uri.parse('https://${localizations.developerUrl}'));
+                },
+                trailing: const Icon(Icons.open_in_new_rounded),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Card(

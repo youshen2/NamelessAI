@@ -1041,4 +1041,16 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get submitIssueDescription =>
       '为了帮助我们修复此问题，请在 GitHub 上提交一个 Issue。\n可以将复制的信息粘贴到问题描述中。';
+
+  @override
+  String get developer => '开发者';
+
+  @override
+  String get developerName => '爅峫';
+
+  @override
+  String get developerUrl => 'space.bilibili.com/3946756160';
+
+  @override
+  String get easterEgg => 'Ciallo～(∠・ω< )⌒★';
 }
