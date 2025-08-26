@@ -1013,4 +1013,32 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get presetDeepseek => '深度求索 (DeepSeek)';
+
+  @override
+  String get crashReport => '崩溃报告';
+
+  @override
+  String get errorDetails => '错误详情';
+
+  @override
+  String get stackTrace => '堆栈追踪';
+
+  @override
+  String get restartApp => '重启应用';
+
+  @override
+  String get crashTest => '崩溃测试';
+
+  @override
+  String get crashTestDescription => '点击以触发一次测试崩溃，并显示错误报告页面。';
+
+  @override
+  String get anErrorOccurred => '发生了一个意外错误。';
+
+  @override
+  String get submitIssue => '提交 Issue';
+
+  @override
+  String get submitIssueDescription =>
+      '为了帮助我们修复此问题，请在 GitHub 上提交一个 Issue。\n可以将复制的信息粘贴到问题描述中。';
 }

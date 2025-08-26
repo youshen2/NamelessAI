@@ -1042,4 +1042,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get presetDeepseek => 'DeepSeek AI';
+
+  @override
+  String get crashReport => 'Crash Report';
+
+  @override
+  String get errorDetails => 'Error Details';
+
+  @override
+  String get stackTrace => 'Stack Trace';
+
+  @override
+  String get restartApp => 'Restart App';
+
+  @override
+  String get crashTest => 'Crash Test';
+
+  @override
+  String get crashTestDescription =>
+      'Tap to trigger a test crash and display the error report screen.';
+
+  @override
+  String get anErrorOccurred => 'An unexpected error occurred.';
+
+  @override
+  String get submitIssue => 'Submit Issue';
+
+  @override
+  String get submitIssueDescription =>
+      'To help us fix this bug, please consider submitting an issue on GitHub. You can paste the copied information into the issue description.';
 }

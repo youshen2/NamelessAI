@@ -93,6 +93,16 @@ class _DeveloperOptionsScreenState extends State<DeveloperOptionsScreen> {
                     }
                   },
                 ),
+                const Divider(height: 1, indent: 16, endIndent: 16),
+                ListTile(
+                  title: Text(localizations.crashTest),
+                  subtitle: Text(localizations.crashTestDescription),
+                  onTap: () {
+                    HapticService.onButtonPress(context);
+                    throw Exception(
+                        "This is a test crash from Developer Options!");
+                  },
+                ),
               ],
             ),
           ),

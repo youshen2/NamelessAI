@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:ui';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,18 +14,73 @@ import 'package:nameless_ai/data/providers/chat_session_manager.dart';
 import 'package:nameless_ai/data/providers/system_prompt_template_manager.dart';
 import 'package:nameless_ai/router/app_router.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
+import 'package:nameless_ai/screens/error/error_screen.dart';
 import 'package:nameless_ai/utils/app_theme.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+void main() {
+  runZonedGuarded<Future<void>>(() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
-  final appDocumentDir = await getApplicationDocumentsDirectory();
-  await Hive.initFlutter(appDocumentDir.path);
-  await AppDatabase.registerAdapters();
-  await AppDatabase.openBoxes();
+    FlutterError.onError = (FlutterErrorDetails details) {
+      FlutterError.dumpErrorToConsole(details);
+      _showErrorScreen(details.exception, details.stack ?? StackTrace.current);
+    };
 
-  runApp(const MyApp());
+    PlatformDispatcher.instance.onError = (error, stack) {
+      _showErrorScreen(error, stack);
+      return true;
+    };
+
+    final appDocumentDir = await getApplicationDocumentsDirectory();
+    await Hive.initFlutter(appDocumentDir.path);
+    await AppDatabase.registerAdapters();
+    await AppDatabase.openBoxes();
+
+    runApp(const MyApp());
+  }, (error, stack) {
+    _showErrorScreen(error, stack);
+  });
+}
+
+void _showErrorScreen(Object error, StackTrace stackTrace) {
+  runApp(ErrorApp(error: error, stackTrace: stackTrace, onRestart: main));
+}
+
+class ErrorApp extends StatelessWidget {
+  final Object error;
+  final StackTrace stackTrace;
+  final VoidCallback onRestart;
+
+  const ErrorApp({
+    super.key,
+    required this.error,
+    required this.stackTrace,
+    required this.onRestart,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'NamelessAI Error',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData.light(useMaterial3: true),
+      darkTheme: ThemeData.dark(useMaterial3: true),
+      themeMode: ThemeMode.system,
+      home: ErrorScreen(
+        error: error,
+        stackTrace: stackTrace,
+        onRestart: onRestart,
+      ),
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+    );
+  }
 }
 
 class MyApp extends StatelessWidget {

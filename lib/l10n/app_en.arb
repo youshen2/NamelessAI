@@ -403,5 +403,14 @@
   "presetGroq": "Groq",
   "presetYi": "01.AI",
   "presetMoonshot": "Moonshot AI (Kimi)",
-  "presetDeepseek": "DeepSeek AI"
+  "presetDeepseek": "DeepSeek AI",
+  "crashReport": "Crash Report",
+  "errorDetails": "Error Details",
+  "stackTrace": "Stack Trace",
+  "restartApp": "Restart App",
+  "crashTest": "Crash Test",
+  "crashTestDescription": "Tap to trigger a test crash and display the error report screen.",
+  "anErrorOccurred": "An unexpected error occurred.",
+  "submitIssue": "Submit Issue",
+  "submitIssueDescription": "To help us fix this bug, please consider submitting an issue on GitHub. You can paste the copied information into the issue description."
 }

@@ -2059,6 +2059,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'DeepSeek AI'**
   String get presetDeepseek;
+
+  /// No description provided for @crashReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Crash Report'**
+  String get crashReport;
+
+  /// No description provided for @errorDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Error Details'**
+  String get errorDetails;
+
+  /// No description provided for @stackTrace.
+  ///
+  /// In en, this message translates to:
+  /// **'Stack Trace'**
+  String get stackTrace;
+
+  /// No description provided for @restartApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Restart App'**
+  String get restartApp;
+
+  /// No description provided for @crashTest.
+  ///
+  /// In en, this message translates to:
+  /// **'Crash Test'**
+  String get crashTest;
+
+  /// No description provided for @crashTestDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to trigger a test crash and display the error report screen.'**
+  String get crashTestDescription;
+
+  /// No description provided for @anErrorOccurred.
+  ///
+  /// In en, this message translates to:
+  /// **'An unexpected error occurred.'**
+  String get anErrorOccurred;
+
+  /// No description provided for @submitIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Issue'**
+  String get submitIssue;
+
+  /// No description provided for @submitIssueDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'To help us fix this bug, please consider submitting an issue on GitHub. You can paste the copied information into the issue description.'**
+  String get submitIssueDescription;
 }
 
 class _AppLocalizationsDelegate
