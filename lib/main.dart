@@ -1,5 +1,6 @@
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
@@ -15,6 +16,7 @@ import 'package:nameless_ai/utils/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
   final appDocumentDir = await getApplicationDocumentsDirectory();
   await Hive.initFlutter(appDocumentDir.path);
@@ -58,22 +60,39 @@ class MyApp extends StatelessWidget {
                     seedColor: Colors.blue, brightness: Brightness.dark);
               }
 
-              return MaterialApp.router(
-                title: 'NamelessAI',
-                debugShowCheckedModeBanner: false,
-                theme: AppTheme.lightTheme(lightColorScheme),
-                darkTheme: AppTheme.darkTheme(darkColorScheme),
-                themeMode: appConfig.themeMode,
-                locale: appConfig.locale,
-                localizationsDelegates: const [
-                  AppLocalizations.delegate,
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalWidgetsLocalizations.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                ],
-                supportedLocales: AppLocalizations.supportedLocales,
-                routerConfig: AppRouter.router,
-              );
+              return Builder(builder: (context) {
+                final isDarkMode =
+                    MediaQuery.platformBrightnessOf(context) == Brightness.dark;
+                SystemChrome.setSystemUIOverlayStyle(
+                  SystemUiOverlayStyle(
+                    statusBarColor: Colors.transparent,
+                    statusBarIconBrightness:
+                        isDarkMode ? Brightness.light : Brightness.dark,
+                    systemNavigationBarColor: Colors.transparent,
+                    systemNavigationBarDividerColor: Colors.transparent,
+                    systemNavigationBarIconBrightness:
+                        isDarkMode ? Brightness.light : Brightness.dark,
+                  ),
+                );
+                return MaterialApp.router(
+                  title: 'NamelessAI',
+                  debugShowCheckedModeBanner: false,
+                  theme: AppTheme.lightTheme(
+                      lightColorScheme, appConfig.cornerRadius),
+                  darkTheme: AppTheme.darkTheme(
+                      darkColorScheme, appConfig.cornerRadius),
+                  themeMode: appConfig.themeMode,
+                  locale: appConfig.locale,
+                  localizationsDelegates: const [
+                    AppLocalizations.delegate,
+                    GlobalMaterialLocalizations.delegate,
+                    GlobalWidgetsLocalizations.delegate,
+                    GlobalCupertinoLocalizations.delegate,
+                  ],
+                  supportedLocales: AppLocalizations.supportedLocales,
+                  routerConfig: AppRouter.router,
+                );
+              });
             },
           );
         },

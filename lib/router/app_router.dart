@@ -7,7 +7,7 @@ import 'package:nameless_ai/screens/settings/about_screen.dart';
 import 'package:nameless_ai/screens/settings/api_provider_settings_screen.dart';
 import 'package:nameless_ai/screens/settings/app_settings_screen.dart';
 import 'package:nameless_ai/screens/settings/developer_options_screen.dart';
-import 'package:nameless_ai/screens/settings/display_settings_screen.dart';
+import 'package:nameless_ai/screens/settings/appearance_settings_screen.dart';
 import 'package:nameless_ai/screens/settings/general_settings_screen.dart';
 import 'package:nameless_ai/screens/settings/haptic_settings_screen.dart';
 import 'package:nameless_ai/screens/settings/settings_screen.dart';
@@ -56,9 +56,9 @@ class AppRouter {
                 builder: (context, state) => const DeveloperOptionsScreen(),
               ),
               GoRoute(
-                path: 'display',
-                name: 'display_settings',
-                builder: (context, state) => const DisplaySettingsScreen(),
+                path: 'appearance',
+                name: 'appearance_settings',
+                builder: (context, state) => const AppearanceSettingsScreen(),
               ),
               GoRoute(
                 path: 'general',

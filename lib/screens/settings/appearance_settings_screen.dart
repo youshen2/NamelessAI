@@ -6,8 +6,8 @@ import 'package:nameless_ai/l10n/app_localizations.dart';
 import 'package:nameless_ai/screens/chat/widgets/markdown_code_block.dart';
 import 'package:nameless_ai/services/haptic_service.dart';
 
-class DisplaySettingsScreen extends StatelessWidget {
-  const DisplaySettingsScreen({super.key});
+class AppearanceSettingsScreen extends StatelessWidget {
+  const AppearanceSettingsScreen({super.key});
 
   Widget _buildRadioGroup<T>({
     required BuildContext context,
@@ -109,6 +109,36 @@ void main() {
                   activeColor: Theme.of(context).colorScheme.primary,
                 ),
               ],
+            ),
+          ),
+          Card(
+            margin: const EdgeInsets.only(bottom: 16),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${localizations.cornerRadius}: ${appConfig.cornerRadius.toStringAsFixed(0)}',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  Text(
+                    localizations.cornerRadiusHint,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  Slider(
+                    value: appConfig.cornerRadius,
+                    min: 0.0,
+                    max: 32.0,
+                    divisions: 32,
+                    label: appConfig.cornerRadius.toStringAsFixed(0),
+                    onChanged: (value) {
+                      HapticService.onSliderChange(context);
+                      appConfig.setCornerRadius(value);
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
           Card(

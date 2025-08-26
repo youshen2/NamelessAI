@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -104,24 +105,33 @@ class _HomePageState extends State<HomePage> {
 
     return ResponsiveLayout(
       mobileBody: Scaffold(
+        extendBody: true,
         body: widget.child,
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: selectedIndex,
-          onTap: (index) => _onItemTapped(index, context),
-          items: [
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.chat_bubble_outline),
-              label: localizations.chat,
+        bottomNavigationBar: ClipRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+            child: BottomNavigationBar(
+              backgroundColor:
+                  Theme.of(context).colorScheme.surface.withOpacity(0.8),
+              elevation: 0,
+              currentIndex: selectedIndex,
+              onTap: (index) => _onItemTapped(index, context),
+              items: [
+                BottomNavigationBarItem(
+                  icon: const Icon(Icons.chat_bubble_outline),
+                  label: localizations.chat,
+                ),
+                BottomNavigationBarItem(
+                  icon: const Icon(Icons.history),
+                  label: localizations.history,
+                ),
+                BottomNavigationBarItem(
+                  icon: const Icon(Icons.settings),
+                  label: localizations.settings,
+                ),
+              ],
             ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.history),
-              label: localizations.history,
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.settings),
-              label: localizations.settings,
-            ),
-          ],
+          ),
         ),
       ),
       desktopBody: Scaffold(

@@ -55,6 +55,7 @@ class AppConfigProvider extends ChangeNotifier {
 
   String _defaultScreen = '/';
   bool _restoreLastSession = true;
+  double _cornerRadius = 16.0;
 
   AppConfigProvider() {
     _loadConfig();
@@ -105,6 +106,7 @@ class AppConfigProvider extends ChangeNotifier {
 
   String get defaultScreen => _defaultScreen;
   bool get restoreLastSession => _restoreLastSession;
+  double get cornerRadius => _cornerRadius;
 
   void _loadConfig() {
     final box = AppDatabase.appConfigBox;
@@ -169,6 +171,7 @@ class AppConfigProvider extends ChangeNotifier {
 
     _defaultScreen = box.get('defaultScreen', defaultValue: '/');
     _restoreLastSession = box.get('restoreLastSession', defaultValue: true);
+    _cornerRadius = box.get('cornerRadius', defaultValue: 16.0);
 
     notifyListeners();
   }
@@ -399,6 +402,13 @@ class AppConfigProvider extends ChangeNotifier {
     if (_restoreLastSession != restore) {
       _restoreLastSession = restore;
       _updateValue('restoreLastSession', restore);
+    }
+  }
+
+  void setCornerRadius(double radius) {
+    if (_cornerRadius != radius) {
+      _cornerRadius = radius;
+      _updateValue('cornerRadius', radius);
     }
   }
 

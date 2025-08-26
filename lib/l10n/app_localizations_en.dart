@@ -978,4 +978,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dataToImport => 'Data to import';
+
+  @override
+  String get cornerRadius => 'Corner Radius';
+
+  @override
+  String get cornerRadiusHint =>
+      'Adjust the roundness of UI elements like cards and buttons.';
 }

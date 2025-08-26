@@ -383,5 +383,7 @@
     }
   },
   "namelessAiSource": "NamelessAI",
-  "chatBoxSource": "ChatBox"
+  "chatBoxSource": "ChatBox",
+  "cornerRadius": "圆角大小",
+  "cornerRadiusHint": "调整卡片、按钮等界面元素的圆角大小。"
 }

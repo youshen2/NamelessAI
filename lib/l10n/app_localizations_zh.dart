@@ -953,4 +953,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get dataToImport => '待导入数据';
+
+  @override
+  String get cornerRadius => '圆角大小';
+
+  @override
+  String get cornerRadiusHint => '调整卡片、按钮等界面元素的圆角大小。';
 }

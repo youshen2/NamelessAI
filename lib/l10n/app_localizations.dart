@@ -1939,6 +1939,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Data to import'**
   String get dataToImport;
+
+  /// No description provided for @cornerRadius.
+  ///
+  /// In en, this message translates to:
+  /// **'Corner Radius'**
+  String get cornerRadius;
+
+  /// No description provided for @cornerRadiusHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust the roundness of UI elements like cards and buttons.'**
+  String get cornerRadiusHint;
 }
 
 class _AppLocalizationsDelegate

@@ -383,5 +383,7 @@
   },
   "namelessAiSource": "NamelessAI",
   "chatBoxSource": "ChatBox",
-  "dataToImport": "Data to import"
+  "dataToImport": "Data to import",
+  "cornerRadius": "Corner Radius",
+  "cornerRadiusHint": "Adjust the roundness of UI elements like cards and buttons."
 }

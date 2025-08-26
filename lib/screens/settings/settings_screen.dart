@@ -213,7 +213,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       title: Text(localizations.appearanceSettings),
                       onTap: () {
                         HapticService.onButtonPress(context);
-                        context.go('/settings/display');
+                        context.go('/settings/appearance');
                       },
                     ),
                     ListTile(
