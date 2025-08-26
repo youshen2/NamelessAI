@@ -2054,11 +2054,11 @@ abstract class AppLocalizations {
   /// **'Moonshot AI (Kimi)'**
   String get presetMoonshot;
 
-  /// No description provided for @presetGeneric.
+  /// No description provided for @presetDeepseek.
   ///
   /// In en, this message translates to:
-  /// **'Generic Local'**
-  String get presetGeneric;
+  /// **'DeepSeek AI'**
+  String get presetDeepseek;
 }
 
 class _AppLocalizationsDelegate

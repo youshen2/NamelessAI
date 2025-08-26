@@ -1041,5 +1041,5 @@ class AppLocalizationsEn extends AppLocalizations {
   String get presetMoonshot => 'Moonshot AI (Kimi)';
 
   @override
-  String get presetGeneric => 'Generic Local';
+  String get presetDeepseek => 'DeepSeek AI';
 }

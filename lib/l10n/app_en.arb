@@ -403,5 +403,5 @@
   "presetGroq": "Groq",
   "presetYi": "01.AI",
   "presetMoonshot": "Moonshot AI (Kimi)",
-  "presetGeneric": "Generic Local"
+  "presetDeepseek": "DeepSeek AI"
 }

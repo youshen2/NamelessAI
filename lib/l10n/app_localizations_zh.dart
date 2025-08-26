@@ -1012,5 +1012,5 @@ class AppLocalizationsZh extends AppLocalizations {
   String get presetMoonshot => '月之暗面 (Kimi)';
 
   @override
-  String get presetGeneric => '通用本地';
+  String get presetDeepseek => '深度求索 (DeepSeek)';
 }

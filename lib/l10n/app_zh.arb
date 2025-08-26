@@ -403,5 +403,5 @@
   "presetGroq": "Groq",
   "presetYi": "零一万物",
   "presetMoonshot": "月之暗面 (Kimi)",
-  "presetGeneric": "通用本地"
+  "presetDeepseek": "深度求索 (DeepSeek)"
 }
