@@ -239,6 +239,22 @@ class _AboutScreenState extends State<AboutScreen>
               ),
             ),
           ),
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Card(
+              child: ListTile(
+                leading: const Icon(Icons.policy_rounded),
+                title: Text(localizations.apacheLicense),
+                onTap: () {
+                  HapticService.onButtonPress(context);
+                  launchUrl(
+                      Uri.parse('https://${localizations.apacheLicenseUrl}'));
+                },
+                trailing: const Icon(Icons.open_in_new_rounded),
+              ),
+            ),
+          ),
           const SizedBox(height: 32),
           Center(
             child: Text(

@@ -510,7 +510,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get timeLabel => '时间';
 
   @override
-  String get reverseBubbleAlignment => '反转气泡对齐';
+  String get reverseBubbleAlignment => '反转气泡';
 
   @override
   String get reverseBubbleAlignmentHint => '用户消息在左，AI消息在右';
@@ -649,10 +649,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get midjourney => 'Midjourney';
 
   @override
-  String get imaginePath => 'Imagine 路径 (可选)';
+  String get imaginePath => 'Imagine 路径';
 
   @override
-  String get fetchPath => 'Fetch 路径 (可选)';
+  String get fetchPath => 'Fetch 路径';
 
   @override
   String get taskSubmitted => '任务已提交';
@@ -770,10 +770,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get chatPathHint => '例如 /v1/chat/completions';
 
   @override
-  String get createVideoPath => '创建视频路径 (可选)';
+  String get createVideoPath => '创建视频路径';
 
   @override
-  String get queryVideoPath => '查询视频路径 (可选)';
+  String get queryVideoPath => '查询视频路径';
 
   @override
   String get createVideoPathHint => '例如 /v1/video/create';
@@ -1030,7 +1030,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get crashTest => '崩溃测试';
 
   @override
-  String get crashTestDescription => '点击以触发一次测试崩溃，并显示错误报告页面。';
+  String get crashTestDescription => '点击以触发一次测试崩溃。';
 
   @override
   String get anErrorOccurred => '发生了一个意外错误。';
@@ -1040,7 +1040,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get submitIssueDescription =>
-      '为了帮助我们修复此问题，请在 GitHub 上提交一个 Issue。\n可以将复制的信息粘贴到问题描述中。';
+      '为了帮助我们修复此问题，请在 GitHub 上提交一个 Issue。\n您可以将复制的信息粘贴到问题描述中。';
 
   @override
   String get developer => '开发者';
@@ -1049,8 +1049,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get developerName => '爅峫';
 
   @override
-  String get developerUrl => 'space.bilibili.com/3946756160';
+  String get developerUrl => 'space.bilibili.com/394675616';
 
   @override
   String get easterEgg => 'Ciallo～(∠・ω< )⌒★';
+
+  @override
+  String get apacheLicense => '本项目基于 Apache License 2.0 许可开源';
+
+  @override
+  String get apacheLicenseUrl => 'www.apache.org/licenses/LICENSE-2.0';
 }

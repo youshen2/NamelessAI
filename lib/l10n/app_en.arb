@@ -263,8 +263,8 @@
   "instant": "Instant",
   "asynchronous": "Asynchronous",
   "midjourney": "Midjourney",
-  "imaginePath": "Imagine Path (Optional)",
-  "fetchPath": "Fetch Path (Optional)",
+  "imaginePath": "Imagine Path",
+  "fetchPath": "Fetch Path",
   "taskSubmitted": "Task submitted",
   "taskInProgress": "In Progress",
   "taskFailed": "Failed",
@@ -316,8 +316,8 @@
   "noApiPathTemplatesFound": "No API path templates found.",
   "searchApiPathTemplates": "Search templates...",
   "chatPathHint": "e.g., /v1/chat/completions",
-  "createVideoPath": "Create Video Path (Optional)",
-  "queryVideoPath": "Query Video Path (Optional)",
+  "createVideoPath": "Create Video Path",
+  "queryVideoPath": "Query Video Path",
   "createVideoPathHint": "e.g., /v1/video/create",
   "queryVideoPathHint": "e.g., /v1/video/query",
   "apiPathTemplateQingyunTopVeo": "Qingyun Top - Veo Universal",
@@ -416,5 +416,7 @@
   "developer": "Developer",
   "developerName": "Moye",
   "developerUrl": "space.bilibili.com/394675616",
-  "easterEgg": "Ciallo～(∠・ω< )⌒★"
+  "easterEgg": "Ciallo～(∠・ω< )⌒★",
+  "apacheLicense": "Licensed under the Apache License 2.0",
+  "apacheLicenseUrl": "www.apache.org/licenses/LICENSE-2.0"
 }

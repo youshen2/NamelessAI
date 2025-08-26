@@ -663,10 +663,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get midjourney => 'Midjourney';
 
   @override
-  String get imaginePath => 'Imagine Path (Optional)';
+  String get imaginePath => 'Imagine Path';
 
   @override
-  String get fetchPath => 'Fetch Path (Optional)';
+  String get fetchPath => 'Fetch Path';
 
   @override
   String get taskSubmitted => 'Task submitted';
@@ -790,10 +790,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chatPathHint => 'e.g., /v1/chat/completions';
 
   @override
-  String get createVideoPath => 'Create Video Path (Optional)';
+  String get createVideoPath => 'Create Video Path';
 
   @override
-  String get queryVideoPath => 'Query Video Path (Optional)';
+  String get queryVideoPath => 'Query Video Path';
 
   @override
   String get createVideoPathHint => 'e.g., /v1/video/create';
@@ -1079,8 +1079,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get developerName => 'Moye';
 
   @override
-  String get developerUrl => 'space.bilibili.com/3946756160';
+  String get developerUrl => 'space.bilibili.com/394675616';
 
   @override
   String get easterEgg => 'Ciallo～(∠・ω< )⌒★';
+
+  @override
+  String get apacheLicense => 'Licensed under the Apache License 2.0';
+
+  @override
+  String get apacheLicenseUrl => 'www.apache.org/licenses/LICENSE-2.0';
 }

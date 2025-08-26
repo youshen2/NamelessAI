@@ -1343,13 +1343,13 @@ abstract class AppLocalizations {
   /// No description provided for @imaginePath.
   ///
   /// In en, this message translates to:
-  /// **'Imagine Path (Optional)'**
+  /// **'Imagine Path'**
   String get imaginePath;
 
   /// No description provided for @fetchPath.
   ///
   /// In en, this message translates to:
-  /// **'Fetch Path (Optional)'**
+  /// **'Fetch Path'**
   String get fetchPath;
 
   /// No description provided for @taskSubmitted.
@@ -1577,13 +1577,13 @@ abstract class AppLocalizations {
   /// No description provided for @createVideoPath.
   ///
   /// In en, this message translates to:
-  /// **'Create Video Path (Optional)'**
+  /// **'Create Video Path'**
   String get createVideoPath;
 
   /// No description provided for @queryVideoPath.
   ///
   /// In en, this message translates to:
-  /// **'Query Video Path (Optional)'**
+  /// **'Query Video Path'**
   String get queryVideoPath;
 
   /// No description provided for @createVideoPathHint.
@@ -2129,7 +2129,7 @@ abstract class AppLocalizations {
   /// No description provided for @developerUrl.
   ///
   /// In en, this message translates to:
-  /// **'space.bilibili.com/3946756160'**
+  /// **'space.bilibili.com/394675616'**
   String get developerUrl;
 
   /// No description provided for @easterEgg.
@@ -2137,6 +2137,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Ciallo～(∠・ω< )⌒★'**
   String get easterEgg;
+
+  /// No description provided for @apacheLicense.
+  ///
+  /// In en, this message translates to:
+  /// **'Licensed under the Apache License 2.0'**
+  String get apacheLicense;
+
+  /// No description provided for @apacheLicenseUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'www.apache.org/licenses/LICENSE-2.0'**
+  String get apacheLicenseUrl;
 }
 
 class _AppLocalizationsDelegate
