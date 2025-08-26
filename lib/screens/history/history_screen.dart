@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nameless_ai/screens/chat/widgets/message_bubble.dart';
 import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/app_database.dart';
 import 'package:nameless_ai/data/models/chat_message.dart';
@@ -8,7 +9,6 @@ import 'package:nameless_ai/data/models/chat_session.dart';
 import 'package:nameless_ai/data/providers/app_config_provider.dart';
 import 'package:nameless_ai/data/providers/chat_session_manager.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
-import 'package:nameless_ai/screens/chat/widgets/message_bubble.dart';
 import 'package:nameless_ai/services/haptic_service.dart';
 import 'package:nameless_ai/utils/helpers.dart';
 
@@ -188,8 +188,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     children: [
                       _buildSearchBar(localizations),
                       Expanded(
-                        child:
-                            _buildSessionList(filteredSessions, localizations),
+                        child: _buildSessionList(
+                            filteredSessions, localizations, isDesktop),
                       ),
                     ],
                   ),
@@ -211,7 +211,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
               children: [
                 _buildSearchBar(localizations),
                 Expanded(
-                    child: _buildSessionList(filteredSessions, localizations)),
+                    child: _buildSessionList(
+                        filteredSessions, localizations, isDesktop)),
               ],
             );
           }
@@ -242,13 +243,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
   }
 
-  Widget _buildSessionList(
-      List<ChatSession> sessions, AppLocalizations localizations) {
+  Widget _buildSessionList(List<ChatSession> sessions,
+      AppLocalizations localizations, bool isDesktop) {
     if (sessions.isEmpty) {
       return Center(child: Text(localizations.noResultsFound));
     }
     return ListView.builder(
-      padding: const EdgeInsets.only(bottom: 96),
+      padding: EdgeInsets.only(bottom: isDesktop ? 16 : 96),
       itemCount: sessions.length,
       itemBuilder: (context, index) {
         final session = sessions[index];
@@ -342,7 +343,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               ),
               const SizedBox(height: 4),
               Text(
-                '${localizations.systemPrompt}: ${_selectedSessionForPreview!.systemPrompt ?? localizations.noSystemPromptTemplates}',
+                '${localizations.systemPrompt}: ${_selectedSessionForPreview!.systemPrompt ?? localizations.noSystemPrompt}',
                 style: Theme.of(context).textTheme.bodySmall,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

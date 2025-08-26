@@ -337,9 +337,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get completion => '输出';
 
   @override
-  String get displaySettings => '显示设置';
-
-  @override
   String get outputCharacters => '输出字数';
 
   @override
@@ -719,30 +716,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get jsonDebugViewer => 'JSON 查看器';
 
   @override
-  String get next => '下一步';
-
-  @override
-  String get welcomeMessage => '一个简洁且强大的跨平台 AI 客户端。';
-
-  @override
-  String get quickSettings => '快速设置';
-
-  @override
-  String get readyToGo => '准备就绪';
-
-  @override
-  String get readyToGoMessage => '一切已准备就绪。\n请记得在“设置”页面添加您的API提供商，以便正常使用。';
-
-  @override
-  String get back => '上一步';
-
-  @override
-  String get skip => '跳过';
-
-  @override
-  String get getStarted => '开始使用';
-
-  @override
   String get searchHint => '搜索...';
 
   @override
@@ -982,23 +955,62 @@ class AppLocalizationsZh extends AppLocalizations {
   String get pageTransitionScale => '缩放';
 
   @override
-  String get onboardingWelcomeTitle => '欢迎使用 Nameless AI';
+  String get onboardingTitle => '设置向导';
 
   @override
-  String get onboardingWelcomeBody => '一个简洁且强大的 AI 聊天客户端。';
+  String get onboardingPage1Title => '欢迎使用 Nameless AI';
 
   @override
-  String get onboardingAppearanceTitle => '自定义外观';
+  String get onboardingPage1Body => '一个简洁且强大的跨平台 AI 客户端。让我们开始设置吧。';
 
   @override
-  String get onboardingAppearanceBody => '选择您喜欢的主题。\n您稍后可以在设置中更改此项和其他选项。';
+  String get onboardingPage2Title => '外观';
 
   @override
-  String get onboardingReadyTitle => '一切就绪！';
+  String get onboardingPage2Body => '自定义应用的外观和感觉。';
 
   @override
-  String get onboardingReadyBody => '开始使用吧。';
+  String get onboardingPage3Title => '偏好设置';
 
   @override
-  String get done => '完成';
+  String get onboardingPage3Body => '设置您与应用交互的首选方式。';
+
+  @override
+  String get onboardingPage4Title => '一切就绪！';
+
+  @override
+  String get onboardingPage4Body => '您可以开始聊天了。请记得在“设置”中添加 API 提供商以开始使用。';
+
+  @override
+  String get onboardingNext => '下一步';
+
+  @override
+  String get onboardingBack => '上一步';
+
+  @override
+  String get onboardingFinish => '开始使用';
+
+  @override
+  String get onboardingSendKey => '发送快捷键';
+
+  @override
+  String get addProviderManually => '手动添加';
+
+  @override
+  String get addFromPreset => '从预设添加';
+
+  @override
+  String get presetOpenAI => 'OpenAI';
+
+  @override
+  String get presetGroq => 'Groq';
+
+  @override
+  String get presetYi => '零一万物';
+
+  @override
+  String get presetMoonshot => '月之暗面 (Kimi)';
+
+  @override
+  String get presetGeneric => '通用本地';
 }

@@ -2,12 +2,12 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nameless_ai/services/update_service.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/providers/app_config_provider.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
 import 'package:nameless_ai/services/haptic_service.dart';
-import 'package:nameless_ai/services/update_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AboutScreen extends StatefulWidget {
@@ -89,6 +89,7 @@ class _AboutScreenState extends State<AboutScreen> {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final isDesktop = MediaQuery.of(context).size.width >= 600;
 
     return Scaffold(
       appBar: AppBar(
@@ -96,7 +97,7 @@ class _AboutScreenState extends State<AboutScreen> {
         title: Text(localizations.about),
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(0, 24, 0, 96),
+        padding: EdgeInsets.fromLTRB(0, 24, 0, isDesktop ? 24 : 96),
         children: <Widget>[
           Column(
             children: [

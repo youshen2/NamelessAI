@@ -441,6 +441,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final isAndroid = Theme.of(context).platform == TargetPlatform.android;
+    final isDesktop = MediaQuery.of(context).size.width >= 600;
 
     return Consumer<ChatSessionManager>(
       builder: (context, manager, child) {
@@ -502,7 +503,8 @@ class _ChatScreenState extends State<ChatScreen> {
                   controller: _scrollController,
                   addAutomaticKeepAlives: true,
                   itemCount: messages.length,
-                  padding: const EdgeInsets.only(top: 8.0, bottom: 140.0),
+                  padding: EdgeInsets.only(
+                      top: 8.0, bottom: isDesktop ? 90.0 : 140.0),
                   itemBuilder: (context, index) {
                     final message = messages[index];
                     final session = manager.currentSession;

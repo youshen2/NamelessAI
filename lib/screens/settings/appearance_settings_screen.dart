@@ -78,6 +78,7 @@ void main() {
     final localizations = AppLocalizations.of(context)!;
     final appConfig = Provider.of<AppConfigProvider>(context);
     final uniqueSortedThemeKeys = themeMap.keys.toSet().toList()..sort();
+    final isDesktop = MediaQuery.of(context).size.width >= 600;
 
     return Scaffold(
       appBar: AppBar(
@@ -85,7 +86,7 @@ void main() {
         title: Text(localizations.appearanceSettings),
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+        padding: EdgeInsets.fromLTRB(16, 16, 16, isDesktop ? 16 : 96),
         children: [
           Card(
             margin: const EdgeInsets.only(bottom: 16),

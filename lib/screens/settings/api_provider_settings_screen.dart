@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:nameless_ai/data/api_provider_presets.dart';
 import 'package:nameless_ai/data/models/api_provider.dart';
 import 'package:nameless_ai/data/providers/api_provider_manager.dart';
 import 'package:nameless_ai/data/providers/app_config_provider.dart';
@@ -36,18 +37,40 @@ class _APIProviderSettingsScreenState extends State<APIProviderSettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+    final isDesktop = MediaQuery.of(context).size.width >= 600;
+    final presets = getProviderPresets(localizations);
+
     return Scaffold(
       appBar: AppBar(
         flexibleSpace: _buildBlurBackground(context),
         title: Text(localizations.apiProviderSettings),
         actions: [
-          IconButton(
+          PopupMenuButton<dynamic>(
             icon: const Icon(Icons.add),
             tooltip: localizations.addProvider,
-            onPressed: () {
+            onSelected: (value) {
               HapticService.onButtonPress(context);
-              _showProviderForm(context);
+              if (value == 'manual') {
+                _showProviderForm(context, isEditing: false);
+              } else if (value is APIProvider) {
+                _showProviderForm(context, provider: value, isEditing: false);
+              }
             },
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: 'manual',
+                child: Text(localizations.addProviderManually),
+              ),
+              const PopupMenuDivider(),
+              PopupMenuItem(
+                enabled: false,
+                child: Text(localizations.addFromPreset),
+              ),
+              ...presets.map((preset) => PopupMenuItem(
+                    value: preset,
+                    child: Text(preset.name),
+                  )),
+            ],
           ),
         ],
       ),
@@ -59,7 +82,7 @@ class _APIProviderSettingsScreenState extends State<APIProviderSettingsScreen> {
             );
           }
           return ListView.builder(
-            padding: const EdgeInsets.fromLTRB(8, 8, 8, 96),
+            padding: EdgeInsets.fromLTRB(8, 8, 8, isDesktop ? 16 : 96),
             itemCount: manager.providers.length,
             itemBuilder: (context, index) {
               final provider = manager.providers[index];
@@ -100,7 +123,8 @@ class _APIProviderSettingsScreenState extends State<APIProviderSettingsScreen> {
                             tooltip: localizations.editProvider,
                             onPressed: () {
                               HapticService.onButtonPress(context);
-                              _showProviderForm(context, provider: provider);
+                              _showProviderForm(context,
+                                  provider: provider, isEditing: true);
                             },
                           ),
                           IconButton(
@@ -133,7 +157,8 @@ class _APIProviderSettingsScreenState extends State<APIProviderSettingsScreen> {
     );
   }
 
-  void _showProviderForm(BuildContext context, {APIProvider? provider}) {
+  void _showProviderForm(BuildContext context,
+      {APIProvider? provider, bool isEditing = false}) {
     showBlurredModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -146,6 +171,7 @@ class _APIProviderSettingsScreenState extends State<APIProviderSettingsScreen> {
           builder: (_, scrollController) {
             return APIProviderForm(
               provider: provider,
+              isEditing: isEditing,
               scrollController: scrollController,
             );
           },

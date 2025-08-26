@@ -34,6 +34,7 @@ class _DeveloperOptionsScreenState extends State<DeveloperOptionsScreen> {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final appConfig = Provider.of<AppConfigProvider>(context);
+    final isDesktop = MediaQuery.of(context).size.width >= 600;
 
     return Scaffold(
       appBar: AppBar(
@@ -41,7 +42,7 @@ class _DeveloperOptionsScreenState extends State<DeveloperOptionsScreen> {
         title: Text(localizations.developerOptions),
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+        padding: EdgeInsets.fromLTRB(16, 16, 16, isDesktop ? 16 : 96),
         children: [
           Card(
             child: Column(

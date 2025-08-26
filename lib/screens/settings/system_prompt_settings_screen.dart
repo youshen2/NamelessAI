@@ -37,6 +37,7 @@ class _SystemPromptSettingsScreenState
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+    final isDesktop = MediaQuery.of(context).size.width >= 600;
     return Scaffold(
       appBar: AppBar(
         flexibleSpace: _buildBlurBackground(context),
@@ -60,7 +61,7 @@ class _SystemPromptSettingsScreenState
             );
           }
           return ListView.builder(
-            padding: const EdgeInsets.fromLTRB(8, 8, 8, 96),
+            padding: EdgeInsets.fromLTRB(8, 8, 8, isDesktop ? 16 : 96),
             itemCount: manager.templates.length,
             itemBuilder: (context, index) {
               final template = manager.templates[index];

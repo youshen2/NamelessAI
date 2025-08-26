@@ -81,69 +81,118 @@ class _NamelessImportConfirmationDialogState
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final isDesktop = MediaQuery.of(context).size.width >= 600;
 
-    return AlertDialog(
-      title: Text(localizations.importPreview),
-      content: SizedBox(
-        width: double.maxFinite,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildImportModeSelector(localizations, theme),
-              const SizedBox(height: 24),
-              Text(localizations.selectItemsToImport,
-                  style: theme.textTheme.titleMedium),
-              const SizedBox(height: 8),
-              Card(
-                margin: EdgeInsets.zero,
-                child: Column(
-                  children: _categoryCounts.keys.map((key) {
-                    return CheckboxListTile(
-                      secondary: Icon(_getCategoryIcon(key)),
-                      title: Text(_getCategoryTitle(localizations, key)),
-                      value: _selectedCategories.contains(key),
-                      onChanged: (bool? value) {
-                        HapticService.onSwitchToggle(context);
-                        setState(() {
-                          if (value == true) {
-                            _selectedCategories.add(key);
-                          } else {
-                            _selectedCategories.remove(key);
-                          }
-                        });
-                      },
-                    );
-                  }).toList(),
-                ),
-              ),
-            ],
+    final content = Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (!isDesktop)
+          Container(
+            height: 4,
+            width: 40,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.outlineVariant,
+              borderRadius: BorderRadius.circular(2),
+            ),
+            margin: const EdgeInsets.only(bottom: 16),
           ),
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            HapticService.onButtonPress(context);
-            Navigator.of(context).pop();
-          },
-          child: Text(localizations.cancel),
-        ),
-        FilledButton(
-          onPressed: _selectedCategories.isEmpty
-              ? null
-              : () {
-                  HapticService.onButtonPress(context);
-                  Navigator.of(context).pop({
-                    'mode': _importMode,
-                    'categories': _selectedCategories,
+        if (!isDesktop)
+          Text(
+            localizations.importPreview,
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
+        if (!isDesktop) const SizedBox(height: 16),
+        _buildImportModeSelector(localizations, theme),
+        const SizedBox(height: 24),
+        Text(localizations.selectItemsToImport,
+            style: theme.textTheme.titleMedium),
+        const SizedBox(height: 8),
+        Card(
+          margin: EdgeInsets.zero,
+          child: Column(
+            children: _categoryCounts.keys.map((key) {
+              return CheckboxListTile(
+                secondary: Icon(_getCategoryIcon(key)),
+                title: Text(_getCategoryTitle(localizations, key)),
+                value: _selectedCategories.contains(key),
+                onChanged: (bool? value) {
+                  HapticService.onSwitchToggle(context);
+                  setState(() {
+                    if (value == true) {
+                      _selectedCategories.add(key);
+                    } else {
+                      _selectedCategories.remove(key);
+                    }
                   });
                 },
-          child: Text(localizations.import),
+              );
+            }).toList(),
+          ),
         ),
       ],
     );
+
+    if (isDesktop) {
+      return AlertDialog(
+        title: Text(localizations.importPreview),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: SingleChildScrollView(child: content),
+        ),
+        actions: _buildActions(localizations),
+      );
+    } else {
+      return Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+          left: 16,
+          right: 16,
+          top: 8,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(child: SingleChildScrollView(child: content)),
+            Padding(
+              padding: EdgeInsets.only(
+                top: 16.0,
+                bottom: 16.0 + MediaQuery.of(context).padding.bottom,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: _buildActions(localizations),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+  List<Widget> _buildActions(AppLocalizations localizations) {
+    return [
+      TextButton(
+        onPressed: () {
+          HapticService.onButtonPress(context);
+          Navigator.of(context).pop();
+        },
+        child: Text(localizations.cancel),
+      ),
+      const SizedBox(width: 8),
+      FilledButton(
+        onPressed: _selectedCategories.isEmpty
+            ? null
+            : () {
+                HapticService.onButtonPress(context);
+                Navigator.of(context).pop({
+                  'mode': _importMode,
+                  'categories': _selectedCategories,
+                });
+              },
+        child: Text(localizations.import),
+      ),
+    ];
   }
 
   Widget _buildImportModeSelector(

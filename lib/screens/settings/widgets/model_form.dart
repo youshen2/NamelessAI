@@ -345,7 +345,7 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
               style: Theme.of(context).textTheme.titleSmall),
           onExpansionChanged: (isExpanded) =>
               HapticService.onSwitchToggle(context),
-          initiallyExpanded: false,
+          initiallyExpanded: true,
           childrenPadding: const EdgeInsets.only(top: 8, bottom: 8),
           children: [
             Row(
@@ -430,7 +430,7 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
               style: Theme.of(context).textTheme.titleSmall),
           onExpansionChanged: (isExpanded) =>
               HapticService.onSwitchToggle(context),
-          initiallyExpanded: false,
+          initiallyExpanded: true,
           childrenPadding: const EdgeInsets.only(top: 8, bottom: 8),
           children: [
             Row(

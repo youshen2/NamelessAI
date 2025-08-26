@@ -746,12 +746,6 @@ abstract class AppLocalizations {
   /// **'Completion'**
   String get completion;
 
-  /// No description provided for @displaySettings.
-  ///
-  /// In en, this message translates to:
-  /// **'Display Settings'**
-  String get displaySettings;
-
   /// No description provided for @outputCharacters.
   ///
   /// In en, this message translates to:
@@ -1472,54 +1466,6 @@ abstract class AppLocalizations {
   /// **'JSON Viewer'**
   String get jsonDebugViewer;
 
-  /// No description provided for @next.
-  ///
-  /// In en, this message translates to:
-  /// **'Next'**
-  String get next;
-
-  /// No description provided for @welcomeMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'A concise and powerful cross-platform AI client.'**
-  String get welcomeMessage;
-
-  /// No description provided for @quickSettings.
-  ///
-  /// In en, this message translates to:
-  /// **'Quick Settings'**
-  String get quickSettings;
-
-  /// No description provided for @readyToGo.
-  ///
-  /// In en, this message translates to:
-  /// **'Ready to Go'**
-  String get readyToGo;
-
-  /// No description provided for @readyToGoMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Everything is set up.\nRemember to add your API provider in the Settings page to get started.'**
-  String get readyToGoMessage;
-
-  /// No description provided for @back.
-  ///
-  /// In en, this message translates to:
-  /// **'Back'**
-  String get back;
-
-  /// No description provided for @skip.
-  ///
-  /// In en, this message translates to:
-  /// **'Skip'**
-  String get skip;
-
-  /// No description provided for @getStarted.
-  ///
-  /// In en, this message translates to:
-  /// **'Get Started'**
-  String get getStarted;
-
   /// No description provided for @searchHint.
   ///
   /// In en, this message translates to:
@@ -1994,47 +1940,125 @@ abstract class AppLocalizations {
   /// **'Scale'**
   String get pageTransitionScale;
 
-  /// No description provided for @onboardingWelcomeTitle.
+  /// No description provided for @onboardingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Setup'**
+  String get onboardingTitle;
+
+  /// No description provided for @onboardingPage1Title.
   ///
   /// In en, this message translates to:
   /// **'Welcome to Nameless AI'**
-  String get onboardingWelcomeTitle;
+  String get onboardingPage1Title;
 
-  /// No description provided for @onboardingWelcomeBody.
+  /// No description provided for @onboardingPage1Body.
   ///
   /// In en, this message translates to:
-  /// **'Your private, cross-platform AI chat client. Let\'s get you set up.'**
-  String get onboardingWelcomeBody;
+  /// **'A concise and powerful cross-platform AI client. Let\'s get you set up.'**
+  String get onboardingPage1Body;
 
-  /// No description provided for @onboardingAppearanceTitle.
+  /// No description provided for @onboardingPage2Title.
   ///
   /// In en, this message translates to:
-  /// **'Customize Your Look'**
-  String get onboardingAppearanceTitle;
+  /// **'Appearance'**
+  String get onboardingPage2Title;
 
-  /// No description provided for @onboardingAppearanceBody.
+  /// No description provided for @onboardingPage2Body.
   ///
   /// In en, this message translates to:
-  /// **'Choose your preferred theme. You can change this and other settings later.'**
-  String get onboardingAppearanceBody;
+  /// **'Customize the look and feel of the app to your liking.'**
+  String get onboardingPage2Body;
 
-  /// No description provided for @onboardingReadyTitle.
+  /// No description provided for @onboardingPage3Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences'**
+  String get onboardingPage3Title;
+
+  /// No description provided for @onboardingPage3Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up your preferred way of interacting with the app.'**
+  String get onboardingPage3Body;
+
+  /// No description provided for @onboardingPage4Title.
   ///
   /// In en, this message translates to:
   /// **'You\'re All Set!'**
-  String get onboardingReadyTitle;
+  String get onboardingPage4Title;
 
-  /// No description provided for @onboardingReadyBody.
+  /// No description provided for @onboardingPage4Body.
   ///
   /// In en, this message translates to:
-  /// **'You\'re ready to start chatting. Enjoy your personalized AI experience!'**
-  String get onboardingReadyBody;
+  /// **'You\'re ready to start chatting. Remember to add an API Provider in Settings to begin.'**
+  String get onboardingPage4Body;
 
-  /// No description provided for @done.
+  /// No description provided for @onboardingNext.
   ///
   /// In en, this message translates to:
-  /// **'Done'**
-  String get done;
+  /// **'Next'**
+  String get onboardingNext;
+
+  /// No description provided for @onboardingBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get onboardingBack;
+
+  /// No description provided for @onboardingFinish.
+  ///
+  /// In en, this message translates to:
+  /// **'Get Started'**
+  String get onboardingFinish;
+
+  /// No description provided for @onboardingSendKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Shortcut'**
+  String get onboardingSendKey;
+
+  /// No description provided for @addProviderManually.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Manually'**
+  String get addProviderManually;
+
+  /// No description provided for @addFromPreset.
+  ///
+  /// In en, this message translates to:
+  /// **'Add from Preset'**
+  String get addFromPreset;
+
+  /// No description provided for @presetOpenAI.
+  ///
+  /// In en, this message translates to:
+  /// **'OpenAI'**
+  String get presetOpenAI;
+
+  /// No description provided for @presetGroq.
+  ///
+  /// In en, this message translates to:
+  /// **'Groq'**
+  String get presetGroq;
+
+  /// No description provided for @presetYi.
+  ///
+  /// In en, this message translates to:
+  /// **'01.AI'**
+  String get presetYi;
+
+  /// No description provided for @presetMoonshot.
+  ///
+  /// In en, this message translates to:
+  /// **'Moonshot AI (Kimi)'**
+  String get presetMoonshot;
+
+  /// No description provided for @presetGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Generic Local'**
+  String get presetGeneric;
 }
 
 class _AppLocalizationsDelegate

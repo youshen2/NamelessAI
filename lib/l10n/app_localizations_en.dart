@@ -342,9 +342,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get completion => 'Completion';
 
   @override
-  String get displaySettings => 'Display Settings';
-
-  @override
   String get outputCharacters => 'Output Characters';
 
   @override
@@ -735,32 +732,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get jsonDebugViewer => 'JSON Viewer';
 
   @override
-  String get next => 'Next';
-
-  @override
-  String get welcomeMessage =>
-      'A concise and powerful cross-platform AI client.';
-
-  @override
-  String get quickSettings => 'Quick Settings';
-
-  @override
-  String get readyToGo => 'Ready to Go';
-
-  @override
-  String get readyToGoMessage =>
-      'Everything is set up.\nRemember to add your API provider in the Settings page to get started.';
-
-  @override
-  String get back => 'Back';
-
-  @override
-  String get skip => 'Skip';
-
-  @override
-  String get getStarted => 'Get Started';
-
-  @override
   String get searchHint => 'Search...';
 
   @override
@@ -1009,26 +980,66 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pageTransitionScale => 'Scale';
 
   @override
-  String get onboardingWelcomeTitle => 'Welcome to Nameless AI';
+  String get onboardingTitle => 'Setup';
 
   @override
-  String get onboardingWelcomeBody =>
-      'Your private, cross-platform AI chat client. Let\'s get you set up.';
+  String get onboardingPage1Title => 'Welcome to Nameless AI';
 
   @override
-  String get onboardingAppearanceTitle => 'Customize Your Look';
+  String get onboardingPage1Body =>
+      'A concise and powerful cross-platform AI client. Let\'s get you set up.';
 
   @override
-  String get onboardingAppearanceBody =>
-      'Choose your preferred theme. You can change this and other settings later.';
+  String get onboardingPage2Title => 'Appearance';
 
   @override
-  String get onboardingReadyTitle => 'You\'re All Set!';
+  String get onboardingPage2Body =>
+      'Customize the look and feel of the app to your liking.';
 
   @override
-  String get onboardingReadyBody =>
-      'You\'re ready to start chatting. Enjoy your personalized AI experience!';
+  String get onboardingPage3Title => 'Preferences';
 
   @override
-  String get done => 'Done';
+  String get onboardingPage3Body =>
+      'Set up your preferred way of interacting with the app.';
+
+  @override
+  String get onboardingPage4Title => 'You\'re All Set!';
+
+  @override
+  String get onboardingPage4Body =>
+      'You\'re ready to start chatting. Remember to add an API Provider in Settings to begin.';
+
+  @override
+  String get onboardingNext => 'Next';
+
+  @override
+  String get onboardingBack => 'Back';
+
+  @override
+  String get onboardingFinish => 'Get Started';
+
+  @override
+  String get onboardingSendKey => 'Send Shortcut';
+
+  @override
+  String get addProviderManually => 'Add Manually';
+
+  @override
+  String get addFromPreset => 'Add from Preset';
+
+  @override
+  String get presetOpenAI => 'OpenAI';
+
+  @override
+  String get presetGroq => 'Groq';
+
+  @override
+  String get presetYi => '01.AI';
+
+  @override
+  String get presetMoonshot => 'Moonshot AI (Kimi)';
+
+  @override
+  String get presetGeneric => 'Generic Local';
 }

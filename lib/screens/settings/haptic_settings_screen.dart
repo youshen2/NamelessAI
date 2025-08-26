@@ -29,6 +29,7 @@ class HapticSettingsScreen extends StatelessWidget {
     final localizations = AppLocalizations.of(context)!;
     final appConfig = Provider.of<AppConfigProvider>(context);
     final isSupported = HapticService.isSupported();
+    final isDesktop = MediaQuery.of(context).size.width >= 600;
 
     return Scaffold(
       appBar: AppBar(
@@ -36,7 +37,7 @@ class HapticSettingsScreen extends StatelessWidget {
         title: Text(localizations.hapticSettings),
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+        padding: EdgeInsets.fromLTRB(16, 16, 16, isDesktop ? 16 : 96),
         children: [
           if (!isSupported)
             Card(

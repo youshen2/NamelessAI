@@ -11,9 +11,14 @@ import 'package:nameless_ai/utils/helpers.dart';
 
 class APIProviderForm extends StatefulWidget {
   final APIProvider? provider;
+  final bool isEditing;
   final ScrollController? scrollController;
 
-  const APIProviderForm({super.key, this.provider, this.scrollController});
+  const APIProviderForm(
+      {super.key,
+      this.provider,
+      this.isEditing = false,
+      this.scrollController});
 
   @override
   State<APIProviderForm> createState() => _APIProviderFormState();
@@ -78,19 +83,25 @@ class _APIProviderFormState extends State<APIProviderForm> {
     HapticService.onButtonPress(context);
     if (_formKey.currentState!.validate()) {
       final manager = Provider.of<APIProviderManager>(context, listen: false);
-      final newProvider = APIProvider(
-        id: widget.provider?.id,
-        name: _nameController.text,
-        baseUrl: _baseUrlController.text,
-        apiKey: _apiKeyController.text,
-        models: _models,
-      );
 
-      if (widget.provider == null) {
-        await manager.addProvider(newProvider);
+      if (widget.isEditing) {
+        final updatedProvider = widget.provider!.copyWith(
+          name: _nameController.text,
+          baseUrl: _baseUrlController.text,
+          apiKey: _apiKeyController.text,
+          models: _models,
+        );
+        await manager.updateProvider(updatedProvider);
       } else {
-        await manager.updateProvider(newProvider);
+        final newProvider = APIProvider(
+          name: _nameController.text,
+          baseUrl: _baseUrlController.text,
+          apiKey: _apiKeyController.text,
+          models: _models,
+        );
+        await manager.addProvider(newProvider);
       }
+
       if (mounted) {
         Navigator.pop(context);
       }
@@ -119,9 +130,9 @@ class _APIProviderFormState extends State<APIProviderForm> {
             margin: const EdgeInsets.only(bottom: 16),
           ),
           Text(
-            widget.provider == null
-                ? localizations.addProvider
-                : localizations.editProvider,
+            widget.isEditing
+                ? localizations.editProvider
+                : localizations.addProvider,
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 16),

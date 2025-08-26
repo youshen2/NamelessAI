@@ -66,6 +66,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _importFromNamelessAI() async {
     HapticService.onButtonPress(context);
     final localizations = AppLocalizations.of(context)!;
+    final isDesktop = MediaQuery.of(context).size.width >= 600;
 
     setState(() => _isWorking = true);
     try {
@@ -76,11 +77,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
       }
 
       if (mounted) {
-        final result = await showDialog<Map<String, dynamic>>(
-          context: context,
-          builder: (context) =>
-              NamelessImportConfirmationDialog(backupData: backupData),
-        );
+        final result = isDesktop
+            ? await showDialog<Map<String, dynamic>>(
+                context: context,
+                builder: (context) =>
+                    NamelessImportConfirmationDialog(backupData: backupData),
+              )
+            : await showBlurredModalBottomSheet<Map<String, dynamic>>(
+                context: context,
+                isScrollControlled: true,
+                builder: (context) =>
+                    NamelessImportConfirmationDialog(backupData: backupData),
+              );
 
         if (result != null) {
           final mode = result['mode'] as ImportMode;
@@ -123,6 +131,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _importFromChatBox() async {
     HapticService.onButtonPress(context);
     final localizations = AppLocalizations.of(context)!;
+    final isDesktop = MediaQuery.of(context).size.width >= 600;
 
     setState(() => _isWorking = true);
     try {
@@ -133,11 +142,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
       }
 
       if (mounted) {
-        final result = await showDialog<Map<String, dynamic>>(
-          context: context,
-          builder: (context) =>
-              ImportConfirmationDialog(backupData: backupData),
-        );
+        final result = isDesktop
+            ? await showDialog<Map<String, dynamic>>(
+                context: context,
+                builder: (context) =>
+                    ImportConfirmationDialog(backupData: backupData),
+              )
+            : await showBlurredModalBottomSheet<Map<String, dynamic>>(
+                context: context,
+                isScrollControlled: true,
+                builder: (context) =>
+                    ImportConfirmationDialog(backupData: backupData),
+              );
 
         if (result != null) {
           final mode = result['mode'] as ImportMode;
@@ -196,6 +212,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+    final isDesktop = MediaQuery.of(context).size.width >= 600;
 
     return Scaffold(
       appBar: AppBar(
@@ -205,7 +222,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       body: Stack(
         children: [
           ListView(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+            padding: EdgeInsets.fromLTRB(16, 16, 16, isDesktop ? 16 : 96),
             children: [
               Card(
                 margin: const EdgeInsets.only(bottom: 16),

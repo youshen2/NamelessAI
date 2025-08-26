@@ -30,6 +30,7 @@ class GeneralSettingsScreen extends StatelessWidget {
     final appConfig = Provider.of<AppConfigProvider>(context);
     final asyncTaskIntervalController = TextEditingController(
         text: appConfig.asyncTaskRefreshInterval.toString());
+    final isDesktop = MediaQuery.of(context).size.width >= 600;
 
     return Scaffold(
       appBar: AppBar(
@@ -37,7 +38,7 @@ class GeneralSettingsScreen extends StatelessWidget {
         title: Text(localizations.generalSettings),
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+        padding: EdgeInsets.fromLTRB(16, 16, 16, isDesktop ? 16 : 96),
         children: [
           Card(
             margin: const EdgeInsets.only(bottom: 16),

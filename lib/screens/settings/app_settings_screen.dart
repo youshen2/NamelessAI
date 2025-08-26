@@ -48,6 +48,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final appConfig = Provider.of<AppConfigProvider>(context);
+    final isDesktop = MediaQuery.of(context).size.width >= 600;
 
     return Scaffold(
       appBar: AppBar(
@@ -55,7 +56,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
         title: Text(localizations.appSettings),
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+        padding: EdgeInsets.fromLTRB(16, 16, 16, isDesktop ? 16 : 96),
         children: [
           Card(
             margin: const EdgeInsets.only(bottom: 16),
