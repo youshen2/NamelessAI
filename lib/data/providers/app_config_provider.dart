@@ -53,6 +53,9 @@ class AppConfigProvider extends ChangeNotifier {
 
   HapticIntensity _thinkingIntensity = HapticIntensity.none;
 
+  String _defaultScreen = '/';
+  bool _restoreLastSession = true;
+
   AppConfigProvider() {
     _loadConfig();
   }
@@ -99,6 +102,9 @@ class AppConfigProvider extends ChangeNotifier {
   HapticIntensity get streamOutputIntensity => _streamOutputIntensity;
 
   HapticIntensity get thinkingIntensity => _thinkingIntensity;
+
+  String get defaultScreen => _defaultScreen;
+  bool get restoreLastSession => _restoreLastSession;
 
   void _loadConfig() {
     final box = AppDatabase.appConfigBox;
@@ -160,6 +166,9 @@ class AppConfigProvider extends ChangeNotifier {
         defaultValue: HapticIntensity.none.index)];
     _thinkingIntensity = HapticIntensity.values[
         box.get('thinkingIntensity', defaultValue: HapticIntensity.none.index)];
+
+    _defaultScreen = box.get('defaultScreen', defaultValue: '/');
+    _restoreLastSession = box.get('restoreLastSession', defaultValue: true);
 
     notifyListeners();
   }
@@ -376,6 +385,20 @@ class AppConfigProvider extends ChangeNotifier {
     if (_thinkingIntensity != intensity) {
       _thinkingIntensity = intensity;
       _updateValue('thinkingIntensity', intensity.index);
+    }
+  }
+
+  void setDefaultScreen(String screen) {
+    if (_defaultScreen != screen) {
+      _defaultScreen = screen;
+      _updateValue('defaultScreen', screen);
+    }
+  }
+
+  void setRestoreLastSession(bool restore) {
+    if (_restoreLastSession != restore) {
+      _restoreLastSession = restore;
+      _updateValue('restoreLastSession', restore);
     }
   }
 

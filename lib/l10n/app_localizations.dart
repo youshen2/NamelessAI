@@ -1873,6 +1873,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Import'**
   String get import;
+
+  /// No description provided for @onboardingReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Onboarding has been reset.'**
+  String get onboardingReset;
+
+  /// No description provided for @defaultStartupPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Default Startup Page'**
+  String get defaultStartupPage;
+
+  /// No description provided for @restoreLastSession.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore last session on startup'**
+  String get restoreLastSession;
+
+  /// No description provided for @restoreLastSessionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'If disabled, a new chat will be started every time.'**
+  String get restoreLastSessionHint;
+
+  /// No description provided for @importOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Import Options'**
+  String get importOptions;
+
+  /// No description provided for @importing.
+  ///
+  /// In en, this message translates to:
+  /// **'Importing...'**
+  String get importing;
+
+  /// No description provided for @parsingFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Parsing file...'**
+  String get parsingFile;
+
+  /// No description provided for @importFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'Import from {source}'**
+  String importFrom(String source);
+
+  /// No description provided for @namelessAiSource.
+  ///
+  /// In en, this message translates to:
+  /// **'NamelessAI'**
+  String get namelessAiSource;
+
+  /// No description provided for @chatBoxSource.
+  ///
+  /// In en, this message translates to:
+  /// **'ChatBox'**
+  String get chatBoxSource;
+
+  /// No description provided for @dataToImport.
+  ///
+  /// In en, this message translates to:
+  /// **'Data to import'**
+  String get dataToImport;
 }
 
 class _AppLocalizationsDelegate

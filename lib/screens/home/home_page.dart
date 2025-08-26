@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:nameless_ai/data/providers/api_provider_manager.dart';
 import 'package:nameless_ai/data/providers/app_config_provider.dart';
+import 'package:nameless_ai/data/providers/chat_session_manager.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
 import 'package:nameless_ai/services/haptic_service.dart';
 import 'package:nameless_ai/services/update_service.dart';
@@ -30,7 +32,41 @@ class _HomePageState extends State<HomePage> {
     final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
     if (appConfig.isFirstLaunch) {
       context.go('/onboarding');
-    } else if (appConfig.checkForUpdatesOnStartup) {
+      return;
+    }
+
+    final currentLocation = GoRouterState.of(context).uri.toString();
+    if (currentLocation == '/') {
+      final defaultScreen = appConfig.defaultScreen;
+      if (defaultScreen != '/') {
+        context.go(defaultScreen);
+      }
+    }
+
+    final chatSessionManager =
+        Provider.of<ChatSessionManager>(context, listen: false);
+    final apiProviderManager =
+        Provider.of<APIProviderManager>(context, listen: false);
+
+    if (appConfig.restoreLastSession) {
+      if (chatSessionManager.currentSession == null) {
+        Future.delayed(const Duration(milliseconds: 50), () {
+          if (mounted) {
+            chatSessionManager.loadLastSession();
+          }
+        });
+      }
+    } else {
+      if (chatSessionManager.currentSession == null ||
+          !chatSessionManager.isNewSession) {
+        chatSessionManager.startNewSession(
+          providerId: apiProviderManager.selectedProvider?.id,
+          modelId: apiProviderManager.selectedModel?.id,
+        );
+      }
+    }
+
+    if (appConfig.checkForUpdatesOnStartup) {
       UpdateService().check(context);
     }
   }

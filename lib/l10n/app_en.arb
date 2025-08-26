@@ -365,5 +365,23 @@
   "warning": "Warning",
   "unsupportedData": "Unsupported data type, will be skipped.",
   "noSystemPrompt": "No system prompt",
-  "import": "Import"
+  "import": "Import",
+  "onboardingReset": "Onboarding has been reset.",
+  "defaultStartupPage": "Default Startup Page",
+  "restoreLastSession": "Restore last session on startup",
+  "restoreLastSessionHint": "If disabled, a new chat will be started every time.",
+  "importOptions": "Import Options",
+  "importing": "Importing...",
+  "parsingFile": "Parsing file...",
+  "importFrom": "Import from {source}",
+  "@importFrom": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "namelessAiSource": "NamelessAI",
+  "chatBoxSource": "ChatBox",
+  "dataToImport": "Data to import"
 }

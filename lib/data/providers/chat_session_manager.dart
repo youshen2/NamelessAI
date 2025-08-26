@@ -11,6 +11,7 @@ import 'package:nameless_ai/data/models/chat_session.dart';
 import 'package:nameless_ai/data/models/model.dart';
 import 'package:nameless_ai/data/models/model_type.dart';
 import 'package:nameless_ai/data/providers/api_provider_manager.dart';
+import 'package:nameless_ai/l10n/app_localizations.dart';
 import 'package:nameless_ai/services/generation_service.dart';
 
 class ChatSessionManager extends ChangeNotifier {
@@ -61,6 +62,31 @@ class ChatSessionManager extends ChangeNotifier {
     _sessions = AppDatabase.chatSessionsBox.values.toList()
       ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
     notifyListeners();
+  }
+
+  Future<void> loadLastSession() async {
+    _loadSessions();
+    if (_sessions.isNotEmpty) {
+      final lastSessionId = AppDatabase.appConfigBox.get('lastActiveSessionId');
+      if (lastSessionId != null) {
+        final session = AppDatabase.chatSessionsBox.get(lastSessionId);
+        if (session != null) {
+          _currentSession = session;
+          _isNewSession = false;
+          notifyListeners();
+          return;
+        }
+      }
+      _currentSession = _sessions.first;
+      _isNewSession = false;
+      notifyListeners();
+    }
+  }
+
+  void _saveCurrentSessionId() {
+    if (_currentSession != null && !_isNewSession) {
+      AppDatabase.appConfigBox.put('lastActiveSessionId', _currentSession!.id);
+    }
   }
 
   void _startRefreshTimer() {
@@ -124,6 +150,7 @@ class ChatSessionManager extends ChangeNotifier {
     if (session != null) {
       _currentSession = session;
       _isNewSession = false;
+      _saveCurrentSessionId();
       notifyListeners();
     }
   }
@@ -158,6 +185,7 @@ class ChatSessionManager extends ChangeNotifier {
         .put(_currentSession!.id, _currentSession!);
     _loadSessions();
     _isNewSession = false;
+    _saveCurrentSessionId();
     notifyListeners();
   }
 
@@ -283,7 +311,7 @@ class ChatSessionManager extends ChangeNotifier {
   }
 
   Future<void> sendMessage(String text, APIProvider provider, Model model,
-      String unsupportedModelErrorText) async {
+      AppLocalizations localizations) async {
     if (isGenerating) return;
 
     if (_currentSession == null) {
@@ -302,7 +330,7 @@ class ChatSessionManager extends ChangeNotifier {
 
       final assistantMessage = ChatMessage(
         role: 'assistant',
-        content: unsupportedModelErrorText,
+        content: localizations.unsupportedModelTypeInChat,
         isLoading: false,
         isError: true,
         modelName: model.name,
@@ -349,7 +377,8 @@ class ChatSessionManager extends ChangeNotifier {
     _generatingSessions.add(sessionId);
     notifyListeners();
 
-    _performGeneration(sessionId, assistantMessage.id, provider, model);
+    _performGeneration(
+        sessionId, assistantMessage.id, provider, model, localizations);
   }
 
   (List<ChatMessage>, int)? _findMessageAndParentListInSession(
@@ -378,12 +407,8 @@ class ChatSessionManager extends ChangeNotifier {
     return _recursiveSearch(session.messages, {});
   }
 
-  Future<void> resubmitMessage(
-      String messageId,
-      String newContent,
-      APIProvider provider,
-      Model model,
-      String unsupportedModelErrorText) async {
+  Future<void> resubmitMessage(String messageId, String newContent,
+      APIProvider provider, Model model, AppLocalizations localizations) async {
     if (_currentSession == null || isGenerating) return;
 
     final session = _currentSession!;
@@ -407,7 +432,7 @@ class ChatSessionManager extends ChangeNotifier {
         model.modelType != ModelType.video) {
       newAssistantMessage = ChatMessage(
         role: 'assistant',
-        content: unsupportedModelErrorText,
+        content: localizations.unsupportedModelTypeInChat,
         isLoading: false,
         isError: true,
         modelName: model.name,
@@ -466,11 +491,12 @@ class ChatSessionManager extends ChangeNotifier {
 
     _generatingSessions.add(session.id);
     await updateCurrentSession(session);
-    _performGeneration(session.id, newAssistantMessage.id, provider, model);
+    _performGeneration(
+        session.id, newAssistantMessage.id, provider, model, localizations);
   }
 
   Future<void> regenerateResponse(String aiMessageId, APIProvider provider,
-      Model model, String unsupportedModelErrorText) async {
+      Model model, AppLocalizations localizations) async {
     if (_currentSession == null || isGenerating) return;
 
     final session = _currentSession!;
@@ -511,8 +537,8 @@ class ChatSessionManager extends ChangeNotifier {
       return;
     }
 
-    await resubmitMessage(userMessage.id, userMessage.content, provider, model,
-        unsupportedModelErrorText);
+    await resubmitMessage(
+        userMessage.id, userMessage.content, provider, model, localizations);
   }
 
   Future<void> switchActiveBranch(String userMessageId, int branchIndex) async {
@@ -533,7 +559,7 @@ class ChatSessionManager extends ChangeNotifier {
   }
 
   Future<void> _performGeneration(String sessionId, String assistantMessageId,
-      APIProvider provider, Model model) async {
+      APIProvider provider, Model model, AppLocalizations localizations) async {
     final session = AppDatabase.chatSessionsBox.get(sessionId);
     if (session == null) {
       _generatingSessions.remove(sessionId);
@@ -573,11 +599,12 @@ class ChatSessionManager extends ChangeNotifier {
       onUpdate: () {
         notifyListeners();
       },
+      localizations: localizations,
     );
 
     await generationService.execute();
 
-    if (messageToUpdate.content == "[Cancelled]") {
+    if (messageToUpdate.content == localizations.cancelled) {
       _removeMessageInSession(session, assistantMessageId);
     }
 

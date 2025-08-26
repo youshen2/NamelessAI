@@ -10,6 +10,7 @@ import 'package:nameless_ai/data/models/chat_message.dart';
 import 'package:nameless_ai/data/models/chat_session.dart';
 import 'package:nameless_ai/data/models/model.dart';
 import 'package:nameless_ai/data/models/model_type.dart';
+import 'package:nameless_ai/l10n/app_localizations.dart';
 
 class GenerationService {
   final APIProvider provider;
@@ -20,6 +21,7 @@ class GenerationService {
   final CancelToken cancelToken;
   final VoidCallback onUpdate;
   final ChatMessage messageToUpdate;
+  final AppLocalizations localizations;
 
   GenerationService({
     required this.provider,
@@ -30,6 +32,7 @@ class GenerationService {
     required this.cancelToken,
     required this.onUpdate,
     required this.messageToUpdate,
+    required this.localizations,
   });
 
   Future<void> execute() async {
@@ -52,11 +55,11 @@ class GenerationService {
         debugPrint(
             "NamelessAI - Generation for session ${session.id} was cancelled via token.");
         if ((messageToUpdate.content).isEmpty) {
-          messageToUpdate.content = "[Cancelled]";
+          messageToUpdate.content = localizations.cancelled;
           messageToUpdate.isError = true;
         }
       } else {
-        String errorMessage = "请求错误";
+        String errorMessage = localizations.requestError;
         if (e.response?.data != null) {
           try {
             messageToUpdate.rawResponseJson = e.response!.data.toString();
@@ -74,7 +77,8 @@ class GenerationService {
         messageToUpdate.isError = true;
       }
     } catch (e) {
-      messageToUpdate.content = "发生未知错误\n\n```\n${e.toString()}\n```";
+      messageToUpdate.content =
+          "${localizations.unknownErrorOccurred}\n\n```\n${e.toString()}\n```";
       messageToUpdate.isError = true;
     } finally {
       stopwatch.stop();

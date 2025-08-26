@@ -7,6 +7,7 @@ import 'package:nameless_ai/data/app_database.dart';
 import 'package:nameless_ai/data/models/api_provider.dart';
 import 'package:nameless_ai/data/models/chat_session.dart';
 import 'package:nameless_ai/data/models/system_prompt_template.dart';
+import 'package:nameless_ai/services/import_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -59,23 +60,43 @@ class BackupService {
     }
   }
 
-  Future<bool> importData(BuildContext context) async {
+  Future<Map<String, dynamic>?> pickAndParseFile() async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['json'],
     );
 
     if (result == null || result.files.single.path == null) {
-      return false;
+      return null;
     }
 
     final filePath = result.files.single.path!;
     final jsonString = await File(filePath).readAsString();
-    final backupData = jsonDecode(jsonString) as Map<String, dynamic>;
+    return jsonDecode(jsonString) as Map<String, dynamic>;
+  }
 
-    await AppDatabase.clearAllData();
+  Future<void> importNamelessData(
+    Map<String, dynamic> backupData,
+    ImportMode mode,
+    Set<String> categories,
+  ) async {
+    if (mode == ImportMode.replace) {
+      if (categories.contains('apiProviders')) {
+        await AppDatabase.apiProvidersBox.clear();
+      }
+      if (categories.contains('chatSessions')) {
+        await AppDatabase.chatSessionsBox.clear();
+      }
+      if (categories.contains('systemPromptTemplates')) {
+        await AppDatabase.systemPromptTemplatesBox.clear();
+      }
+      if (categories.contains('appConfig')) {
+        await AppDatabase.appConfigBox.clear();
+      }
+    }
 
-    if (backupData['apiProviders'] != null) {
+    if (categories.contains('apiProviders') &&
+        backupData['apiProviders'] != null) {
       final providers = (backupData['apiProviders'] as List)
           .map((p) => APIProvider.fromJson(p))
           .toList();
@@ -84,7 +105,8 @@ class BackupService {
       }
     }
 
-    if (backupData['chatSessions'] != null) {
+    if (categories.contains('chatSessions') &&
+        backupData['chatSessions'] != null) {
       final sessions = (backupData['chatSessions'] as List)
           .map((s) => ChatSession.fromJson(s))
           .toList();
@@ -93,7 +115,8 @@ class BackupService {
       }
     }
 
-    if (backupData['systemPromptTemplates'] != null) {
+    if (categories.contains('systemPromptTemplates') &&
+        backupData['systemPromptTemplates'] != null) {
       final templates = (backupData['systemPromptTemplates'] as List)
           .map((t) => SystemPromptTemplate.fromJson(t))
           .toList();
@@ -102,12 +125,11 @@ class BackupService {
       }
     }
 
-    if (backupData['appConfig'] != null) {
+    if (categories.contains('appConfig') && backupData['appConfig'] != null) {
       final config = backupData['appConfig'] as Map;
       for (final entry in config.entries) {
         await AppDatabase.appConfigBox.put(entry.key, entry.value);
       }
     }
-    return true;
   }
 }

@@ -44,6 +44,45 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
             margin: const EdgeInsets.only(bottom: 16),
             child: Column(
               children: [
+                ListTile(
+                  title: Text(localizations.defaultStartupPage),
+                  trailing: DropdownButton<String>(
+                    value: appConfig.defaultScreen,
+                    items: [
+                      DropdownMenuItem(
+                          value: '/', child: Text(localizations.chat)),
+                      DropdownMenuItem(
+                          value: '/history',
+                          child: Text(localizations.history)),
+                      DropdownMenuItem(
+                          value: '/settings',
+                          child: Text(localizations.settings)),
+                    ],
+                    onChanged: (value) {
+                      if (value != null) {
+                        HapticService.onSwitchToggle(context);
+                        appConfig.setDefaultScreen(value);
+                      }
+                    },
+                  ),
+                ),
+                SwitchListTile(
+                  title: Text(localizations.restoreLastSession),
+                  subtitle: Text(localizations.restoreLastSessionHint),
+                  value: appConfig.restoreLastSession,
+                  onChanged: (value) {
+                    HapticService.onSwitchToggle(context);
+                    appConfig.setRestoreLastSession(value);
+                  },
+                  activeColor: Theme.of(context).colorScheme.primary,
+                ),
+              ],
+            ),
+          ),
+          Card(
+            margin: const EdgeInsets.only(bottom: 16),
+            child: Column(
+              children: [
                 SwitchListTile(
                   title: Text(localizations.checkForUpdatesOnStartup),
                   value: appConfig.checkForUpdatesOnStartup,

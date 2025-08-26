@@ -70,7 +70,7 @@ class _DeveloperOptionsScreenState extends State<DeveloperOptionsScreen> {
                     if (confirmed == true) {
                       await appConfig.resetOnboarding();
                       if (mounted) {
-                        showSnackBar(context, "Onboarding has been reset.");
+                        showSnackBar(context, localizations.onboardingReset);
                       }
                     }
                   },

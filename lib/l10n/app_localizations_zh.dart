@@ -918,4 +918,39 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get import => '导入';
+
+  @override
+  String get onboardingReset => '引导页已重置。';
+
+  @override
+  String get defaultStartupPage => '默认启动页';
+
+  @override
+  String get restoreLastSession => '启动时恢复上次会话';
+
+  @override
+  String get restoreLastSessionHint => '如果禁用，每次启动都会开始一个新的聊天。';
+
+  @override
+  String get importOptions => '导入选项';
+
+  @override
+  String get importing => '正在导入...';
+
+  @override
+  String get parsingFile => '正在解析文件...';
+
+  @override
+  String importFrom(String source) {
+    return '从 $source 导入';
+  }
+
+  @override
+  String get namelessAiSource => 'NamelessAI';
+
+  @override
+  String get chatBoxSource => 'ChatBox';
+
+  @override
+  String get dataToImport => '待导入数据';
 }

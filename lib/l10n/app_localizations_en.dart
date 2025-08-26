@@ -942,4 +942,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get import => 'Import';
+
+  @override
+  String get onboardingReset => 'Onboarding has been reset.';
+
+  @override
+  String get defaultStartupPage => 'Default Startup Page';
+
+  @override
+  String get restoreLastSession => 'Restore last session on startup';
+
+  @override
+  String get restoreLastSessionHint =>
+      'If disabled, a new chat will be started every time.';
+
+  @override
+  String get importOptions => 'Import Options';
+
+  @override
+  String get importing => 'Importing...';
+
+  @override
+  String get parsingFile => 'Parsing file...';
+
+  @override
+  String importFrom(String source) {
+    return 'Import from $source';
+  }
+
+  @override
+  String get namelessAiSource => 'NamelessAI';
+
+  @override
+  String get chatBoxSource => 'ChatBox';
+
+  @override
+  String get dataToImport => 'Data to import';
 }

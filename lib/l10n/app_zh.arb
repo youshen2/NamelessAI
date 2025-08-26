@@ -366,5 +366,22 @@
   "warning": "警告",
   "unsupportedData": "不支持的数据类型，将被跳过。",
   "noSystemPrompt": "无系统提示词",
-  "import": "导入"
+  "import": "导入",
+  "onboardingReset": "引导页已重置。",
+  "defaultStartupPage": "默认启动页",
+  "restoreLastSession": "启动时恢复上次会话",
+  "restoreLastSessionHint": "如果禁用，每次启动都会开始一个新的聊天。",
+  "importOptions": "导入选项",
+  "importing": "正在导入...",
+  "parsingFile": "正在解析文件...",
+  "importFrom": "从 {source} 导入",
+  "@importFrom": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "namelessAiSource": "NamelessAI",
+  "chatBoxSource": "ChatBox"
 }

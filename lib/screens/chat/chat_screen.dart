@@ -170,22 +170,33 @@ class _ChatScreenState extends State<ChatScreen> {
   void _scrollToBottom({bool instant = false}) {
     if (_userScrolledUp && !instant) return;
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients &&
-          _scrollController.position.hasContentDimensions) {
-        if (instant) {
-          _scrollController.animateTo(
-            _scrollController.position.maxScrollExtent,
-            duration: const Duration(milliseconds: 1),
-            curve: Curves.linear,
-          );
-        } else {
-          _scrollController.animateTo(
-            _scrollController.position.maxScrollExtent,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOut,
-          );
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      if (!_scrollController.hasClients ||
+          !_scrollController.position.hasContentDimensions) {
+        return;
+      }
+
+      if (instant) {
+        // Using a loop with jumpTo to ensure we reach the very bottom of a long list.
+        // This is necessary because maxScrollExtent is updated as new items are rendered.
+        while (true) {
+          if (!mounted || !_scrollController.hasClients) break;
+          double lastPos = _scrollController.position.pixels;
+          _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+          // Wait for the next frame to allow ListView to build new items.
+          await SchedulerBinding.instance.endOfFrame;
+          if (!mounted || !_scrollController.hasClients) break;
+          if (_scrollController.position.pixels == lastPos) {
+            // If the position hasn't changed, we've reached the end.
+            break;
+          }
         }
+      } else {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
       }
     });
   }
@@ -223,8 +234,8 @@ class _ChatScreenState extends State<ChatScreen> {
     setState(() {
       _userScrolledUp = false;
     });
-    await chatSessionManager.sendMessage(messageText, selectedProvider,
-        selectedModel, localizations.unsupportedModelTypeInChat);
+    await chatSessionManager.sendMessage(
+        messageText, selectedProvider, selectedModel, localizations);
   }
 
   KeyEventResult _handleKeyEvent(FocusNode node, RawKeyEvent event) {
@@ -309,11 +320,7 @@ class _ChatScreenState extends State<ChatScreen> {
       _userScrolledUp = false;
     });
     await chatSessionManager.resubmitMessage(
-        message.id,
-        newContent,
-        selectedProvider,
-        selectedModel,
-        localizations.unsupportedModelTypeInChat);
+        message.id, newContent, selectedProvider, selectedModel, localizations);
   }
 
   void _regenerateResponse(ChatMessage message) async {
@@ -334,8 +341,8 @@ class _ChatScreenState extends State<ChatScreen> {
     setState(() {
       _userScrolledUp = false;
     });
-    await chatSessionManager.regenerateResponse(message.id, selectedProvider,
-        selectedModel, localizations.unsupportedModelTypeInChat);
+    await chatSessionManager.regenerateResponse(
+        message.id, selectedProvider, selectedModel, localizations);
   }
 
   void _refreshAsyncTask(ChatMessage message) async {
@@ -569,7 +576,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             setState(() {
                               _userScrolledUp = false;
                             });
-                            _scrollToBottom();
+                            _scrollToBottom(instant: true);
                           },
                           tooltip: localizations.scrollToBottom,
                         ),
