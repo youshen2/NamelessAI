@@ -105,7 +105,6 @@ Please include the following information in your Issue:
 
 ### 1. Language Models
 
-```
 - **Provider Name**: [e.g., My AI Service]
 - **Request URL**: [e.g., https://api.my-ai.com/v1/chat]
 - **Request Method**: [e.g., POST]
@@ -151,13 +150,11 @@ Please include the following information in your Issue:
     }
   }
   ```
-```
 
 ### 2. Image Generation Models
 
 #### Real-time Generation
 
-```
 - **Provider Name**: [e.g., My Image Service]
 - **Request URL**: [e.g., https://api.my-image.com/v1/images]
 - **Request Method**: [e.g., POST]
@@ -206,11 +203,9 @@ Please include the following information in your Issue:
       "progress": "100%"
     }
     ```
-```
 
 ### 3. Video Generation Models
 
-```
 - **Provider Name**: [e.g., My Video Service]
 
 - **Task Creation Endpoint**:
@@ -229,7 +224,6 @@ Please include the following information in your Issue:
       "video_url": "https://.../video.mp4"
     }
     ```
-```
 
 ## 📄 License
 
