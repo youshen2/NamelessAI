@@ -560,7 +560,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get newVersionMessage => '发现 NamelessAI Box 的新版本。';
+  String get newVersionMessage => '发现 Nameless AI Box 的新版本。';
 
   @override
   String get releaseNotes => '更新日志:';
@@ -959,4 +959,46 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get cornerRadiusHint => '调整卡片、按钮等界面元素的圆角大小。';
+
+  @override
+  String get enableBlurEffect => '启用模糊效果';
+
+  @override
+  String get enableBlurEffectHint => '为导航栏等部分UI元素应用模糊效果。';
+
+  @override
+  String get pageTransition => '页面切换动画';
+
+  @override
+  String get pageTransitionSystem => '系统默认';
+
+  @override
+  String get pageTransitionSlide => '滑动';
+
+  @override
+  String get pageTransitionFade => '淡入淡出';
+
+  @override
+  String get pageTransitionScale => '缩放';
+
+  @override
+  String get onboardingWelcomeTitle => '欢迎使用 Nameless AI';
+
+  @override
+  String get onboardingWelcomeBody => '一个简洁且强大的 AI 聊天客户端。';
+
+  @override
+  String get onboardingAppearanceTitle => '自定义外观';
+
+  @override
+  String get onboardingAppearanceBody => '选择您喜欢的主题。\n您稍后可以在设置中更改此项和其他选项。';
+
+  @override
+  String get onboardingReadyTitle => '一切就绪！';
+
+  @override
+  String get onboardingReadyBody => '开始使用吧。';
+
+  @override
+  String get done => '完成';
 }

@@ -87,37 +87,42 @@ class _SystemPromptTemplateFormState extends State<SystemPromptTemplateForm> {
           ),
           const SizedBox(height: 16),
           Expanded(
-            child: Form(
-              key: _formKey,
-              child: ListView(
-                controller: widget.scrollController,
-                children: [
-                  TextFormField(
-                    controller: _nameController,
-                    decoration:
-                        InputDecoration(labelText: localizations.templateName),
-                    validator: (value) => value!.isEmpty
-                        ? localizations.templateNameRequired
-                        : null,
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _promptController,
-                    decoration: InputDecoration(
-                        labelText: localizations.templatePrompt),
-                    maxLines: 8,
-                    minLines: 3,
-                    keyboardType: TextInputType.multiline,
-                    validator: (value) => value!.isEmpty
-                        ? localizations.templatePromptRequired
-                        : null,
-                  ),
-                ],
+            child: SingleChildScrollView(
+              controller: widget.scrollController,
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextFormField(
+                      controller: _nameController,
+                      decoration: InputDecoration(
+                          labelText: localizations.templateName),
+                      validator: (value) => value!.isEmpty
+                          ? localizations.templateNameRequired
+                          : null,
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _promptController,
+                      decoration: InputDecoration(
+                          labelText: localizations.templatePrompt),
+                      maxLines: 8,
+                      minLines: 3,
+                      validator: (value) => value!.isEmpty
+                          ? localizations.templatePromptRequired
+                          : null,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            padding: EdgeInsets.only(
+              top: 16.0,
+              bottom: 16.0 + MediaQuery.of(context).padding.bottom,
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [

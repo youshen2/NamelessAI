@@ -1,7 +1,10 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:provider/provider.dart';
+import 'package:nameless_ai/data/providers/app_config_provider.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
 import 'package:nameless_ai/services/haptic_service.dart';
 import 'package:nameless_ai/services/update_service.dart';
@@ -67,6 +70,21 @@ class _AboutScreenState extends State<AboutScreen> {
     }
   }
 
+  Widget _buildBlurBackground(BuildContext context) {
+    final appConfig = Provider.of<AppConfigProvider>(context);
+    if (!appConfig.enableBlurEffect) {
+      return const SizedBox.shrink();
+    }
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+        child: Container(
+          color: Colors.transparent,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
@@ -74,10 +92,11 @@ class _AboutScreenState extends State<AboutScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        flexibleSpace: _buildBlurBackground(context),
         title: Text(localizations.about),
       ),
       body: ListView(
-        padding: const EdgeInsets.symmetric(vertical: 24.0),
+        padding: const EdgeInsets.fromLTRB(0, 24, 0, 96),
         children: <Widget>[
           Column(
             children: [

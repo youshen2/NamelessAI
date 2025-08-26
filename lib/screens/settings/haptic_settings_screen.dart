@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -8,6 +9,21 @@ import 'package:nameless_ai/services/haptic_service.dart';
 class HapticSettingsScreen extends StatelessWidget {
   const HapticSettingsScreen({super.key});
 
+  Widget _buildBlurBackground(BuildContext context) {
+    final appConfig = Provider.of<AppConfigProvider>(context);
+    if (!appConfig.enableBlurEffect) {
+      return const SizedBox.shrink();
+    }
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+        child: Container(
+          color: Colors.transparent,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
@@ -16,10 +32,11 @@ class HapticSettingsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        flexibleSpace: _buildBlurBackground(context),
         title: Text(localizations.hapticSettings),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
         children: [
           if (!isSupported)
             Card(
@@ -154,7 +171,7 @@ class HapticSettingsScreen extends StatelessWidget {
     };
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      padding: const EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -8,6 +9,21 @@ import 'package:nameless_ai/services/haptic_service.dart';
 class GeneralSettingsScreen extends StatelessWidget {
   const GeneralSettingsScreen({super.key});
 
+  Widget _buildBlurBackground(BuildContext context) {
+    final appConfig = Provider.of<AppConfigProvider>(context);
+    if (!appConfig.enableBlurEffect) {
+      return const SizedBox.shrink();
+    }
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+        child: Container(
+          color: Colors.transparent,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
@@ -17,10 +33,11 @@ class GeneralSettingsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        flexibleSpace: _buildBlurBackground(context),
         title: Text(localizations.generalSettings),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
         children: [
           Card(
             margin: const EdgeInsets.only(bottom: 16),

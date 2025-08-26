@@ -9,6 +9,8 @@ enum FontSize { small, medium, large }
 
 enum HapticIntensity { none, light, medium, heavy, selection }
 
+enum PageTransitionType { system, slide, fade, scale }
+
 class AppConfigProvider extends ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.system;
   Locale? _locale;
@@ -56,6 +58,8 @@ class AppConfigProvider extends ChangeNotifier {
   String _defaultScreen = '/';
   bool _restoreLastSession = true;
   double _cornerRadius = 16.0;
+  bool _enableBlurEffect = true;
+  PageTransitionType _pageTransitionType = PageTransitionType.system;
 
   AppConfigProvider() {
     _loadConfig();
@@ -107,6 +111,8 @@ class AppConfigProvider extends ChangeNotifier {
   String get defaultScreen => _defaultScreen;
   bool get restoreLastSession => _restoreLastSession;
   double get cornerRadius => _cornerRadius;
+  bool get enableBlurEffect => _enableBlurEffect;
+  PageTransitionType get pageTransitionType => _pageTransitionType;
 
   void _loadConfig() {
     final box = AppDatabase.appConfigBox;
@@ -172,6 +178,10 @@ class AppConfigProvider extends ChangeNotifier {
     _defaultScreen = box.get('defaultScreen', defaultValue: '/');
     _restoreLastSession = box.get('restoreLastSession', defaultValue: true);
     _cornerRadius = box.get('cornerRadius', defaultValue: 16.0);
+    _enableBlurEffect = box.get('enableBlurEffect', defaultValue: true);
+    _pageTransitionType = PageTransitionType.values[box.get(
+        'pageTransitionType',
+        defaultValue: PageTransitionType.system.index)];
 
     notifyListeners();
   }
@@ -409,6 +419,20 @@ class AppConfigProvider extends ChangeNotifier {
     if (_cornerRadius != radius) {
       _cornerRadius = radius;
       _updateValue('cornerRadius', radius);
+    }
+  }
+
+  void setEnableBlurEffect(bool enable) {
+    if (_enableBlurEffect != enable) {
+      _enableBlurEffect = enable;
+      _updateValue('enableBlurEffect', enable);
+    }
+  }
+
+  void setPageTransitionType(PageTransitionType type) {
+    if (_pageTransitionType != type) {
+      _pageTransitionType = type;
+      _updateValue('pageTransitionType', type.index);
     }
   }
 

@@ -40,7 +40,7 @@ class _ImportConfirmationDialogState extends State<ImportConfirmationDialog> {
     return AlertDialog(
       title: Text(localizations.importPreview),
       content: SizedBox(
-        width: 400,
+        width: double.maxFinite,
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,

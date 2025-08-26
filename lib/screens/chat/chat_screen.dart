@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
@@ -177,17 +178,13 @@ class _ChatScreenState extends State<ChatScreen> {
       }
 
       if (instant) {
-        // Using a loop with jumpTo to ensure we reach the very bottom of a long list.
-        // This is necessary because maxScrollExtent is updated as new items are rendered.
         while (true) {
           if (!mounted || !_scrollController.hasClients) break;
           double lastPos = _scrollController.position.pixels;
           _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
-          // Wait for the next frame to allow ListView to build new items.
           await SchedulerBinding.instance.endOfFrame;
           if (!mounted || !_scrollController.hasClients) break;
           if (_scrollController.position.pixels == lastPos) {
-            // If the position hasn't changed, we've reached the end.
             break;
           }
         }
@@ -382,7 +379,7 @@ class _ChatScreenState extends State<ChatScreen> {
     HapticService.onButtonPress(context);
     final manager = Provider.of<ChatSessionManager>(context, listen: false);
     if (manager.currentSession != null) {
-      showModalBottomSheet(
+      showBlurredModalBottomSheet(
         context: context,
         isScrollControlled: true,
         builder: (context) => DraggableScrollableSheet(
@@ -425,6 +422,21 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  Widget _buildBlurBackground(BuildContext context) {
+    final appConfig = Provider.of<AppConfigProvider>(context);
+    if (!appConfig.enableBlurEffect) {
+      return const SizedBox.shrink();
+    }
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+        child: Container(
+          color: Colors.transparent,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
@@ -434,7 +446,9 @@ class _ChatScreenState extends State<ChatScreen> {
       builder: (context, manager, child) {
         final messages = manager.activeMessages;
         return Scaffold(
+          extendBody: true,
           appBar: AppBar(
+            flexibleSpace: _buildBlurBackground(context),
             title: GestureDetector(
               onTap: () {
                 if (manager.currentSession != null &&
@@ -475,78 +489,70 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           body: Stack(
             children: [
-              Column(
-                children: [
-                  Expanded(
-                    child: Builder(
-                      builder: (context) {
-                        if (messages.isEmpty && !manager.isGenerating) {
-                          return Center(
-                            child: Text(localizations.noChatHistory),
-                          );
+              if (messages.isEmpty && !manager.isGenerating)
+                Center(
+                  child: Text(localizations.noChatHistory),
+                )
+              else
+                ListView.builder(
+                  physics: isAndroid
+                      ? const BouncingScrollPhysics(
+                          parent: AlwaysScrollableScrollPhysics())
+                      : null,
+                  controller: _scrollController,
+                  addAutomaticKeepAlives: true,
+                  itemCount: messages.length,
+                  padding: const EdgeInsets.only(top: 8.0, bottom: 140.0),
+                  itemBuilder: (context, index) {
+                    final message = messages[index];
+                    final session = manager.currentSession;
+                    int branchCount = 0;
+                    int activeBranchIndex = 0;
+                    String? aiMessageIdForBranching;
+
+                    if (session != null &&
+                        message.role == 'assistant' &&
+                        index > 0 &&
+                        messages[index - 1].role == 'user' &&
+                        session.branches.containsKey(messages[index - 1].id)) {
+                      aiMessageIdForBranching = messages[index - 1].id;
+                      branchCount =
+                          session.branches[aiMessageIdForBranching]!.length;
+                      activeBranchIndex = session.activeBranchSelections[
+                              aiMessageIdForBranching] ??
+                          0;
+                    }
+
+                    return MessageBubble(
+                      key: ValueKey(message.id),
+                      message: message,
+                      animatedMessageIds: _animatedMessageIds,
+                      onEdit: (msg, isEditing) =>
+                          _toggleEditing(msg.id, isEditing),
+                      onSave: _saveEditedMessage,
+                      onDelete: _deleteMessage,
+                      onResubmit: _resubmitMessage,
+                      onRegenerate: _regenerateResponse,
+                      onRefresh: _refreshAsyncTask,
+                      onCopy: (text) => copyToClipboard(context, text),
+                      branchCount: branchCount,
+                      activeBranchIndex: activeBranchIndex,
+                      onBranchChange: (newIndex) {
+                        if (aiMessageIdForBranching != null) {
+                          _onBranchChange(aiMessageIdForBranching, newIndex);
                         }
-                        return ListView.builder(
-                          physics: isAndroid
-                              ? const BouncingScrollPhysics(
-                                  parent: AlwaysScrollableScrollPhysics())
-                              : null,
-                          controller: _scrollController,
-                          addAutomaticKeepAlives: true,
-                          itemCount: messages.length,
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          itemBuilder: (context, index) {
-                            final message = messages[index];
-                            final session = manager.currentSession;
-                            int branchCount = 0;
-                            int activeBranchIndex = 0;
-                            String? aiMessageIdForBranching;
-
-                            if (session != null &&
-                                message.role == 'assistant' &&
-                                index > 0 &&
-                                messages[index - 1].role == 'user' &&
-                                session.branches
-                                    .containsKey(messages[index - 1].id)) {
-                              aiMessageIdForBranching = messages[index - 1].id;
-                              branchCount = session
-                                  .branches[aiMessageIdForBranching]!.length;
-                              activeBranchIndex =
-                                  session.activeBranchSelections[
-                                          aiMessageIdForBranching] ??
-                                      0;
-                            }
-
-                            return MessageBubble(
-                              key: ValueKey(message.id),
-                              message: message,
-                              animatedMessageIds: _animatedMessageIds,
-                              onEdit: (msg, isEditing) =>
-                                  _toggleEditing(msg.id, isEditing),
-                              onSave: _saveEditedMessage,
-                              onDelete: _deleteMessage,
-                              onResubmit: _resubmitMessage,
-                              onRegenerate: _regenerateResponse,
-                              onRefresh: _refreshAsyncTask,
-                              onCopy: (text) => copyToClipboard(context, text),
-                              branchCount: branchCount,
-                              activeBranchIndex: activeBranchIndex,
-                              onBranchChange: (newIndex) {
-                                if (aiMessageIdForBranching != null) {
-                                  _onBranchChange(
-                                      aiMessageIdForBranching, newIndex);
-                                }
-                              },
-                            );
-                          },
-                        );
                       },
-                    ),
-                  ),
-                  _buildInputArea(localizations, manager.isGenerating),
-                ],
+                    );
+                  },
+                ),
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: _buildInputArea(localizations, manager.isGenerating),
               ),
               Positioned(
-                bottom: 80,
+                bottom: 110,
                 right: 16,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -596,96 +602,131 @@ class _ChatScreenState extends State<ChatScreen> {
     required VoidCallback onPressed,
     required String tooltip,
   }) {
+    final appConfig = Provider.of<AppConfigProvider>(context);
+    final theme = Theme.of(context);
+
+    final buttonContent = InkWell(
+      borderRadius: BorderRadius.circular(24),
+      onTap: onPressed,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Icon(
+          icon,
+          color: theme.colorScheme.onSurface,
+        ),
+      ),
+    );
+
+    Widget button;
+    if (appConfig.enableBlurEffect) {
+      button = ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+          child: Container(
+            color: theme.colorScheme.surfaceContainer.withOpacity(0.6),
+            child: buttonContent,
+          ),
+        ),
+      );
+    } else {
+      button = Material(
+        color: theme.colorScheme.surfaceContainer.withOpacity(0.8),
+        borderRadius: BorderRadius.circular(24),
+        child: buttonContent,
+      );
+    }
+
     return AnimatedOpacity(
       opacity: 1.0,
       duration: const Duration(milliseconds: 200),
-      child: Material(
-        color: Theme.of(context).colorScheme.surfaceContainer.withOpacity(0.8),
-        borderRadius: BorderRadius.circular(24),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(24),
-          onTap: onPressed,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Icon(
-              icon,
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
-          ),
-        ),
-      ),
+      child: button,
     );
   }
 
   Widget _buildInputArea(AppLocalizations localizations, bool isLoading) {
     final apiManager = Provider.of<APIProviderManager>(context, listen: false);
+    final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
     final selectedModel = apiManager.selectedModel;
     final isMidjourney = selectedModel?.modelType == ModelType.image &&
         selectedModel?.imageGenerationMode == ImageGenerationMode.asynchronous;
 
+    final inputContainer = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+      decoration: BoxDecoration(
+        color: appConfig.enableBlurEffect
+            ? Theme.of(context).colorScheme.surface.withOpacity(0.8)
+            : Theme.of(context).colorScheme.surface,
+        border: Border(
+            top: BorderSide(
+                color: Theme.of(context)
+                    .colorScheme
+                    .outlineVariant
+                    .withOpacity(0.5))),
+      ),
+      child: SafeArea(
+        top: false,
+        bottom: true,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.tune),
+              onPressed: _showChatSettings,
+              tooltip: localizations.chatSettings,
+              style: IconButton.styleFrom(
+                backgroundColor:
+                    Theme.of(context).colorScheme.surfaceContainerHighest,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.all(12),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: TextField(
+                controller: _messageController,
+                decoration: InputDecoration(
+                  hintText: isMidjourney
+                      ? localizations.midjourneyPromptHint
+                      : localizations.sendMessage,
+                  border: Theme.of(context).inputDecorationTheme.border,
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                ),
+                maxLines: 5,
+                minLines: 1,
+                keyboardType: TextInputType.multiline,
+                textCapitalization: TextCapitalization.sentences,
+              ),
+            ),
+            const SizedBox(width: 8),
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              transitionBuilder: (child, animation) {
+                return ScaleTransition(scale: animation, child: child);
+              },
+              child: isLoading
+                  ? _buildStopButton()
+                  : _buildSendButton(localizations),
+            ),
+          ],
+        ),
+      ),
+    );
+
     return Focus(
       focusNode: _inputFocusNode,
       onKey: _handleKeyEvent,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          border: Border(
-              top: BorderSide(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .outlineVariant
-                      .withOpacity(0.5))),
-        ),
-        child: SafeArea(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.tune),
-                onPressed: _showChatSettings,
-                tooltip: localizations.chatSettings,
-                style: IconButton.styleFrom(
-                  backgroundColor:
-                      Theme.of(context).colorScheme.surfaceContainerHighest,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  padding: const EdgeInsets.all(12),
-                ),
+      child: appConfig.enableBlurEffect
+          ? ClipRect(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                child: inputContainer,
               ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: TextField(
-                  controller: _messageController,
-                  decoration: InputDecoration(
-                    hintText: isMidjourney
-                        ? localizations.midjourneyPromptHint
-                        : localizations.sendMessage,
-                    border: Theme.of(context).inputDecorationTheme.border,
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 14),
-                  ),
-                  maxLines: 5,
-                  minLines: 1,
-                  keyboardType: TextInputType.multiline,
-                  textCapitalization: TextCapitalization.sentences,
-                ),
-              ),
-              const SizedBox(width: 8),
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 200),
-                transitionBuilder: (child, animation) {
-                  return ScaleTransition(scale: animation, child: child);
-                },
-                child: isLoading
-                    ? _buildStopButton()
-                    : _buildSendButton(localizations),
-              ),
-            ],
-          ),
-        ),
-      ),
+            )
+          : inputContainer,
     );
   }
 

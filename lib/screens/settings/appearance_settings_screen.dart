@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_highlight/theme_map.dart';
 import 'package:provider/provider.dart';
@@ -57,6 +58,21 @@ void main() {
     );
   }
 
+  Widget _buildBlurBackground(BuildContext context) {
+    final appConfig = Provider.of<AppConfigProvider>(context);
+    if (!appConfig.enableBlurEffect) {
+      return const SizedBox.shrink();
+    }
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+        child: Container(
+          color: Colors.transparent,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
@@ -65,10 +81,11 @@ void main() {
 
     return Scaffold(
       appBar: AppBar(
+        flexibleSpace: _buildBlurBackground(context),
         title: Text(localizations.appearanceSettings),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
         children: [
           Card(
             margin: const EdgeInsets.only(bottom: 16),
@@ -107,6 +124,50 @@ void main() {
                     appConfig.setEnableMonet(value);
                   },
                   activeColor: Theme.of(context).colorScheme.primary,
+                ),
+              ],
+            ),
+          ),
+          Card(
+            margin: const EdgeInsets.only(bottom: 16),
+            child: Column(
+              children: [
+                SwitchListTile(
+                  title: Text(localizations.enableBlurEffect),
+                  subtitle: Text(localizations.enableBlurEffectHint),
+                  value: appConfig.enableBlurEffect,
+                  onChanged: (value) {
+                    HapticService.onSwitchToggle(context);
+                    appConfig.setEnableBlurEffect(value);
+                  },
+                  activeColor: Theme.of(context).colorScheme.primary,
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  title: Text(localizations.pageTransition),
+                  trailing: DropdownButton<PageTransitionType>(
+                    value: appConfig.pageTransitionType,
+                    items: [
+                      DropdownMenuItem(
+                          value: PageTransitionType.system,
+                          child: Text(localizations.pageTransitionSystem)),
+                      DropdownMenuItem(
+                          value: PageTransitionType.slide,
+                          child: Text(localizations.pageTransitionSlide)),
+                      DropdownMenuItem(
+                          value: PageTransitionType.fade,
+                          child: Text(localizations.pageTransitionFade)),
+                      DropdownMenuItem(
+                          value: PageTransitionType.scale,
+                          child: Text(localizations.pageTransitionScale)),
+                    ],
+                    onChanged: (value) {
+                      if (value != null) {
+                        HapticService.onSwitchToggle(context);
+                        appConfig.setPageTransitionType(value);
+                      }
+                    },
+                  ),
                 ),
               ],
             ),

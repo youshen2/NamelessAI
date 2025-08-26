@@ -1,5 +1,8 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:nameless_ai/data/providers/app_config_provider.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
 import 'package:nameless_ai/screens/settings/widgets/export_options_sheet.dart';
 import 'package:nameless_ai/screens/settings/widgets/import_confirmation_dialog.dart';
@@ -34,7 +37,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               content: ExportOptionsSheet(),
             ),
           )
-        : await showModalBottomSheet<Map<String, bool>>(
+        : await showBlurredModalBottomSheet<Map<String, bool>>(
             context: context,
             isScrollControlled: true,
             builder: (context) => const ExportOptionsSheet(),
@@ -175,18 +178,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  Widget _buildBlurBackground(BuildContext context) {
+    final appConfig = Provider.of<AppConfigProvider>(context);
+    if (!appConfig.enableBlurEffect) {
+      return const SizedBox.shrink();
+    }
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+        child: Container(
+          color: Colors.transparent,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
+        flexibleSpace: _buildBlurBackground(context),
         title: Text(localizations.settings),
       ),
       body: Stack(
         children: [
           ListView(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
             children: [
               Card(
                 margin: const EdgeInsets.only(bottom: 16),

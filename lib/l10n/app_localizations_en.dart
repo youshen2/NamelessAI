@@ -985,4 +985,50 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get cornerRadiusHint =>
       'Adjust the roundness of UI elements like cards and buttons.';
+
+  @override
+  String get enableBlurEffect => 'Enable Blur Effect';
+
+  @override
+  String get enableBlurEffectHint =>
+      'Applies a blur effect to some UI elements like the navigation bar.';
+
+  @override
+  String get pageTransition => 'Page Transition';
+
+  @override
+  String get pageTransitionSystem => 'System Default';
+
+  @override
+  String get pageTransitionSlide => 'Slide';
+
+  @override
+  String get pageTransitionFade => 'Fade';
+
+  @override
+  String get pageTransitionScale => 'Scale';
+
+  @override
+  String get onboardingWelcomeTitle => 'Welcome to Nameless AI';
+
+  @override
+  String get onboardingWelcomeBody =>
+      'Your private, cross-platform AI chat client. Let\'s get you set up.';
+
+  @override
+  String get onboardingAppearanceTitle => 'Customize Your Look';
+
+  @override
+  String get onboardingAppearanceBody =>
+      'Choose your preferred theme. You can change this and other settings later.';
+
+  @override
+  String get onboardingReadyTitle => 'You\'re All Set!';
+
+  @override
+  String get onboardingReadyBody =>
+      'You\'re ready to start chatting. Enjoy your personalized AI experience!';
+
+  @override
+  String get done => 'Done';
 }

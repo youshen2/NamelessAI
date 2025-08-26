@@ -1951,6 +1951,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Adjust the roundness of UI elements like cards and buttons.'**
   String get cornerRadiusHint;
+
+  /// No description provided for @enableBlurEffect.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Blur Effect'**
+  String get enableBlurEffect;
+
+  /// No description provided for @enableBlurEffectHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Applies a blur effect to some UI elements like the navigation bar.'**
+  String get enableBlurEffectHint;
+
+  /// No description provided for @pageTransition.
+  ///
+  /// In en, this message translates to:
+  /// **'Page Transition'**
+  String get pageTransition;
+
+  /// No description provided for @pageTransitionSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'System Default'**
+  String get pageTransitionSystem;
+
+  /// No description provided for @pageTransitionSlide.
+  ///
+  /// In en, this message translates to:
+  /// **'Slide'**
+  String get pageTransitionSlide;
+
+  /// No description provided for @pageTransitionFade.
+  ///
+  /// In en, this message translates to:
+  /// **'Fade'**
+  String get pageTransitionFade;
+
+  /// No description provided for @pageTransitionScale.
+  ///
+  /// In en, this message translates to:
+  /// **'Scale'**
+  String get pageTransitionScale;
+
+  /// No description provided for @onboardingWelcomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Nameless AI'**
+  String get onboardingWelcomeTitle;
+
+  /// No description provided for @onboardingWelcomeBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your private, cross-platform AI chat client. Let\'s get you set up.'**
+  String get onboardingWelcomeBody;
+
+  /// No description provided for @onboardingAppearanceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Customize Your Look'**
+  String get onboardingAppearanceTitle;
+
+  /// No description provided for @onboardingAppearanceBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your preferred theme. You can change this and other settings later.'**
+  String get onboardingAppearanceBody;
+
+  /// No description provided for @onboardingReadyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re All Set!'**
+  String get onboardingReadyTitle;
+
+  /// No description provided for @onboardingReadyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re ready to start chatting. Enjoy your personalized AI experience!'**
+  String get onboardingReadyBody;
+
+  /// No description provided for @done.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get done;
 }
 
 class _AppLocalizationsDelegate

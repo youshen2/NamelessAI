@@ -1,9 +1,11 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/app_database.dart';
 import 'package:nameless_ai/data/models/chat_message.dart';
 import 'package:nameless_ai/data/models/chat_session.dart';
+import 'package:nameless_ai/data/providers/app_config_provider.dart';
 import 'package:nameless_ai/data/providers/chat_session_manager.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
 import 'package:nameless_ai/screens/chat/widgets/message_bubble.dart';
@@ -129,6 +131,21 @@ class _HistoryScreenState extends State<HistoryScreen> {
     }
   }
 
+  Widget _buildBlurBackground(BuildContext context) {
+    final appConfig = Provider.of<AppConfigProvider>(context);
+    if (!appConfig.enableBlurEffect) {
+      return const SizedBox.shrink();
+    }
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+        child: Container(
+          color: Colors.transparent,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
@@ -136,6 +153,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        flexibleSpace: _buildBlurBackground(context),
         title: Text(localizations.history),
         actions: [
           IconButton(
@@ -230,6 +248,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       return Center(child: Text(localizations.noResultsFound));
     }
     return ListView.builder(
+      padding: const EdgeInsets.only(bottom: 96),
       itemCount: sessions.length,
       itemBuilder: (context, index) {
         final session = sessions[index];

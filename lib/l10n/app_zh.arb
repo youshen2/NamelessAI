@@ -227,7 +227,7 @@
       }
     }
   },
-  "newVersionMessage": "发现 NamelessAI Box 的新版本。",
+  "newVersionMessage": "发现 Nameless AI Box 的新版本。",
   "releaseNotes": "更新日志:",
   "later": "稍后",
   "update": "更新",
@@ -385,5 +385,19 @@
   "namelessAiSource": "NamelessAI",
   "chatBoxSource": "ChatBox",
   "cornerRadius": "圆角大小",
-  "cornerRadiusHint": "调整卡片、按钮等界面元素的圆角大小。"
+  "cornerRadiusHint": "调整卡片、按钮等界面元素的圆角大小。",
+  "enableBlurEffect": "启用模糊效果",
+  "enableBlurEffectHint": "为导航栏等部分UI元素应用模糊效果。",
+  "pageTransition": "页面切换动画",
+  "pageTransitionSystem": "系统默认",
+  "pageTransitionSlide": "滑动",
+  "pageTransitionFade": "淡入淡出",
+  "pageTransitionScale": "缩放",
+  "onboardingWelcomeTitle": "欢迎使用 Nameless AI",
+  "onboardingWelcomeBody": "一个简洁且强大的 AI 聊天客户端。",
+  "onboardingAppearanceTitle": "自定义外观",
+  "onboardingAppearanceBody": "选择您喜欢的主题。\n您稍后可以在设置中更改此项和其他选项。",
+  "onboardingReadyTitle": "一切就绪！",
+  "onboardingReadyBody": "开始使用吧。",
+  "done": "完成"
 }

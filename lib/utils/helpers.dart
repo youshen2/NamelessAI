@@ -1,5 +1,8 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:nameless_ai/data/providers/app_config_provider.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
 import 'package:nameless_ai/services/haptic_service.dart';
 
@@ -91,4 +94,41 @@ void copyToClipboard(BuildContext context, String text) {
     HapticService.onButtonPress(context);
     showSnackBar(context, AppLocalizations.of(context)!.copiedToClipboard);
   });
+}
+
+Future<T?> showBlurredModalBottomSheet<T>({
+  required BuildContext context,
+  required WidgetBuilder builder,
+  bool isScrollControlled = false,
+}) {
+  final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
+  final cornerRadius = appConfig.cornerRadius;
+
+  return showModalBottomSheet<T>(
+    context: context,
+    isScrollControlled: isScrollControlled,
+    backgroundColor: appConfig.enableBlurEffect ? Colors.transparent : null,
+    builder: (context) {
+      Widget content = builder(context);
+
+      if (appConfig.enableBlurEffect) {
+        return ClipRRect(
+          borderRadius:
+              BorderRadius.vertical(top: Radius.circular(cornerRadius)),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+            child: Container(
+              color: Theme.of(context)
+                  .bottomSheetTheme
+                  .backgroundColor
+                  ?.withOpacity(0.88),
+              child: content,
+            ),
+          ),
+        );
+      } else {
+        return content;
+      }
+    },
+  );
 }

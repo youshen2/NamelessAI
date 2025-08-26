@@ -98,6 +98,43 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Widget _buildBottomNavBar(
+      BuildContext context, AppLocalizations localizations, int selectedIndex) {
+    final appConfig = Provider.of<AppConfigProvider>(context);
+    final navBar = BottomNavigationBar(
+      backgroundColor: appConfig.enableBlurEffect
+          ? Theme.of(context).colorScheme.surface.withOpacity(0.8)
+          : Theme.of(context).colorScheme.surface,
+      elevation: 0,
+      currentIndex: selectedIndex,
+      onTap: (index) => _onItemTapped(index, context),
+      items: [
+        BottomNavigationBarItem(
+          icon: const Icon(Icons.chat_bubble_outline),
+          label: localizations.chat,
+        ),
+        BottomNavigationBarItem(
+          icon: const Icon(Icons.history),
+          label: localizations.history,
+        ),
+        BottomNavigationBarItem(
+          icon: const Icon(Icons.settings),
+          label: localizations.settings,
+        ),
+      ],
+    );
+
+    if (appConfig.enableBlurEffect) {
+      return ClipRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+          child: navBar,
+        ),
+      );
+    }
+    return navBar;
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
@@ -107,32 +144,8 @@ class _HomePageState extends State<HomePage> {
       mobileBody: Scaffold(
         extendBody: true,
         body: widget.child,
-        bottomNavigationBar: ClipRect(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-            child: BottomNavigationBar(
-              backgroundColor:
-                  Theme.of(context).colorScheme.surface.withOpacity(0.8),
-              elevation: 0,
-              currentIndex: selectedIndex,
-              onTap: (index) => _onItemTapped(index, context),
-              items: [
-                BottomNavigationBarItem(
-                  icon: const Icon(Icons.chat_bubble_outline),
-                  label: localizations.chat,
-                ),
-                BottomNavigationBarItem(
-                  icon: const Icon(Icons.history),
-                  label: localizations.history,
-                ),
-                BottomNavigationBarItem(
-                  icon: const Icon(Icons.settings),
-                  label: localizations.settings,
-                ),
-              ],
-            ),
-          ),
-        ),
+        bottomNavigationBar:
+            _buildBottomNavBar(context, localizations, selectedIndex),
       ),
       desktopBody: Scaffold(
         body: Row(

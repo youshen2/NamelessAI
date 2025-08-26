@@ -7,6 +7,7 @@ import 'package:nameless_ai/data/providers/api_provider_manager.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
 import 'package:nameless_ai/screens/settings/widgets/model_form.dart';
 import 'package:nameless_ai/services/haptic_service.dart';
+import 'package:nameless_ai/utils/helpers.dart';
 
 class APIProviderForm extends StatefulWidget {
   final APIProvider? provider;
@@ -45,7 +46,7 @@ class _APIProviderFormState extends State<APIProviderForm> {
 
   void _addOrEditModel({Model? model, int? index}) async {
     HapticService.onButtonPress(context);
-    final result = await showModalBottomSheet<Model>(
+    final result = await showBlurredModalBottomSheet<Model>(
       context: context,
       isScrollControlled: true,
       builder: (context) => Padding(
@@ -245,7 +246,10 @@ class _APIProviderFormState extends State<APIProviderForm> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 16.0),
+            padding: EdgeInsets.only(
+              top: 16.0,
+              bottom: 16.0 + MediaQuery.of(context).padding.bottom,
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [

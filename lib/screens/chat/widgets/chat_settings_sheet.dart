@@ -76,7 +76,7 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
 
   void _showTemplateSelection() async {
     HapticService.onButtonPress(context);
-    final selectedPrompt = await showModalBottomSheet<String>(
+    final selectedPrompt = await showBlurredModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
       builder: (context) => const TemplateSelectionSheet(),
@@ -269,7 +269,10 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            padding: EdgeInsets.only(
+              top: 16.0,
+              bottom: 24.0 + MediaQuery.of(context).padding.bottom,
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [

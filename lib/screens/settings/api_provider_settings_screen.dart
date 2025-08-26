@@ -1,7 +1,9 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/models/api_provider.dart';
 import 'package:nameless_ai/data/providers/api_provider_manager.dart';
+import 'package:nameless_ai/data/providers/app_config_provider.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
 import 'package:nameless_ai/screens/settings/widgets/api_provider_form.dart';
 import 'package:nameless_ai/services/haptic_service.dart';
@@ -16,11 +18,27 @@ class APIProviderSettingsScreen extends StatefulWidget {
 }
 
 class _APIProviderSettingsScreenState extends State<APIProviderSettingsScreen> {
+  Widget _buildBlurBackground(BuildContext context) {
+    final appConfig = Provider.of<AppConfigProvider>(context);
+    if (!appConfig.enableBlurEffect) {
+      return const SizedBox.shrink();
+    }
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+        child: Container(
+          color: Colors.transparent,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
+        flexibleSpace: _buildBlurBackground(context),
         title: Text(localizations.apiProviderSettings),
         actions: [
           IconButton(
@@ -41,7 +59,7 @@ class _APIProviderSettingsScreenState extends State<APIProviderSettingsScreen> {
             );
           }
           return ListView.builder(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.fromLTRB(8, 8, 8, 96),
             itemCount: manager.providers.length,
             itemBuilder: (context, index) {
               final provider = manager.providers[index];
@@ -116,7 +134,7 @@ class _APIProviderSettingsScreenState extends State<APIProviderSettingsScreen> {
   }
 
   void _showProviderForm(BuildContext context, {APIProvider? provider}) {
-    showModalBottomSheet(
+    showBlurredModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (context) {

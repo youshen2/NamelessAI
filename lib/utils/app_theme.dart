@@ -11,7 +11,7 @@ class AppTheme {
       textTheme: TextTheme().useSystemChineseFont(Brightness.light),
       colorScheme: colorScheme,
       appBarTheme: AppBarTheme(
-        backgroundColor: colorScheme.surface,
+        backgroundColor: colorScheme.surface.withOpacity(0.85),
         foregroundColor: colorScheme.onSurface,
         elevation: 0,
         scrolledUnderElevation: 0,
@@ -132,7 +132,7 @@ class AppTheme {
       textTheme: TextTheme().useSystemChineseFont(Brightness.dark),
       colorScheme: colorScheme,
       appBarTheme: AppBarTheme(
-        backgroundColor: colorScheme.surface,
+        backgroundColor: colorScheme.surface.withOpacity(0.85),
         foregroundColor: colorScheme.onSurface,
         elevation: 0,
         scrolledUnderElevation: 0,

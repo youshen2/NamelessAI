@@ -1,6 +1,8 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/models/system_prompt_template.dart';
+import 'package:nameless_ai/data/providers/app_config_provider.dart';
 import 'package:nameless_ai/data/providers/system_prompt_template_manager.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
 import 'package:nameless_ai/screens/settings/widgets/system_prompt_form.dart';
@@ -17,11 +19,27 @@ class SystemPromptSettingsScreen extends StatefulWidget {
 
 class _SystemPromptSettingsScreenState
     extends State<SystemPromptSettingsScreen> {
+  Widget _buildBlurBackground(BuildContext context) {
+    final appConfig = Provider.of<AppConfigProvider>(context);
+    if (!appConfig.enableBlurEffect) {
+      return const SizedBox.shrink();
+    }
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+        child: Container(
+          color: Colors.transparent,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
+        flexibleSpace: _buildBlurBackground(context),
         title: Text(localizations.systemPromptTemplates),
         actions: [
           IconButton(
@@ -42,7 +60,7 @@ class _SystemPromptSettingsScreenState
             );
           }
           return ListView.builder(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.fromLTRB(8, 8, 8, 96),
             itemCount: manager.templates.length,
             itemBuilder: (context, index) {
               final template = manager.templates[index];
@@ -104,7 +122,7 @@ class _SystemPromptSettingsScreenState
 
   void _showTemplateForm(BuildContext context,
       {SystemPromptTemplate? template}) {
-    showModalBottomSheet(
+    showBlurredModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (context) {

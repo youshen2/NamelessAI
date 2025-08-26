@@ -385,5 +385,19 @@
   "chatBoxSource": "ChatBox",
   "dataToImport": "Data to import",
   "cornerRadius": "Corner Radius",
-  "cornerRadiusHint": "Adjust the roundness of UI elements like cards and buttons."
+  "cornerRadiusHint": "Adjust the roundness of UI elements like cards and buttons.",
+  "enableBlurEffect": "Enable Blur Effect",
+  "enableBlurEffectHint": "Applies a blur effect to some UI elements like the navigation bar.",
+  "pageTransition": "Page Transition",
+  "pageTransitionSystem": "System Default",
+  "pageTransitionSlide": "Slide",
+  "pageTransitionFade": "Fade",
+  "pageTransitionScale": "Scale",
+  "onboardingWelcomeTitle": "Welcome to Nameless AI",
+  "onboardingWelcomeBody": "Your private, cross-platform AI chat client. Let's get you set up.",
+  "onboardingAppearanceTitle": "Customize Your Look",
+  "onboardingAppearanceBody": "Choose your preferred theme. You can change this and other settings later.",
+  "onboardingReadyTitle": "You're All Set!",
+  "onboardingReadyBody": "You're ready to start chatting. Enjoy your personalized AI experience!",
+  "done": "Done"
 }
