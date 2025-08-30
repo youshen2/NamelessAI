@@ -171,23 +171,30 @@ class _ChatScreenState extends State<ChatScreen> {
   void _scrollToBottom({bool instant = false}) {
     if (_userScrolledUp && !instant) return;
 
-    SchedulerBinding.instance.addPostFrameCallback((_) async {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
       if (!_scrollController.hasClients ||
           !_scrollController.position.hasContentDimensions) {
         return;
       }
 
       if (instant) {
-        while (true) {
-          if (!mounted || !_scrollController.hasClients) break;
-          double lastPos = _scrollController.position.pixels;
+        void jumpRepeatedly(int attempts) {
+          if (attempts <= 0 || !mounted) return;
+
           _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
-          await SchedulerBinding.instance.endOfFrame;
-          if (!mounted || !_scrollController.hasClients) break;
-          if (_scrollController.position.pixels == lastPos) {
-            break;
-          }
+
+          SchedulerBinding.instance.addPostFrameCallback((_) {
+            if (mounted &&
+                _scrollController.hasClients &&
+                _scrollController.position.hasContentDimensions &&
+                _scrollController.position.pixels <
+                    _scrollController.position.maxScrollExtent) {
+              jumpRepeatedly(attempts - 1);
+            }
+          });
         }
+
+        jumpRepeatedly(5);
       } else {
         _scrollController.animateTo(
           _scrollController.position.maxScrollExtent,
