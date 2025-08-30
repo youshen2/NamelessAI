@@ -734,6 +734,12 @@ abstract class AppLocalizations {
   /// **'Tokens'**
   String get tokens;
 
+  /// No description provided for @tokensEstimate.
+  ///
+  /// In en, this message translates to:
+  /// **'Tokens (Est.)'**
+  String get tokensEstimate;
+
   /// No description provided for @prompt.
   ///
   /// In en, this message translates to:
@@ -1433,7 +1439,7 @@ abstract class AppLocalizations {
   /// No description provided for @errorTimeout.
   ///
   /// In en, this message translates to:
-  /// **'Request timed out. Please check your network connection or increase timeout settings.'**
+  /// **'Request timed out. Please check your network connection.'**
   String get errorTimeout;
 
   /// No description provided for @errorConnection.

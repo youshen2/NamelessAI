@@ -336,6 +336,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tokens => 'Tokens';
 
   @override
+  String get tokensEstimate => 'Tokens (Est.)';
+
+  @override
   String get prompt => 'Prompt';
 
   @override
@@ -714,7 +717,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorTimeout =>
-      'Request timed out. Please check your network connection or increase timeout settings.';
+      'Request timed out. Please check your network connection.';
 
   @override
   String get errorConnection =>

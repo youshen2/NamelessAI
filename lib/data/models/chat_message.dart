@@ -101,6 +101,9 @@ class ChatMessage extends HiveObject {
   @HiveField(23)
   DateTime? nextRefreshTime;
 
+  @HiveField(24, defaultValue: false)
+  bool isTokenCountEstimated;
+
   DateTime? thinkingStartTime;
 
   ChatMessage({
@@ -129,6 +132,7 @@ class ChatMessage extends HiveObject {
     this.enhancedPrompt,
     this.videoUrl,
     this.nextRefreshTime,
+    this.isTokenCountEstimated = false,
   })  : id = id ?? const Uuid().v4(),
         timestamp = timestamp ?? DateTime.now();
 
@@ -158,6 +162,7 @@ class ChatMessage extends HiveObject {
     String? enhancedPrompt,
     String? videoUrl,
     DateTime? nextRefreshTime,
+    bool? isTokenCountEstimated,
   }) {
     return ChatMessage(
       id: id ?? this.id,
@@ -186,6 +191,8 @@ class ChatMessage extends HiveObject {
       enhancedPrompt: enhancedPrompt ?? this.enhancedPrompt,
       videoUrl: videoUrl ?? this.videoUrl,
       nextRefreshTime: nextRefreshTime ?? this.nextRefreshTime,
+      isTokenCountEstimated:
+          isTokenCountEstimated ?? this.isTokenCountEstimated,
     );
   }
 
@@ -214,6 +221,7 @@ class ChatMessage extends HiveObject {
         'enhancedPrompt': enhancedPrompt,
         'videoUrl': videoUrl,
         'nextRefreshTime': nextRefreshTime?.toIso8601String(),
+        'isTokenCountEstimated': isTokenCountEstimated,
       };
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) => ChatMessage(
@@ -247,5 +255,6 @@ class ChatMessage extends HiveObject {
         nextRefreshTime: json['nextRefreshTime'] == null
             ? null
             : DateTime.parse(json['nextRefreshTime']),
+        isTokenCountEstimated: json['isTokenCountEstimated'] ?? false,
       );
 }

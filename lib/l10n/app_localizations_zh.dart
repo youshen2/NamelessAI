@@ -331,6 +331,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get tokens => 'Tokens';
 
   @override
+  String get tokensEstimate => 'Tokens (估算)';
+
+  @override
   String get prompt => '输入';
 
   @override
@@ -698,7 +701,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get error429 => '请求过多。您可能已超出速率限制或配额。';
 
   @override
-  String get errorTimeout => '请求超时。请检查您的网络连接或增加超时设置。';
+  String get errorTimeout => '请求超时。请检查您的网络连接。';
 
   @override
   String get errorConnection => '连接错误。请检查您的网络连接和基础 URL。';

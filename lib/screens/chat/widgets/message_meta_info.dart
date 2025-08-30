@@ -143,8 +143,11 @@ class MessageMetaInfo extends StatelessWidget {
     if (message.promptTokens != null || message.completionTokens != null) {
       final prompt = message.promptTokens?.toString() ?? '-';
       final completion = message.completionTokens?.toString() ?? '-';
+      final label = message.isTokenCountEstimated
+          ? localizations.tokensEstimate
+          : localizations.tokens;
       stats.add(_StatItem(
-          label: localizations.tokens,
+          label: label,
           value:
               '${localizations.prompt}: $prompt / ${localizations.completion}: $completion',
           isCompact: appConfig.compactMode));

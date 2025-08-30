@@ -113,6 +113,7 @@
   "totalTime": "总耗时",
   "firstChunkTime": "首字耗时",
   "tokens": "Tokens",
+  "tokensEstimate": "Tokens (估算)",
   "prompt": "输入",
   "completion": "输出",
   "outputCharacters": "输出字数",

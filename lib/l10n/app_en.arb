@@ -113,6 +113,7 @@
   "totalTime": "Total Time",
   "firstChunkTime": "Time to First Chunk",
   "tokens": "Tokens",
+  "tokensEstimate": "Tokens (Est.)",
   "prompt": "Prompt",
   "completion": "Completion",
   "outputCharacters": "Output Characters",

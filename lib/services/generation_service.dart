@@ -11,6 +11,7 @@ import 'package:nameless_ai/data/models/chat_session.dart';
 import 'package:nameless_ai/data/models/model.dart';
 import 'package:nameless_ai/data/models/model_type.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
+import 'package:tiktoken/tiktoken.dart';
 
 class GenerationService {
   final APIProvider provider;
@@ -35,10 +36,25 @@ class GenerationService {
     required this.localizations,
   });
 
+  int _calculatePromptTokens(
+      Tiktoken encoding, List<Map<String, String>> messages) {
+    int numTokens = 0;
+    for (final message in messages) {
+      numTokens +=
+          4; // every message follows <|start|>{role/name}\n{content}<|end|>\n
+      message.forEach((key, value) {
+        numTokens += encoding.encode(value).length;
+      });
+    }
+    numTokens += 2; // every reply is primed with <|start|>assistant
+    return numTokens;
+  }
+
   Future<void> execute() async {
     final stopwatch = Stopwatch()..start();
     int? firstChunkTimeMs;
     api_models.Usage? usage;
+    int? estimatedPromptTokens;
 
     try {
       if (model.modelType == ModelType.image) {
@@ -46,6 +62,15 @@ class GenerationService {
       } else if (model.modelType == ModelType.video) {
         await _submitVideoTask();
       } else {
+        try {
+          final encoding = getEncoding('cl100k_base');
+          estimatedPromptTokens = _calculatePromptTokens(
+              encoding, _formatMessages(messagesForApi, session.systemPrompt));
+        } catch (e) {
+          debugPrint("NamelessAI - Tiktoken encoding failed: $e");
+          estimatedPromptTokens = null;
+        }
+
         final result = await _generateText(stopwatch);
         firstChunkTimeMs = result.firstChunkTimeMs;
         usage = result.usage;
@@ -122,6 +147,19 @@ class GenerationService {
       if (usage != null) {
         messageToUpdate.promptTokens = usage.promptTokens;
         messageToUpdate.completionTokens = usage.completionTokens;
+        messageToUpdate.isTokenCountEstimated = false;
+      } else if (model.modelType == ModelType.language &&
+          estimatedPromptTokens != null) {
+        try {
+          final encoding = getEncoding('cl100k_base');
+          messageToUpdate.promptTokens = estimatedPromptTokens;
+          messageToUpdate.completionTokens =
+              encoding.encode(messageToUpdate.content).length;
+          messageToUpdate.isTokenCountEstimated = true;
+        } catch (e) {
+          debugPrint(
+              "NamelessAI - Tiktoken encoding failed for completion: $e");
+        }
       }
 
       if (messageToUpdate.thinkingContent != null &&
