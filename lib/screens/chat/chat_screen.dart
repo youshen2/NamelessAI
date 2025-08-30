@@ -446,7 +446,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildBlurBackground(BuildContext context) {
-    final appConfig = Provider.of<AppConfigProvider>(context);
+    final appConfig = context.watch<AppConfigProvider>();
     if (!appConfig.enableBlurEffect) {
       return const SizedBox.shrink();
     }
@@ -463,169 +463,195 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    final isAndroid = Theme.of(context).platform == TargetPlatform.android;
     final isDesktop = MediaQuery.of(context).size.width >= 600;
 
-    return Consumer<ChatSessionManager>(
-      builder: (context, manager, child) {
-        final appConfig = Provider.of<AppConfigProvider>(context);
-        final messages = manager.activeMessages;
-        return Scaffold(
-          extendBody: true,
-          extendBodyBehindAppBar: true,
-          appBar: AppBar(
-            backgroundColor:
-                appConfig.enableBlurEffect ? Colors.transparent : null,
-            elevation: 0,
-            scrolledUnderElevation: 0,
-            flexibleSpace: _buildBlurBackground(context),
-            title: GestureDetector(
-              onTap: () {
-                if (manager.currentSession != null &&
-                    (manager.currentSession?.name.isNotEmpty ?? false)) {
-                  HapticService.onButtonPress(context);
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: Text(localizations.chatName),
-                      content: SelectableText(manager.currentSession!.name),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            HapticService.onButtonPress(context);
-                            Navigator.of(context).pop();
-                          },
-                          child: Text(localizations.close),
-                        ),
-                      ],
-                    ),
-                  );
+    return Scaffold(
+      extendBody: true,
+      extendBodyBehindAppBar: true,
+      appBar: _buildAppBar(context, localizations),
+      body: _buildBody(context, localizations, isDesktop),
+    );
+  }
+
+  PreferredSizeWidget _buildAppBar(
+      BuildContext context, AppLocalizations localizations) {
+    final appConfig = context.watch<AppConfigProvider>();
+    return AppBar(
+      backgroundColor: appConfig.enableBlurEffect ? Colors.transparent : null,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      flexibleSpace: _buildBlurBackground(context),
+      title: Selector<ChatSessionManager, (String, String?)>(
+        selector: (_, manager) =>
+            (manager.currentSession?.name ?? '', manager.currentSession?.id),
+        builder: (context, sessionData, _) {
+          final sessionName = sessionData.$1;
+          final sessionId = sessionData.$2;
+          return GestureDetector(
+            onTap: () {
+              if (sessionId != null && sessionName.isNotEmpty) {
+                HapticService.onButtonPress(context);
+                final manager =
+                    Provider.of<ChatSessionManager>(context, listen: false);
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text(localizations.chatName),
+                    content: SelectableText(manager.currentSession!.name),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          HapticService.onButtonPress(context);
+                          Navigator.of(context).pop();
+                        },
+                        child: Text(localizations.close),
+                      ),
+                    ],
+                  ),
+                );
+              }
+            },
+            child: Text(
+              sessionName.isNotEmpty ? sessionName : localizations.newChat,
+              overflow: TextOverflow.ellipsis,
+            ),
+          );
+        },
+      ),
+      actions: [
+        _buildAppBarModelSelector(localizations),
+        IconButton(
+          icon: const Icon(Icons.add_circle_outline),
+          tooltip: localizations.newChat,
+          onPressed: _startNewChat,
+        ),
+        const SizedBox(width: 8),
+      ],
+    );
+  }
+
+  Widget _buildBody(
+      BuildContext context, AppLocalizations localizations, bool isDesktop) {
+    final appConfig = context.watch<AppConfigProvider>();
+    return Stack(
+      children: [
+        _buildChatList(localizations, isDesktop),
+        Positioned(
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: Selector<ChatSessionManager, bool>(
+              selector: (_, manager) => manager.isGenerating,
+              builder: (context, isGenerating, _) {
+                return _buildInputArea(localizations, isGenerating);
+              }),
+        ),
+        Positioned(
+          bottom: appConfig.scrollButtonBottomOffset,
+          right: appConfig.scrollButtonRightOffset,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (_showScrollUpButton)
+                _buildScrollButton(
+                  icon: Icons.vertical_align_top,
+                  onPressed: _scrollToTop,
+                  tooltip: localizations.scrollToTop,
+                ),
+              if (_showScrollPageUpButton)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: _buildScrollButton(
+                    icon: Icons.arrow_upward,
+                    onPressed: _scrollPageUp,
+                    tooltip: localizations.pageUp,
+                  ),
+                ),
+              if (_showScrollDownButton)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: _buildScrollButton(
+                    icon: Icons.arrow_downward,
+                    onPressed: () {
+                      HapticService.onButtonPress(context);
+                      setState(() {
+                        _userScrolledUp = false;
+                      });
+                      _scrollToBottom(instant: true);
+                    },
+                    tooltip: localizations.scrollToBottom,
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildChatList(AppLocalizations localizations, bool isDesktop) {
+    final isAndroid = Theme.of(context).platform == TargetPlatform.android;
+    return Selector<ChatSessionManager, (List<ChatMessage>, bool)>(
+      selector: (_, m) => (m.activeMessages, m.isGenerating),
+      builder: (context, data, _) {
+        final messages = data.$1;
+        final isGenerating = data.$2;
+        if (messages.isEmpty && !isGenerating) {
+          return Center(
+            child: Text(localizations.noChatHistory),
+          );
+        }
+
+        return ListView.builder(
+          physics: isAndroid
+              ? const BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics())
+              : null,
+          controller: _scrollController,
+          itemCount: messages.length,
+          padding: EdgeInsets.only(
+              top: kToolbarHeight + MediaQuery.of(context).padding.top + 8.0,
+              bottom: isDesktop ? 90.0 : 140.0),
+          itemBuilder: (context, index) {
+            final message = messages[index];
+            final manager =
+                Provider.of<ChatSessionManager>(context, listen: false);
+            final session = manager.currentSession;
+            int branchCount = 0;
+            int activeBranchIndex = 0;
+            String? aiMessageIdForBranching;
+
+            if (session != null &&
+                message.role == 'assistant' &&
+                index > 0 &&
+                messages[index - 1].role == 'user' &&
+                session.branches.containsKey(messages[index - 1].id)) {
+              aiMessageIdForBranching = messages[index - 1].id;
+              branchCount = session.branches[aiMessageIdForBranching]!.length;
+              activeBranchIndex =
+                  session.activeBranchSelections[aiMessageIdForBranching] ?? 0;
+            }
+
+            return MessageBubble(
+              key: ValueKey(message.id),
+              message: message,
+              animatedMessageIds: _animatedMessageIds,
+              onEdit: (msg, isEditing) => _toggleEditing(msg.id, isEditing),
+              onSave: _saveEditedMessage,
+              onDelete: _deleteMessage,
+              onResubmit: _resubmitMessage,
+              onRegenerate: _regenerateResponse,
+              onRefresh: _refreshAsyncTask,
+              onCopy: (text) => copyToClipboard(context, text),
+              branchCount: branchCount,
+              activeBranchIndex: activeBranchIndex,
+              onBranchChange: (newIndex) {
+                if (aiMessageIdForBranching != null) {
+                  _onBranchChange(aiMessageIdForBranching, newIndex);
                 }
               },
-              child: Text(
-                manager.currentSession?.name ?? localizations.newChat,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            actions: [
-              _buildAppBarModelSelector(localizations),
-              IconButton(
-                icon: const Icon(Icons.add_circle_outline),
-                tooltip: localizations.newChat,
-                onPressed: _startNewChat,
-              ),
-              const SizedBox(width: 8),
-            ],
-          ),
-          body: Stack(
-            children: [
-              if (messages.isEmpty && !manager.isGenerating)
-                Center(
-                  child: Text(localizations.noChatHistory),
-                )
-              else
-                ListView.builder(
-                  physics: isAndroid
-                      ? const BouncingScrollPhysics(
-                          parent: AlwaysScrollableScrollPhysics())
-                      : null,
-                  controller: _scrollController,
-                  addAutomaticKeepAlives: true,
-                  itemCount: messages.length,
-                  padding: EdgeInsets.only(
-                      top: kToolbarHeight +
-                          MediaQuery.of(context).padding.top +
-                          8.0,
-                      bottom: isDesktop ? 90.0 : 140.0),
-                  itemBuilder: (context, index) {
-                    final message = messages[index];
-                    final session = manager.currentSession;
-                    int branchCount = 0;
-                    int activeBranchIndex = 0;
-                    String? aiMessageIdForBranching;
-
-                    if (session != null &&
-                        message.role == 'assistant' &&
-                        index > 0 &&
-                        messages[index - 1].role == 'user' &&
-                        session.branches.containsKey(messages[index - 1].id)) {
-                      aiMessageIdForBranching = messages[index - 1].id;
-                      branchCount =
-                          session.branches[aiMessageIdForBranching]!.length;
-                      activeBranchIndex = session.activeBranchSelections[
-                              aiMessageIdForBranching] ??
-                          0;
-                    }
-
-                    return MessageBubble(
-                      key: ValueKey(message.id),
-                      message: message,
-                      animatedMessageIds: _animatedMessageIds,
-                      onEdit: (msg, isEditing) =>
-                          _toggleEditing(msg.id, isEditing),
-                      onSave: _saveEditedMessage,
-                      onDelete: _deleteMessage,
-                      onResubmit: _resubmitMessage,
-                      onRegenerate: _regenerateResponse,
-                      onRefresh: _refreshAsyncTask,
-                      onCopy: (text) => copyToClipboard(context, text),
-                      branchCount: branchCount,
-                      activeBranchIndex: activeBranchIndex,
-                      onBranchChange: (newIndex) {
-                        if (aiMessageIdForBranching != null) {
-                          _onBranchChange(aiMessageIdForBranching, newIndex);
-                        }
-                      },
-                    );
-                  },
-                ),
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: _buildInputArea(localizations, manager.isGenerating),
-              ),
-              Positioned(
-                bottom: appConfig.scrollButtonBottomOffset,
-                right: appConfig.scrollButtonRightOffset,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (_showScrollUpButton)
-                      _buildScrollButton(
-                        icon: Icons.vertical_align_top,
-                        onPressed: _scrollToTop,
-                        tooltip: localizations.scrollToTop,
-                      ),
-                    if (_showScrollPageUpButton)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: _buildScrollButton(
-                          icon: Icons.arrow_upward,
-                          onPressed: _scrollPageUp,
-                          tooltip: localizations.pageUp,
-                        ),
-                      ),
-                    if (_showScrollDownButton)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: _buildScrollButton(
-                          icon: Icons.arrow_downward,
-                          onPressed: () {
-                            HapticService.onButtonPress(context);
-                            setState(() {
-                              _userScrolledUp = false;
-                            });
-                            _scrollToBottom(instant: true);
-                          },
-                          tooltip: localizations.scrollToBottom,
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+            );
+          },
         );
       },
     );
@@ -805,120 +831,121 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildAppBarModelSelector(AppLocalizations localizations) {
-    final apiManager = Provider.of<APIProviderManager>(context);
-    final providers = apiManager.providers;
+    return Consumer<APIProviderManager>(builder: (context, apiManager, _) {
+      final providers = apiManager.providers;
 
-    if (providers.isEmpty) {
-      return TextButton.icon(
-        onPressed: () {
+      if (providers.isEmpty) {
+        return TextButton.icon(
+          onPressed: () {
+            HapticService.onButtonPress(context);
+            context.go('/settings/api_providers');
+          },
+          icon: const Icon(Icons.warning_amber_rounded),
+          label: Text(localizations.addProvider),
+        );
+      }
+
+      return PopupMenuButton<dynamic>(
+        tooltip: localizations.modelSelection,
+        onSelected: (value) {
           HapticService.onButtonPress(context);
-          context.go('/settings/api_providers');
+          if (value is Model) {
+            APIProvider? providerOfSelectedModel;
+            for (var p in providers) {
+              if (p.models.any((m) => m.id == value.id)) {
+                providerOfSelectedModel = p;
+                break;
+              }
+            }
+            if (providerOfSelectedModel != null) {
+              apiManager.setSelectedProvider(providerOfSelectedModel);
+              apiManager.setSelectedModel(value);
+
+              final chatManager =
+                  Provider.of<ChatSessionManager>(context, listen: false);
+              if (chatManager.currentSession != null) {
+                chatManager.updateCurrentSessionDetails(
+                  providerId: providerOfSelectedModel.id,
+                  modelId: value.id,
+                );
+              }
+            }
+          }
         },
-        icon: const Icon(Icons.warning_amber_rounded),
-        label: Text(localizations.addProvider),
-      );
-    }
-
-    return PopupMenuButton<dynamic>(
-      tooltip: localizations.modelSelection,
-      onSelected: (value) {
-        HapticService.onButtonPress(context);
-        if (value is Model) {
-          APIProvider? providerOfSelectedModel;
-          for (var p in providers) {
-            if (p.models.any((m) => m.id == value.id)) {
-              providerOfSelectedModel = p;
-              break;
-            }
-          }
-          if (providerOfSelectedModel != null) {
-            apiManager.setSelectedProvider(providerOfSelectedModel);
-            apiManager.setSelectedModel(value);
-
-            final chatManager =
-                Provider.of<ChatSessionManager>(context, listen: false);
-            if (chatManager.currentSession != null) {
-              chatManager.updateCurrentSessionDetails(
-                providerId: providerOfSelectedModel.id,
-                modelId: value.id,
-              );
-            }
-          }
-        }
-      },
-      itemBuilder: (context) {
-        List<PopupMenuEntry<dynamic>> items = [];
-        for (var provider in providers) {
-          items.add(PopupMenuItem(
-            enabled: false,
-            height: 32,
-            child: Text(
-              provider.name,
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-          ));
-          for (var model in provider.models) {
-            final bool isSelected = apiManager.selectedModel?.id == model.id;
+        itemBuilder: (context) {
+          List<PopupMenuEntry<dynamic>> items = [];
+          for (var provider in providers) {
             items.add(PopupMenuItem(
-              value: model,
-              child: Row(
-                children: [
-                  Icon(
-                    isSelected ? Icons.check_circle : Icons.circle_outlined,
-                    size: 20,
-                    color: isSelected
-                        ? Theme.of(context).colorScheme.primary
-                        : Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(child: Text(model.name)),
-                ],
+              enabled: false,
+              height: 32,
+              child: Text(
+                provider.name,
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
             ));
+            for (var model in provider.models) {
+              final bool isSelected = apiManager.selectedModel?.id == model.id;
+              items.add(PopupMenuItem(
+                value: model,
+                child: Row(
+                  children: [
+                    Icon(
+                      isSelected ? Icons.check_circle : Icons.circle_outlined,
+                      size: 20,
+                      color: isSelected
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(child: Text(model.name)),
+                  ],
+                ),
+              ));
+            }
+            if (providers.indexOf(provider) < providers.length - 1) {
+              items.add(const PopupMenuDivider());
+            }
           }
-          if (providers.indexOf(provider) < providers.length - 1) {
-            items.add(const PopupMenuDivider());
-          }
-        }
-        return items;
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainer,
-          borderRadius: BorderRadius.circular(12.0),
-          border: Border.all(
-            color:
-                Theme.of(context).colorScheme.outlineVariant.withOpacity(0.5),
+          return items;
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surfaceContainer,
+            borderRadius: BorderRadius.circular(12.0),
+            border: Border.all(
+              color:
+                  Theme.of(context).colorScheme.outlineVariant.withOpacity(0.5),
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.model_training_outlined,
+                  size: 18,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant),
+              const SizedBox(width: 8),
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width * 0.2),
+                child: Text(
+                  apiManager.selectedModel?.name ?? localizations.selectModel,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Icon(Icons.arrow_drop_down,
+                  size: 20,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant),
+            ],
           ),
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.model_training_outlined,
-                size: 18,
-                color: Theme.of(context).colorScheme.onSurfaceVariant),
-            const SizedBox(width: 8),
-            ConstrainedBox(
-              constraints: BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width * 0.2),
-              child: Text(
-                apiManager.selectedModel?.name ?? localizations.selectModel,
-                style: Theme.of(context).textTheme.bodyMedium,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            const SizedBox(width: 4),
-            Icon(Icons.arrow_drop_down,
-                size: 20,
-                color: Theme.of(context).colorScheme.onSurfaceVariant),
-          ],
-        ),
-      ),
-    );
+      );
+    });
   }
 
   @override

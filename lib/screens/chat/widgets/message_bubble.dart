@@ -57,7 +57,7 @@ class MessageBubble extends StatefulWidget {
 }
 
 class _MessageBubbleState extends State<MessageBubble>
-    with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
+    with SingleTickerProviderStateMixin {
   late TextEditingController _editController;
   final FocusNode _editFocusNode = FocusNode();
   bool _isHovering = false;
@@ -66,8 +66,9 @@ class _MessageBubbleState extends State<MessageBubble>
   late final Animation<Offset> _slideAnimation;
   late final Animation<double> _fadeAnimation;
 
-  @override
-  bool get wantKeepAlive => true;
+  Widget? _cachedDisplayContent;
+  String? _cachedCodeTheme;
+  FontSize? _cachedFontSize;
 
   @override
   void initState() {
@@ -96,8 +97,16 @@ class _MessageBubbleState extends State<MessageBubble>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _updateCachedContentIfNeeded();
+  }
+
+  @override
   void didUpdateWidget(covariant MessageBubble oldWidget) {
     super.didUpdateWidget(oldWidget);
+
+    _updateCachedContentIfNeeded(oldWidget: oldWidget);
 
     if (widget.message.content != oldWidget.message.content) {
       _editController.text = widget.message.content;
@@ -127,6 +136,43 @@ class _MessageBubbleState extends State<MessageBubble>
         });
       }
     }
+  }
+
+  void _updateCachedContentIfNeeded({MessageBubble? oldWidget}) {
+    final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
+
+    final bool messageChanged = oldWidget == null ||
+        widget.message.content != oldWidget.message.content ||
+        widget.message.isLoading != oldWidget.message.isLoading ||
+        widget.message.isError != oldWidget.message.isError ||
+        widget.message.messageType != oldWidget.message.messageType ||
+        widget.message.asyncTaskStatus != oldWidget.message.asyncTaskStatus ||
+        widget.message.videoUrl != oldWidget.message.videoUrl;
+
+    final bool configChanged = appConfig.codeTheme != _cachedCodeTheme ||
+        appConfig.fontSize != _cachedFontSize;
+
+    if (_cachedDisplayContent == null || messageChanged || configChanged) {
+      _updateCachedContent();
+      _cachedCodeTheme = appConfig.codeTheme;
+      _cachedFontSize = appConfig.fontSize;
+    }
+  }
+
+  void _updateCachedContent() {
+    final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
+    final isUser = widget.message.role == 'user';
+    final isError = widget.message.isError;
+    final theme = Theme.of(context);
+
+    final textColor = isError
+        ? theme.colorScheme.onErrorContainer
+        : isUser
+            ? theme.colorScheme.onPrimaryContainer
+            : theme.colorScheme.onSurface;
+
+    _cachedDisplayContent =
+        _buildDisplayModeContent(context, textColor, appConfig);
   }
 
   @override
@@ -166,8 +212,6 @@ class _MessageBubbleState extends State<MessageBubble>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
-
     final appConfig = Provider.of<AppConfigProvider>(context);
     final isUser = widget.message.role == 'user';
 
@@ -252,49 +296,52 @@ class _MessageBubbleState extends State<MessageBubble>
       constraints: BoxConstraints(
         maxWidth: MediaQuery.of(context).size.width * appConfig.chatBubbleWidth,
       ),
-      child: Card(
-        color: bubbleColor,
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: !isUser && !isError && appConfig.distinguishAssistantBubble
-              ? BorderSide(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .outlineVariant
-                      .withOpacity(0.5),
+      child: RepaintBoundary(
+        child: Card(
+          color: bubbleColor,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: !isUser && !isError && appConfig.distinguishAssistantBubble
+                ? BorderSide(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .outlineVariant
+                        .withOpacity(0.5),
+                  )
+                : BorderSide.none,
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (widget.message.thinkingContent != null &&
+                  widget.message.thinkingContent!.isNotEmpty)
+                ThinkingContentWidget(
+                    message: widget.message, textColor: textColor),
+              if (widget.message.isEditing)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: _buildEditModeContent(context, textColor),
                 )
-              : BorderSide.none,
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (widget.message.thinkingContent != null &&
-                widget.message.thinkingContent!.isNotEmpty)
-              ThinkingContentWidget(
-                  message: widget.message, textColor: textColor),
-            if (widget.message.isEditing)
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: _buildEditModeContent(context, textColor),
-              )
-            else
-              _buildDisplayModeContent(context, textColor),
-          ],
+              else
+                _cachedDisplayContent ?? const SizedBox.shrink(),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildDisplayModeContent(BuildContext context, Color textColor) {
+  Widget _buildDisplayModeContent(
+      BuildContext context, Color textColor, AppConfigProvider appConfig) {
     if (widget.message.messageType == MessageType.image) {
       return _buildImageContent(context, textColor);
     }
     if (widget.message.messageType == MessageType.video) {
       return _buildVideoContent(context, textColor);
     }
-    return _buildTextContent(context, textColor);
+    return _buildTextContent(context, textColor, appConfig);
   }
 
   Widget _buildImageContent(BuildContext context, Color textColor) {
@@ -315,7 +362,8 @@ class _MessageBubbleState extends State<MessageBubble>
     }
 
     if (message.isError || message.content.isEmpty) {
-      return _buildTextContent(context, textColor);
+      return _buildTextContent(context, textColor,
+          Provider.of<AppConfigProvider>(context, listen: false));
     }
 
     String imageUrl = message.content;
@@ -332,7 +380,7 @@ class _MessageBubbleState extends State<MessageBubble>
         }
       }
     } catch (e) {
-      // NULL
+      // It's a plain URL, do nothing.
     }
 
     return Column(
@@ -420,7 +468,8 @@ class _MessageBubbleState extends State<MessageBubble>
     }
 
     if (message.isError) {
-      return _buildTextContent(context, textColor);
+      return _buildTextContent(context, textColor,
+          Provider.of<AppConfigProvider>(context, listen: false));
     }
 
     return Padding(
@@ -488,7 +537,8 @@ class _MessageBubbleState extends State<MessageBubble>
               ],
             ),
           ] else ...[
-            _buildTextContent(context, textColor),
+            _buildTextContent(context, textColor,
+                Provider.of<AppConfigProvider>(context, listen: false)),
           ],
         ],
       ),
@@ -513,7 +563,7 @@ class _MessageBubbleState extends State<MessageBubble>
         statusIcon = Icons.hourglass_bottom_outlined;
         break;
       case AsyncTaskStatus.failure:
-        return _buildTextContent(context, textColor);
+        return _buildTextContent(context, textColor, appConfig);
       default:
         statusText = localizations.taskStatus;
         statusIcon = Icons.info_outline;
@@ -587,8 +637,8 @@ class _MessageBubbleState extends State<MessageBubble>
     );
   }
 
-  Widget _buildTextContent(BuildContext context, Color textColor) {
-    final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
+  Widget _buildTextContent(
+      BuildContext context, Color textColor, AppConfigProvider appConfig) {
     final isError = widget.message.isError;
     double fontSize;
     switch (appConfig.fontSize) {

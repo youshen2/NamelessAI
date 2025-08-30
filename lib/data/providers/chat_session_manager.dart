@@ -72,6 +72,7 @@ class ChatSessionManager extends ChangeNotifier {
         final session = AppDatabase.chatSessionsBox.get(lastSessionId);
         if (session != null) {
           _currentSession = session;
+          _clearAllEditingStates(_currentSession!);
           _isNewSession = false;
           shouldScrollToBottomOnLoad = false;
           notifyListeners();
@@ -79,6 +80,7 @@ class ChatSessionManager extends ChangeNotifier {
         }
       }
       _currentSession = _sessions.first;
+      _clearAllEditingStates(_currentSession!);
       _isNewSession = false;
       shouldScrollToBottomOnLoad = false;
       notifyListeners();
@@ -152,6 +154,7 @@ class ChatSessionManager extends ChangeNotifier {
     final session = AppDatabase.chatSessionsBox.get(sessionId);
     if (session != null) {
       _currentSession = session;
+      _clearAllEditingStates(_currentSession!);
       _isNewSession = false;
       _saveCurrentSessionId();
       shouldScrollToBottomOnLoad = true;
@@ -159,12 +162,15 @@ class ChatSessionManager extends ChangeNotifier {
     }
   }
 
-  void _clearAllEditingStates(ChatSession session) {
+  void _clearAllEditingStates(ChatSession session, {String? exceptMessageId}) {
     void recursiveClear(List<ChatMessage> messages, Set<int> visited) {
       if (messages.isEmpty || !visited.add(identityHashCode(messages))) return;
       for (var msg in messages) {
-        msg.isEditing = false;
-        if (msg.role == 'assistant' && session.branches.containsKey(msg.id)) {
+        if (msg.isEditing && msg.id != exceptMessageId) {
+          msg.isEditing = false;
+        }
+
+        if (msg.role == 'user' && session.branches.containsKey(msg.id)) {
           for (var branch in session.branches[msg.id]!) {
             recursiveClear(branch, visited);
           }
@@ -183,7 +189,8 @@ class ChatSessionManager extends ChangeNotifier {
       updatedAt: DateTime.now(),
     );
 
-    _clearAllEditingStates(_currentSession!);
+    // No need to clear edit states if this is only to set the name for a new chat
+    // _clearAllEditingStates(_currentSession!);
 
     await AppDatabase.chatSessionsBox
         .put(_currentSession!.id, _currentSession!);
@@ -206,7 +213,6 @@ class ChatSessionManager extends ChangeNotifier {
   Future<void> updateCurrentSession(ChatSession session) async {
     _currentSession = session.copyWith(updatedAt: DateTime.now());
     if (!_isNewSession || session.messages.isNotEmpty) {
-      _clearAllEditingStates(_currentSession!);
       await AppDatabase.chatSessionsBox.put(session.id, _currentSession!);
       _loadSessions();
     }
@@ -267,6 +273,10 @@ class ChatSessionManager extends ChangeNotifier {
 
   void toggleMessageEditing(String messageId, bool isEditing) {
     if (_currentSession == null) return;
+
+    _clearAllEditingStates(_currentSession!,
+        exceptMessageId: isEditing ? messageId : null);
+
     final message = _findMessageInSession(_currentSession!, messageId);
     if (message != null) {
       message.isEditing = isEditing;
@@ -423,12 +433,12 @@ class ChatSessionManager extends ChangeNotifier {
       return;
     }
 
-    final (parentList, userMessageIndex) = findResult;
+    final parentList = findResult.$1;
+    final userMessageIndex = findResult.$2;
     final userMessageToEdit = parentList[userMessageIndex];
 
-    userMessageToEdit.content = newContent;
-    userMessageToEdit.isEditing = false;
-    userMessageToEdit.modelName = model.name;
+    parentList[userMessageIndex] = userMessageToEdit.copyWith(
+        content: newContent, isEditing: false, modelName: model.name);
 
     final ChatMessage newAssistantMessage;
     if (model.modelType != ModelType.language &&
