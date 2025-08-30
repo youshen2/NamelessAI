@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:nameless_ai/api/api_service.dart';
-import 'package:nameless_ai/api/models.dart';
 import 'package:nameless_ai/data/app_database.dart';
 import 'package:nameless_ai/data/models/api_provider.dart';
 import 'package:nameless_ai/data/models/chat_message.dart';
@@ -25,6 +24,7 @@ class ChatSessionManager extends ChangeNotifier {
   List<ChatSession> _sessions = [];
   ChatSession? _currentSession;
   bool _isNewSession = true;
+  bool shouldScrollToBottomOnLoad = true;
   final Set<String> _generatingSessions = {};
   final Map<String, CancelToken> _cancelTokens = {};
   APIProviderManager? _apiProviderManager;
@@ -73,12 +73,14 @@ class ChatSessionManager extends ChangeNotifier {
         if (session != null) {
           _currentSession = session;
           _isNewSession = false;
+          shouldScrollToBottomOnLoad = false;
           notifyListeners();
           return;
         }
       }
       _currentSession = _sessions.first;
       _isNewSession = false;
+      shouldScrollToBottomOnLoad = false;
       notifyListeners();
     }
   }
@@ -142,6 +144,7 @@ class ChatSessionManager extends ChangeNotifier {
       imageStyle: _defaultImageStyle,
     );
     _isNewSession = true;
+    shouldScrollToBottomOnLoad = true;
     notifyListeners();
   }
 
@@ -151,6 +154,7 @@ class ChatSessionManager extends ChangeNotifier {
       _currentSession = session;
       _isNewSession = false;
       _saveCurrentSessionId();
+      shouldScrollToBottomOnLoad = true;
       notifyListeners();
     }
   }

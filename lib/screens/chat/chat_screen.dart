@@ -66,7 +66,16 @@ class _ChatScreenState extends State<ChatScreen> {
         _showScrollPageUpButton = false;
         _showScrollDownButton = false;
       });
-      _scrollToBottom(instant: true);
+      if (manager.shouldScrollToBottomOnLoad) {
+        _scrollToBottom(instant: true);
+      } else {
+        // When not scrolling on load, manually check button visibility after layout
+        SchedulerBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            _scrollListener();
+          }
+        });
+      }
     }
 
     if (manager.isGenerating &&
@@ -78,7 +87,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void _scrollListener() {
-    if (!mounted) return;
+    if (!mounted || !_scrollController.hasClients) return;
     final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
     final position = _scrollController.position;
 
@@ -146,7 +155,16 @@ class _ChatScreenState extends State<ChatScreen> {
     if (mounted) {
       setState(() {});
     }
-    _scrollToBottom(instant: true);
+    if (_chatSessionManager.shouldScrollToBottomOnLoad) {
+      _scrollToBottom(instant: true);
+    } else {
+      // When not scrolling on load, manually check button visibility after layout
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _scrollListener();
+        }
+      });
+    }
   }
 
   void _scrollToTop() {
