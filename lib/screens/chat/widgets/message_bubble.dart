@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:markdown/markdown.dart' as md;
@@ -65,9 +66,6 @@ class _MessageBubbleState extends State<MessageBubble>
   late final Animation<Offset> _slideAnimation;
   late final Animation<double> _fadeAnimation;
 
-  String? _currentContent;
-  String? _currentThinkingContent;
-
   @override
   bool get wantKeepAlive => true;
 
@@ -75,9 +73,6 @@ class _MessageBubbleState extends State<MessageBubble>
   void initState() {
     super.initState();
     _editController = TextEditingController(text: widget.message.content);
-
-    _currentContent = widget.message.content;
-    _currentThinkingContent = widget.message.thinkingContent;
 
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 400),
@@ -103,10 +98,34 @@ class _MessageBubbleState extends State<MessageBubble>
   @override
   void didUpdateWidget(covariant MessageBubble oldWidget) {
     super.didUpdateWidget(oldWidget);
+
+    if (widget.message.content != oldWidget.message.content) {
+      _editController.text = widget.message.content;
+      if (widget.message.isLoading &&
+          !widget.isReadOnly &&
+          widget.message.role == 'assistant' &&
+          widget.message.asyncTaskStatus == AsyncTaskStatus.none) {
+        HapticService.onStreamOutput(context);
+      }
+    }
+
+    if (widget.message.thinkingContent != oldWidget.message.thinkingContent) {
+      if (widget.message.isLoading && !widget.isReadOnly) {
+        HapticService.onThinking(context);
+      }
+    }
+
     if (oldWidget.message.isEditing != widget.message.isEditing) {
       if (widget.message.isEditing) {
-        _editController.text = widget.message.content;
-        _editFocusNode.requestFocus();
+        // Ensure controller is up-to-date before requesting focus.
+        if (_editController.text != widget.message.content) {
+          _editController.text = widget.message.content;
+        }
+        SchedulerBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            _editFocusNode.requestFocus();
+          }
+        });
       }
     }
   }
@@ -149,23 +168,6 @@ class _MessageBubbleState extends State<MessageBubble>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-
-    if (_currentContent != widget.message.content) {
-      _editController.text = widget.message.content;
-      if (widget.message.isLoading &&
-          !widget.isReadOnly &&
-          widget.message.role == 'assistant' &&
-          widget.message.asyncTaskStatus == AsyncTaskStatus.none) {
-        HapticService.onStreamOutput(context);
-      }
-      _currentContent = widget.message.content;
-    }
-    if (_currentThinkingContent != widget.message.thinkingContent) {
-      if (widget.message.isLoading && !widget.isReadOnly) {
-        HapticService.onThinking(context);
-      }
-      _currentThinkingContent = widget.message.thinkingContent;
-    }
 
     final appConfig = Provider.of<AppConfigProvider>(context);
     final isUser = widget.message.role == 'user';
