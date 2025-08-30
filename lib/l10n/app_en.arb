@@ -281,6 +281,23 @@
     }
   },
   "requestError": "Request Error",
+  "httpError": "HTTP Error: {statusCode} {statusMessage}",
+  "@httpError": {
+    "placeholders": {
+      "statusCode": {
+        "type": "int"
+      },
+      "statusMessage": {
+        "type": "String"
+      }
+    }
+  },
+  "error401": "Authentication failed. Please check your API Key.",
+  "error404": "Not Found. Please check the Base URL and API Path.",
+  "error429": "Too many requests. You may have exceeded your rate limit or quota.",
+  "errorTimeout": "Request timed out. Please check your network connection.",
+  "errorConnection": "Connection error. Please check your network connection and the Base URL.",
+  "errorUnknownNetwork": "An unknown network error occurred.",
   "unknownErrorOccurred": "An unknown error occurred",
   "cancelled": "Cancelled",
   "ok": "OK",

@@ -698,6 +698,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get requestError => 'Request Error';
 
   @override
+  String httpError(int statusCode, String statusMessage) {
+    return 'HTTP Error: $statusCode $statusMessage';
+  }
+
+  @override
+  String get error401 => 'Authentication failed. Please check your API Key.';
+
+  @override
+  String get error404 => 'Not Found. Please check the Base URL and API Path.';
+
+  @override
+  String get error429 =>
+      'Too many requests. You may have exceeded your rate limit or quota.';
+
+  @override
+  String get errorTimeout =>
+      'Request timed out. Please check your network connection or increase timeout settings.';
+
+  @override
+  String get errorConnection =>
+      'Connection error. Please check your network connection and the Base URL.';
+
+  @override
+  String get errorUnknownNetwork => 'An unknown network error occurred.';
+
+  @override
   String get unknownErrorOccurred => 'An unknown error occurred';
 
   @override

@@ -1406,6 +1406,48 @@ abstract class AppLocalizations {
   /// **'Request Error'**
   String get requestError;
 
+  /// No description provided for @httpError.
+  ///
+  /// In en, this message translates to:
+  /// **'HTTP Error: {statusCode} {statusMessage}'**
+  String httpError(int statusCode, String statusMessage);
+
+  /// No description provided for @error401.
+  ///
+  /// In en, this message translates to:
+  /// **'Authentication failed. Please check your API Key.'**
+  String get error401;
+
+  /// No description provided for @error404.
+  ///
+  /// In en, this message translates to:
+  /// **'Not Found. Please check the Base URL and API Path.'**
+  String get error404;
+
+  /// No description provided for @error429.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many requests. You may have exceeded your rate limit or quota.'**
+  String get error429;
+
+  /// No description provided for @errorTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Request timed out. Please check your network connection or increase timeout settings.'**
+  String get errorTimeout;
+
+  /// No description provided for @errorConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection error. Please check your network connection and the Base URL.'**
+  String get errorConnection;
+
+  /// No description provided for @errorUnknownNetwork.
+  ///
+  /// In en, this message translates to:
+  /// **'An unknown network error occurred.'**
+  String get errorUnknownNetwork;
+
   /// No description provided for @unknownErrorOccurred.
   ///
   /// In en, this message translates to:

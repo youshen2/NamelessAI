@@ -59,19 +59,50 @@ class GenerationService {
           messageToUpdate.isError = true;
         }
       } else {
-        String errorMessage = localizations.requestError;
-        if (e.response?.data != null) {
-          try {
+        String errorMessage;
+        if (e.response != null) {
+          final statusCode = e.response!.statusCode ?? 0;
+          final statusMessage = e.response!.statusMessage ?? '';
+          errorMessage = localizations.httpError(statusCode, statusMessage);
+
+          switch (statusCode) {
+            case 401:
+              errorMessage += '\n\n${localizations.error401}';
+              break;
+            case 404:
+              errorMessage += '\n\n${localizations.error404}';
+              break;
+            case 429:
+              errorMessage += '\n\n${localizations.error429}';
+              break;
+          }
+
+          if (e.response!.data != null) {
             messageToUpdate.rawResponseJson = e.response!.data.toString();
-            final prettyJson =
-                const JsonEncoder.withIndent('  ').convert(e.response!.data);
-            errorMessage += '\n\n```json\n$prettyJson\n```';
-          } catch (_) {
-            errorMessage += '\n\n```\n${e.response!.data.toString()}\n```';
+            try {
+              final prettyJson =
+                  const JsonEncoder.withIndent('  ').convert(e.response!.data);
+              errorMessage += '\n\n```json\n$prettyJson\n```';
+            } catch (_) {
+              errorMessage += '\n\n```\n${e.response!.data.toString()}\n```';
+            }
           }
         } else {
-          errorMessage +=
-              '\n\n${e.message ?? 'Code: ${e.response?.statusCode}'}';
+          errorMessage = localizations.requestError;
+          switch (e.type) {
+            case DioExceptionType.connectionTimeout:
+            case DioExceptionType.sendTimeout:
+            case DioExceptionType.receiveTimeout:
+              errorMessage += '\n\n${localizations.errorTimeout}';
+              break;
+            case DioExceptionType.connectionError:
+              errorMessage += '\n\n${localizations.errorConnection}';
+              break;
+            default:
+              errorMessage +=
+                  '\n\n${e.message ?? localizations.errorUnknownNetwork}';
+              break;
+          }
         }
         messageToUpdate.content = errorMessage;
         messageToUpdate.isError = true;

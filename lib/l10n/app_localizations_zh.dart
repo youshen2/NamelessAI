@@ -684,6 +684,29 @@ class AppLocalizationsZh extends AppLocalizations {
   String get requestError => '请求错误';
 
   @override
+  String httpError(int statusCode, String statusMessage) {
+    return 'HTTP 错误: $statusCode $statusMessage';
+  }
+
+  @override
+  String get error401 => '身份验证失败。请检查您的 API 密钥。';
+
+  @override
+  String get error404 => '未找到。请检查您的基础 URL 和 API 路径。';
+
+  @override
+  String get error429 => '请求过多。您可能已超出速率限制或配额。';
+
+  @override
+  String get errorTimeout => '请求超时。请检查您的网络连接或增加超时设置。';
+
+  @override
+  String get errorConnection => '连接错误。请检查您的网络连接和基础 URL。';
+
+  @override
+  String get errorUnknownNetwork => '发生未知网络错误。';
+
+  @override
   String get unknownErrorOccurred => '发生未知错误';
 
   @override

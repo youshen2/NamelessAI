@@ -281,6 +281,23 @@
     }
   },
   "requestError": "请求错误",
+  "httpError": "HTTP 错误: {statusCode} {statusMessage}",
+  "@httpError": {
+    "placeholders": {
+      "statusCode": {
+        "type": "int"
+      },
+      "statusMessage": {
+        "type": "String"
+      }
+    }
+  },
+  "error401": "身份验证失败。请检查您的 API 密钥。",
+  "error404": "未找到。请检查您的基础 URL 和 API 路径。",
+  "error429": "请求过多。您可能已超出速率限制或配额。",
+  "errorTimeout": "请求超时。请检查您的网络连接。",
+  "errorConnection": "连接错误。请检查您的网络连接和基础 URL。",
+  "errorUnknownNetwork": "发生未知网络错误。",
   "unknownErrorOccurred": "发生未知错误",
   "cancelled": "已取消",
   "ok": "好的",
