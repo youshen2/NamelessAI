@@ -1059,4 +1059,19 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get apacheLicenseUrl => 'www.apache.org/licenses/LICENSE-2.0';
+
+  @override
+  String get distinguishAssistantBubble => '区分 AI 气泡';
+
+  @override
+  String get distinguishAssistantBubbleHint => '为AI的气泡添加边框，让它区别于背景色。';
+
+  @override
+  String get scrollButtonPosition => '滚动按钮位置';
+
+  @override
+  String get scrollButtonBottomOffset => '底部偏移';
+
+  @override
+  String get scrollButtonRightOffset => '右侧偏移';
 }

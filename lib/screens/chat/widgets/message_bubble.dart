@@ -117,7 +117,6 @@ class _MessageBubbleState extends State<MessageBubble>
 
     if (oldWidget.message.isEditing != widget.message.isEditing) {
       if (widget.message.isEditing) {
-        // Ensure controller is up-to-date before requesting focus.
         if (_editController.text != widget.message.content) {
           _editController.text = widget.message.content;
         }
@@ -258,6 +257,14 @@ class _MessageBubbleState extends State<MessageBubble>
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
+          side: !isUser && !isError && appConfig.distinguishAssistantBubble
+              ? BorderSide(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .outlineVariant
+                      .withOpacity(0.5),
+                )
+              : BorderSide.none,
         ),
         clipBehavior: Clip.antiAlias,
         child: Column(

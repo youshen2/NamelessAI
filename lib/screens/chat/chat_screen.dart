@@ -69,7 +69,6 @@ class _ChatScreenState extends State<ChatScreen> {
       if (manager.shouldScrollToBottomOnLoad) {
         _scrollToBottom(instant: true);
       } else {
-        // When not scrolling on load, manually check button visibility after layout
         SchedulerBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
             _scrollListener();
@@ -158,7 +157,6 @@ class _ChatScreenState extends State<ChatScreen> {
     if (_chatSessionManager.shouldScrollToBottomOnLoad) {
       _scrollToBottom(instant: true);
     } else {
-      // When not scrolling on load, manually check button visibility after layout
       SchedulerBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
           _scrollListener();
@@ -588,8 +586,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 child: _buildInputArea(localizations, manager.isGenerating),
               ),
               Positioned(
-                bottom: 110,
-                right: 16,
+                bottom: appConfig.scrollButtonBottomOffset,
+                right: appConfig.scrollButtonRightOffset,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [

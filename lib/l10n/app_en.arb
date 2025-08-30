@@ -418,5 +418,10 @@
   "developerUrl": "space.bilibili.com/394675616",
   "easterEgg": "Ciallo～(∠・ω< )⌒★",
   "apacheLicense": "Licensed under the Apache License 2.0",
-  "apacheLicenseUrl": "www.apache.org/licenses/LICENSE-2.0"
+  "apacheLicenseUrl": "www.apache.org/licenses/LICENSE-2.0",
+  "distinguishAssistantBubble": "Distinguish Assistant Bubble",
+  "distinguishAssistantBubbleHint": "Add a border to the assistant's bubble to distinguish it from the background.",
+  "scrollButtonPosition": "Scroll Button Position",
+  "scrollButtonBottomOffset": "Bottom Offset",
+  "scrollButtonRightOffset": "Right Offset"
 }

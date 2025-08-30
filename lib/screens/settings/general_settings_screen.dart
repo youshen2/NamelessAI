@@ -96,6 +96,46 @@ class GeneralSettingsScreen extends StatelessWidget {
                     },
                     activeColor: Theme.of(context).colorScheme.primary,
                   ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                    child: Text(
+                      localizations.scrollButtonPosition,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                    child: Text(
+                        '${localizations.scrollButtonBottomOffset}: ${appConfig.scrollButtonBottomOffset.toStringAsFixed(0)}'),
+                  ),
+                  Slider(
+                    value: appConfig.scrollButtonBottomOffset,
+                    min: 16.0,
+                    max: 200.0,
+                    divisions: 184,
+                    label:
+                        appConfig.scrollButtonBottomOffset.toStringAsFixed(0),
+                    onChanged: (value) {
+                      HapticService.onSliderChange(context);
+                      appConfig.setScrollButtonBottomOffset(value);
+                    },
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                    child: Text(
+                        '${localizations.scrollButtonRightOffset}: ${appConfig.scrollButtonRightOffset.toStringAsFixed(0)}'),
+                  ),
+                  Slider(
+                    value: appConfig.scrollButtonRightOffset,
+                    min: 0.0,
+                    max: 100.0,
+                    divisions: 100,
+                    label: appConfig.scrollButtonRightOffset.toStringAsFixed(0),
+                    onChanged: (value) {
+                      HapticService.onSliderChange(context);
+                      appConfig.setScrollButtonRightOffset(value);
+                    },
+                  ),
                 ],
               ),
             ),

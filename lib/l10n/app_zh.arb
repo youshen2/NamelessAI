@@ -418,5 +418,10 @@
   "developerUrl": "space.bilibili.com/394675616",
   "easterEgg": "Ciallo～(∠・ω< )⌒★",
   "apacheLicense": "本项目基于 Apache License 2.0 许可开源",
-  "apacheLicenseUrl": "www.apache.org/licenses/LICENSE-2.0"
+  "apacheLicenseUrl": "www.apache.org/licenses/LICENSE-2.0",
+  "distinguishAssistantBubble": "区分 AI 气泡",
+  "distinguishAssistantBubbleHint": "为AI的气泡添加边框，让它区别于背景色。",
+  "scrollButtonPosition": "滚动按钮位置",
+  "scrollButtonBottomOffset": "底部偏移",
+  "scrollButtonRightOffset": "右侧偏移"
 }

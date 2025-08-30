@@ -2149,6 +2149,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'www.apache.org/licenses/LICENSE-2.0'**
   String get apacheLicenseUrl;
+
+  /// No description provided for @distinguishAssistantBubble.
+  ///
+  /// In en, this message translates to:
+  /// **'Distinguish Assistant Bubble'**
+  String get distinguishAssistantBubble;
+
+  /// No description provided for @distinguishAssistantBubbleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a border to the assistant\'s bubble to distinguish it from the background.'**
+  String get distinguishAssistantBubbleHint;
+
+  /// No description provided for @scrollButtonPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Scroll Button Position'**
+  String get scrollButtonPosition;
+
+  /// No description provided for @scrollButtonBottomOffset.
+  ///
+  /// In en, this message translates to:
+  /// **'Bottom Offset'**
+  String get scrollButtonBottomOffset;
+
+  /// No description provided for @scrollButtonRightOffset.
+  ///
+  /// In en, this message translates to:
+  /// **'Right Offset'**
+  String get scrollButtonRightOffset;
 }
 
 class _AppLocalizationsDelegate

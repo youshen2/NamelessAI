@@ -1089,4 +1089,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get apacheLicenseUrl => 'www.apache.org/licenses/LICENSE-2.0';
+
+  @override
+  String get distinguishAssistantBubble => 'Distinguish Assistant Bubble';
+
+  @override
+  String get distinguishAssistantBubbleHint =>
+      'Add a border to the assistant\'s bubble to distinguish it from the background.';
+
+  @override
+  String get scrollButtonPosition => 'Scroll Button Position';
+
+  @override
+  String get scrollButtonBottomOffset => 'Bottom Offset';
+
+  @override
+  String get scrollButtonRightOffset => 'Right Offset';
 }

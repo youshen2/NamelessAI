@@ -296,23 +296,28 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
             ] else ...[
               _buildLanguageModelSettings(localizations),
             ],
-            const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton(
-                  onPressed: () {
-                    HapticService.onButtonPress(context);
-                    Navigator.pop(context);
-                  },
-                  child: Text(localizations.cancel),
-                ),
-                const SizedBox(width: 8),
-                FilledButton(
-                  onPressed: _save,
-                  child: Text(localizations.save),
-                ),
-              ],
+            Padding(
+              padding: EdgeInsets.only(
+                top: 24.0,
+                bottom: MediaQuery.of(context).padding.bottom,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      HapticService.onButtonPress(context);
+                      Navigator.pop(context);
+                    },
+                    child: Text(localizations.cancel),
+                  ),
+                  const SizedBox(width: 8),
+                  FilledButton(
+                    onPressed: _save,
+                    child: Text(localizations.save),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

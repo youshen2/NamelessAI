@@ -33,6 +33,7 @@ class AppConfigProvider extends ChangeNotifier {
   bool _showModelName = true;
   bool _compactMode = false;
   double _chatBubbleWidth = 0.8;
+  bool _distinguishAssistantBubble = true;
 
   bool _useFirstSentenceAsTitle = true;
   String _codeTheme = 'github';
@@ -61,6 +62,9 @@ class AppConfigProvider extends ChangeNotifier {
   bool _enableBlurEffect = true;
   PageTransitionType _pageTransitionType = PageTransitionType.system;
 
+  double _scrollButtonBottomOffset = 110.0;
+  double _scrollButtonRightOffset = 16.0;
+
   AppConfigProvider() {
     _loadConfig();
   }
@@ -86,6 +90,7 @@ class AppConfigProvider extends ChangeNotifier {
   bool get showModelName => _showModelName;
   bool get compactMode => _compactMode;
   double get chatBubbleWidth => _chatBubbleWidth;
+  bool get distinguishAssistantBubble => _distinguishAssistantBubble;
 
   bool get useFirstSentenceAsTitle => _useFirstSentenceAsTitle;
   String get codeTheme => _codeTheme;
@@ -113,6 +118,9 @@ class AppConfigProvider extends ChangeNotifier {
   double get cornerRadius => _cornerRadius;
   bool get enableBlurEffect => _enableBlurEffect;
   PageTransitionType get pageTransitionType => _pageTransitionType;
+
+  double get scrollButtonBottomOffset => _scrollButtonBottomOffset;
+  double get scrollButtonRightOffset => _scrollButtonRightOffset;
 
   void _loadConfig() {
     final box = AppDatabase.appConfigBox;
@@ -147,6 +155,8 @@ class AppConfigProvider extends ChangeNotifier {
     _showModelName = box.get('showModelName', defaultValue: true);
     _compactMode = box.get('compactMode', defaultValue: false);
     _chatBubbleWidth = box.get('chatBubbleWidth', defaultValue: 0.8);
+    _distinguishAssistantBubble =
+        box.get('distinguishAssistantBubble', defaultValue: true);
     _useFirstSentenceAsTitle =
         box.get('useFirstSentenceAsTitle', defaultValue: true);
     _codeTheme = box.get('codeTheme', defaultValue: 'github');
@@ -182,6 +192,11 @@ class AppConfigProvider extends ChangeNotifier {
     _pageTransitionType = PageTransitionType.values[box.get(
         'pageTransitionType',
         defaultValue: PageTransitionType.system.index)];
+
+    _scrollButtonBottomOffset =
+        box.get('scrollButtonBottomOffset', defaultValue: 110.0);
+    _scrollButtonRightOffset =
+        box.get('scrollButtonRightOffset', defaultValue: 16.0);
 
     notifyListeners();
   }
@@ -317,6 +332,13 @@ class AppConfigProvider extends ChangeNotifier {
     }
   }
 
+  void setDistinguishAssistantBubble(bool value) {
+    if (_distinguishAssistantBubble != value) {
+      _distinguishAssistantBubble = value;
+      _updateValue('distinguishAssistantBubble', value);
+    }
+  }
+
   void setUseFirstSentenceAsTitle(bool value) {
     if (_useFirstSentenceAsTitle != value) {
       _useFirstSentenceAsTitle = value;
@@ -433,6 +455,20 @@ class AppConfigProvider extends ChangeNotifier {
     if (_pageTransitionType != type) {
       _pageTransitionType = type;
       _updateValue('pageTransitionType', type.index);
+    }
+  }
+
+  void setScrollButtonBottomOffset(double offset) {
+    if (_scrollButtonBottomOffset != offset) {
+      _scrollButtonBottomOffset = offset;
+      _updateValue('scrollButtonBottomOffset', offset);
+    }
+  }
+
+  void setScrollButtonRightOffset(double offset) {
+    if (_scrollButtonRightOffset != offset) {
+      _scrollButtonRightOffset = offset;
+      _updateValue('scrollButtonRightOffset', offset);
     }
   }
 

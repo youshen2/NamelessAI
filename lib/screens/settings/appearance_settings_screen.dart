@@ -279,6 +279,17 @@ void main() {
                     activeColor: Theme.of(context).colorScheme.primary,
                   ),
                   SwitchListTile(
+                    title: Text(localizations.distinguishAssistantBubble),
+                    subtitle:
+                        Text(localizations.distinguishAssistantBubbleHint),
+                    value: appConfig.distinguishAssistantBubble,
+                    onChanged: (value) {
+                      HapticService.onSwitchToggle(context);
+                      appConfig.setDistinguishAssistantBubble(value);
+                    },
+                    activeColor: Theme.of(context).colorScheme.primary,
+                  ),
+                  SwitchListTile(
                     title: Text(localizations.showTimestamps),
                     value: appConfig.showTimestamps,
                     onChanged: (value) {
