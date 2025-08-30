@@ -86,7 +86,9 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void _scrollListener() {
-    if (!mounted || !_scrollController.hasClients) return;
+    if (!mounted ||
+        !_scrollController.hasClients ||
+        !_scrollController.position.hasContentDimensions) return;
     final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
     final position = _scrollController.position;
 
