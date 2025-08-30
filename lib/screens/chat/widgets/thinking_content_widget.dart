@@ -1,8 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:markdown/markdown.dart' as md;
 import 'package:nameless_ai/data/models/chat_message.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
+import 'package:nameless_ai/screens/chat/widgets/markdown_code_block.dart';
+import 'package:nameless_ai/screens/chat/widgets/markdown_components.dart';
 import 'package:nameless_ai/services/haptic_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -64,6 +67,21 @@ class ThinkingContentWidget extends StatelessWidget {
               data: message.thinkingContent!,
               selectable: false,
               styleSheet: markdownStyleSheet,
+              extensionSet: md.ExtensionSet(
+                md.ExtensionSet.gitHubWeb.blockSyntaxes,
+                [
+                  ...md.ExtensionSet.gitHubWeb.inlineSyntaxes,
+                  MathInlineSyntax(),
+                  MathDisplaySyntax(),
+                ],
+              ),
+              builders: {
+                'code': MarkdownCodeBlockBuilder(
+                    context: context, isSelectable: false),
+                'math_inline': MathBuilder(context: context, fontSize: 14),
+                'math_display': MathBuilder(context: context, fontSize: 14),
+                'hr': HrBuilder(context: context),
+              },
               onTapLink: (text, href, title) {
                 if (href != null) {
                   HapticService.onButtonPress(context);

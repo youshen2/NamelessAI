@@ -629,7 +629,8 @@ class _MessageBubbleState extends State<MessageBubble>
           ],
         ),
         builders: {
-          'code': MarkdownCodeBlockBuilder(context: context),
+          'code':
+              MarkdownCodeBlockBuilder(context: context, isSelectable: false),
           'math_inline': MathBuilder(context: context, fontSize: fontSize),
           'math_display': MathBuilder(context: context, fontSize: fontSize),
           'hr': HrBuilder(context: context),

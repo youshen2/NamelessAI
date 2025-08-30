@@ -4,6 +4,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
+import 'package:nameless_ai/screens/chat/widgets/markdown_code_block.dart';
 import 'package:nameless_ai/utils/helpers.dart';
 
 class UpdateService {
@@ -89,6 +90,9 @@ class UpdateService {
                 MarkdownBody(
                   data: notes,
                   selectable: true,
+                  builders: {
+                    'code': MarkdownCodeBlockBuilder(context: context),
+                  },
                   onTapLink: (text, href, title) {
                     if (href != null) {
                       launchUrl(Uri.parse(href));

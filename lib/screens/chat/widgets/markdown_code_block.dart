@@ -38,8 +38,9 @@ void _showFreeCopyDialog(BuildContext context, String code) {
 
 class MarkdownCodeBlockBuilder extends MarkdownElementBuilder {
   final BuildContext context;
+  final bool isSelectable;
 
-  MarkdownCodeBlockBuilder({required this.context});
+  MarkdownCodeBlockBuilder({required this.context, this.isSelectable = true});
 
   @override
   Widget? visitElementAfter(md.Element element, TextStyle? preferredStyle) {
@@ -53,6 +54,7 @@ class MarkdownCodeBlockBuilder extends MarkdownElementBuilder {
         language: language,
         code: code,
         theme: theme,
+        isSelectable: isSelectable,
       );
     }
     return null;
@@ -64,6 +66,7 @@ class CollapsibleCodeBlock extends StatefulWidget {
   final String code;
   final Map<String, TextStyle> theme;
   final bool isReadOnly;
+  final bool isSelectable;
 
   const CollapsibleCodeBlock({
     super.key,
@@ -71,6 +74,7 @@ class CollapsibleCodeBlock extends StatefulWidget {
     required this.code,
     required this.theme,
     this.isReadOnly = false,
+    this.isSelectable = true,
   });
 
   @override
@@ -83,6 +87,18 @@ class _CollapsibleCodeBlockState extends State<CollapsibleCodeBlock> {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+
+    final highlightView = HighlightView(
+      widget.code,
+      language: widget.language,
+      theme: widget.theme,
+      padding: const EdgeInsets.all(12.0),
+      textStyle: const TextStyle(
+        fontFamily: 'monospace',
+        fontSize: 14,
+      ),
+    );
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       decoration: BoxDecoration(
@@ -192,18 +208,9 @@ class _CollapsibleCodeBlockState extends State<CollapsibleCodeBlock> {
                           .withOpacity(0.5)),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
-                    child: SelectionArea(
-                      child: HighlightView(
-                        widget.code,
-                        language: widget.language,
-                        theme: widget.theme,
-                        padding: const EdgeInsets.all(12.0),
-                        textStyle: const TextStyle(
-                          fontFamily: 'monospace',
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
+                    child: widget.isSelectable
+                        ? SelectionArea(child: highlightView)
+                        : highlightView,
                   ),
                 ],
               ),
