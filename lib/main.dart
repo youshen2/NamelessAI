@@ -61,24 +61,46 @@ class ErrorApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'NamelessAI Error',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData.light(useMaterial3: true),
-      darkTheme: ThemeData.dark(useMaterial3: true),
-      themeMode: ThemeMode.system,
-      home: ErrorScreen(
-        error: error,
-        stackTrace: stackTrace,
-        onRestart: onRestart,
-      ),
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: AppLocalizations.supportedLocales,
+    final appConfig = AppConfigProvider();
+
+    return DynamicColorBuilder(
+      builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+        ColorScheme lightColorScheme;
+        ColorScheme darkColorScheme;
+
+        if (appConfig.enableMonet &&
+            lightDynamic != null &&
+            darkDynamic != null) {
+          lightColorScheme = lightDynamic;
+          darkColorScheme = darkDynamic;
+        } else {
+          lightColorScheme = ColorScheme.fromSeed(seedColor: Colors.blue);
+          darkColorScheme = ColorScheme.fromSeed(
+              seedColor: Colors.blue, brightness: Brightness.dark);
+        }
+
+        return MaterialApp(
+          title: 'NamelessAI Error',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.lightTheme(lightColorScheme, appConfig.cornerRadius),
+          darkTheme:
+              AppTheme.darkTheme(darkColorScheme, appConfig.cornerRadius),
+          themeMode: appConfig.themeMode,
+          locale: appConfig.locale,
+          home: ErrorScreen(
+            error: error,
+            stackTrace: stackTrace,
+            onRestart: onRestart,
+          ),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+        );
+      },
     );
   }
 }
