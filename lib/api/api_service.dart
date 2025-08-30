@@ -25,12 +25,12 @@ class ApiService {
       ChatCompletionRequest request,
       [CancelToken? cancelToken]) async {
     try {
-      debugPrint(
-          "NamelessAI - Sending Request: ${jsonEncode(request.toJson())}");
+      final requestBody = jsonEncode(request.toJson());
+      debugPrint("NamelessAI - Sending Request: $requestBody");
       final path = request.model.chatPath ?? '/v1/chat/completions';
       final response = await _dio.post(
         path,
-        data: request.toJson(),
+        data: requestBody,
         cancelToken: cancelToken,
       );
       final rawResponseString =
@@ -73,12 +73,12 @@ class ApiService {
   Stream<dynamic> getChatCompletionStream(ChatCompletionRequest request,
       [CancelToken? cancelToken]) async* {
     try {
-      debugPrint(
-          "NamelessAI - Sending Stream Request: ${jsonEncode(request.toJson())}");
+      final requestBody = jsonEncode(request.toJson());
+      debugPrint("NamelessAI - Sending Stream Request: $requestBody");
       final path = request.model.chatPath ?? '/v1/chat/completions';
       final response = await _dio.post(
         path,
-        data: request.toJson(),
+        data: requestBody,
         options: Options(
           responseType: ResponseType.stream,
           headers: {
@@ -174,14 +174,14 @@ class ApiService {
   Future<ImageGenerationResponse> generateImage(ImageGenerationRequest request,
       [CancelToken? cancelToken]) async {
     try {
-      debugPrint(
-          "NamelessAI - Sending Image Request: ${jsonEncode(request.toJson())}");
+      final requestBody = jsonEncode(request.toJson());
+      debugPrint("NamelessAI - Sending Image Request: $requestBody");
       final path = request.modelSettings.imaginePath;
       final endpoint =
           (path != null && path.isNotEmpty) ? path : '/v1/images/generations';
       final response = await _dio.post(
         endpoint,
-        data: request.toJson(),
+        data: requestBody,
         cancelToken: cancelToken,
       );
       final rawResponseString = jsonEncode(response.data);
@@ -197,8 +197,8 @@ class ApiService {
       MidjourneyImagineRequest request,
       [CancelToken? cancelToken]) async {
     try {
-      debugPrint(
-          "NamelessAI - Submitting Midjourney Task: ${jsonEncode(request.toJson())}");
+      final requestBody = jsonEncode(request.toJson());
+      debugPrint("NamelessAI - Submitting Midjourney Task: $requestBody");
       final imaginePath = request.modelSettings.imaginePath;
       final endpoint = (imaginePath != null && imaginePath.isNotEmpty)
           ? imaginePath
@@ -206,7 +206,7 @@ class ApiService {
 
       final response = await _dio.post(
         endpoint,
-        data: request.toJson(),
+        data: requestBody,
         cancelToken: cancelToken,
       );
       final rawResponseString =
@@ -252,12 +252,12 @@ class ApiService {
   Future<VideoCreationResponse> createVideoTask(VideoCreationRequest request,
       [CancelToken? cancelToken]) async {
     try {
-      debugPrint(
-          "NamelessAI - Creating Video Task: ${jsonEncode(request.toJson())}");
+      final requestBody = jsonEncode(request.toJson());
+      debugPrint("NamelessAI - Creating Video Task: $requestBody");
       final path = request.modelSettings.createVideoPath ?? '/v1/video/create';
       final response = await _dio.post(
         path,
-        data: request.toJson(),
+        data: requestBody,
         cancelToken: cancelToken,
       );
       final rawResponseString = jsonEncode(response.data);
