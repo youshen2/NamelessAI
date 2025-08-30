@@ -84,19 +84,27 @@ class _APIProviderFormState extends State<APIProviderForm> {
     if (_formKey.currentState!.validate()) {
       final manager = Provider.of<APIProviderManager>(context, listen: false);
 
+      String baseUrl = _baseUrlController.text.trim();
+      if (baseUrl.endsWith('/v1')) {
+        baseUrl = baseUrl.substring(0, baseUrl.length - 3);
+      }
+      while (baseUrl.endsWith('/')) {
+        baseUrl = baseUrl.substring(0, baseUrl.length - 1);
+      }
+
       if (widget.isEditing) {
         final updatedProvider = widget.provider!.copyWith(
-          name: _nameController.text,
-          baseUrl: _baseUrlController.text,
-          apiKey: _apiKeyController.text,
+          name: _nameController.text.trim(),
+          baseUrl: baseUrl,
+          apiKey: _apiKeyController.text.trim(),
           models: _models,
         );
         await manager.updateProvider(updatedProvider);
       } else {
         final newProvider = APIProvider(
-          name: _nameController.text,
-          baseUrl: _baseUrlController.text,
-          apiKey: _apiKeyController.text,
+          name: _nameController.text.trim(),
+          baseUrl: baseUrl,
+          apiKey: _apiKeyController.text.trim(),
           models: _models,
         );
         await manager.addProvider(newProvider);

@@ -31,7 +31,22 @@ class ChatBoxBackup {
       final sessionId = sessionMeta['id'];
       final sessionData = json['session:$sessionId'] as Map<String, dynamic>?;
       if (sessionData != null) {
-        final messages = (sessionData['messages'] as List<dynamic>? ?? [])
+        final allMessagesData = sessionData['messages'] as List<dynamic>? ?? [];
+        String? systemPrompt;
+
+        final systemMessageData = allMessagesData
+            .firstWhere((msg) => msg['role'] == 'system', orElse: () => null);
+
+        if (systemMessageData != null) {
+          final contentParts =
+              systemMessageData['contentParts'] as List<dynamic>? ?? [];
+          if (contentParts.isNotEmpty) {
+            systemPrompt = contentParts.first['text'] as String? ?? '';
+          }
+        }
+
+        final messages = allMessagesData
+            .where((msg) => msg['role'] != 'system')
             .map((msg) => _parseChatMessage(msg))
             .toList();
 
@@ -60,6 +75,7 @@ class ChatBoxBackup {
           id: sessionId,
           name: sessionMeta['name'],
           messages: messages,
+          systemPrompt: systemPrompt,
           branches: branches,
           activeBranchSelections: activeBranchSelections,
         ));
