@@ -456,7 +456,7 @@ class _ChatScreenState extends State<ChatScreen> {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
         child: Container(
-          color: Colors.transparent,
+          color: Theme.of(context).colorScheme.surface.withOpacity(0.6),
         ),
       ),
     );
@@ -470,10 +470,16 @@ class _ChatScreenState extends State<ChatScreen> {
 
     return Consumer<ChatSessionManager>(
       builder: (context, manager, child) {
+        final appConfig = Provider.of<AppConfigProvider>(context);
         final messages = manager.activeMessages;
         return Scaffold(
           extendBody: true,
+          extendBodyBehindAppBar: true,
           appBar: AppBar(
+            backgroundColor:
+                appConfig.enableBlurEffect ? Colors.transparent : null,
+            elevation: 0,
+            scrolledUnderElevation: 0,
             flexibleSpace: _buildBlurBackground(context),
             title: GestureDetector(
               onTap: () {
@@ -529,7 +535,10 @@ class _ChatScreenState extends State<ChatScreen> {
                   addAutomaticKeepAlives: true,
                   itemCount: messages.length,
                   padding: EdgeInsets.only(
-                      top: 8.0, bottom: isDesktop ? 90.0 : 140.0),
+                      top: kToolbarHeight +
+                          MediaQuery.of(context).padding.top +
+                          8.0,
+                      bottom: isDesktop ? 90.0 : 140.0),
                   itemBuilder: (context, index) {
                     final message = messages[index];
                     final session = manager.currentSession;
@@ -844,25 +853,31 @@ class _ChatScreenState extends State<ChatScreen> {
         for (var provider in providers) {
           items.add(PopupMenuItem(
             enabled: false,
-            child: Text(provider.name,
-                style: const TextStyle(fontWeight: FontWeight.bold)),
+            height: 32,
+            child: Text(
+              provider.name,
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
           ));
           for (var model in provider.models) {
+            final bool isSelected = apiManager.selectedModel?.id == model.id;
             items.add(PopupMenuItem(
               value: model,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 8.0),
-                child: Row(
-                  children: [
-                    if (apiManager.selectedModel?.id == model.id)
-                      Icon(Icons.check,
-                          color: Theme.of(context).colorScheme.primary)
-                    else
-                      const SizedBox(width: 24),
-                    const SizedBox(width: 12),
-                    Expanded(child: Text(model.name)),
-                  ],
-                ),
+              child: Row(
+                children: [
+                  Icon(
+                    isSelected ? Icons.check_circle : Icons.circle_outlined,
+                    size: 20,
+                    color: isSelected
+                        ? Theme.of(context).colorScheme.primary
+                        : Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(child: Text(model.name)),
+                ],
               ),
             ));
           }
@@ -872,11 +887,21 @@ class _ChatScreenState extends State<ChatScreen> {
         }
         return items;
       },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12.0),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainer,
+          borderRadius: BorderRadius.circular(12.0),
+          border: Border.all(
+            color:
+                Theme.of(context).colorScheme.outlineVariant.withOpacity(0.5),
+          ),
+        ),
         child: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Icon(Icons.model_training_outlined,
+                size: 18,
                 color: Theme.of(context).colorScheme.onSurfaceVariant),
             const SizedBox(width: 8),
             ConstrainedBox(
@@ -888,7 +913,9 @@ class _ChatScreenState extends State<ChatScreen> {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
+            const SizedBox(width: 4),
             Icon(Icons.arrow_drop_down,
+                size: 20,
                 color: Theme.of(context).colorScheme.onSurfaceVariant),
           ],
         ),
