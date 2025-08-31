@@ -82,41 +82,22 @@ class _APIProviderSettingsScreenState extends State<APIProviderSettingsScreen> {
             );
           }
           return ListView.builder(
-            padding: EdgeInsets.fromLTRB(8, 8, 8, isDesktop ? 16 : 96),
+            padding: EdgeInsets.fromLTRB(16, 8, 16, isDesktop ? 16 : 96),
             itemCount: manager.providers.length,
             itemBuilder: (context, index) {
               final provider = manager.providers[index];
               return Card(
-                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(provider.name,
-                          style: Theme.of(context).textTheme.titleLarge),
-                      const SizedBox(height: 4),
-                      Text(provider.baseUrl,
-                          style: Theme.of(context).textTheme.bodySmall),
-                      const SizedBox(height: 16),
-                      Text('${localizations.models}:',
+                margin: const EdgeInsets.only(bottom: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ListTile(
+                      title: Text(provider.name,
                           style: Theme.of(context).textTheme.titleMedium),
-                      const SizedBox(height: 8),
-                      if (provider.models.isEmpty)
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8.0, top: 4.0),
-                          child: Text(localizations.noModelsConfigured,
-                              style:
-                                  const TextStyle(fontStyle: FontStyle.italic)),
-                        ),
-                      ...provider.models.map((model) => Padding(
-                            padding: const EdgeInsets.only(left: 8.0, top: 4.0),
-                            child: Text(
-                                '- ${model.name} (${model.modelType.name})'),
-                          )),
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                      subtitle: Text(provider.baseUrl,
+                          overflow: TextOverflow.ellipsis),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
                             icon: const Icon(Icons.edit_outlined),
@@ -146,8 +127,41 @@ class _APIProviderSettingsScreenState extends State<APIProviderSettingsScreen> {
                           ),
                         ],
                       ),
-                    ],
-                  ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          left: 16, right: 16, bottom: 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (provider.models.isNotEmpty)
+                            const Divider(height: 1),
+                          if (provider.models.isNotEmpty)
+                            const SizedBox(height: 12),
+                          if (provider.models.isNotEmpty)
+                            Text('${localizations.models}:',
+                                style: Theme.of(context).textTheme.labelLarge),
+                          if (provider.models.isEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 4.0),
+                              child: Text(localizations.noModelsConfigured,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurfaceVariant)),
+                            ),
+                          ...provider.models.map((model) => Padding(
+                                padding:
+                                    const EdgeInsets.only(left: 8.0, top: 8.0),
+                                child: Text('• ${model.name}'),
+                              )),
+                        ],
+                      ),
+                    )
+                  ],
                 ),
               );
             },

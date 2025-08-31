@@ -12,6 +12,24 @@ import 'package:nameless_ai/services/haptic_service.dart';
 import 'package:nameless_ai/services/import_service.dart';
 import 'package:nameless_ai/utils/helpers.dart';
 
+class _SettingsSection extends StatelessWidget {
+  final String title;
+  const _SettingsSection({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+      child: Text(
+        title,
+        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              color: Theme.of(context).colorScheme.primary,
+            ),
+      ),
+    );
+  }
+}
+
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
@@ -222,28 +240,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
       body: Stack(
         children: [
           ListView(
-            padding: EdgeInsets.fromLTRB(16, 16, 16, isDesktop ? 16 : 96),
+            padding: EdgeInsets.fromLTRB(16, 8, 16, isDesktop ? 16 : 96),
             children: [
+              _SettingsSection(title: localizations.generalSettings),
               Card(
-                margin: const EdgeInsets.only(bottom: 16),
                 child: Column(
                   children: [
                     ListTile(
-                      leading: const Icon(Icons.apps),
+                      leading: const Icon(Icons.settings_applications_outlined),
                       title: Text(localizations.appSettings),
                       onTap: () {
                         HapticService.onButtonPress(context);
                         context.go('/settings/app');
                       },
                     ),
+                    const Divider(height: 1, indent: 56),
                     ListTile(
-                      leading: const Icon(Icons.tune),
+                      leading: const Icon(Icons.tune_outlined),
                       title: Text(localizations.generalSettings),
                       onTap: () {
                         HapticService.onButtonPress(context);
                         context.go('/settings/general');
                       },
                     ),
+                  ],
+                ),
+              ),
+              _SettingsSection(title: localizations.appearanceSettings),
+              Card(
+                child: Column(
+                  children: [
                     ListTile(
                       leading: const Icon(Icons.palette_outlined),
                       title: Text(localizations.appearanceSettings),
@@ -252,8 +278,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         context.go('/settings/appearance');
                       },
                     ),
+                    const Divider(height: 1, indent: 56),
                     ListTile(
-                      leading: const Icon(Icons.vibration),
+                      leading: const Icon(Icons.vibration_outlined),
                       title: Text(localizations.hapticSettings),
                       onTap: () {
                         HapticService.onButtonPress(context);
@@ -263,20 +290,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ],
                 ),
               ),
+              _SettingsSection(title: localizations.modelLabel),
               Card(
-                margin: const EdgeInsets.only(bottom: 16),
                 child: Column(
                   children: [
                     ListTile(
-                      leading: const Icon(Icons.api),
+                      leading: const Icon(Icons.api_outlined),
                       title: Text(localizations.apiProviderSettings),
                       onTap: () {
                         HapticService.onButtonPress(context);
                         context.go('/settings/api_providers');
                       },
                     ),
+                    const Divider(height: 1, indent: 56),
                     ListTile(
-                      leading: const Icon(Icons.library_books),
+                      leading: const Icon(Icons.library_books_outlined),
                       title: Text(localizations.systemPromptTemplates),
                       onTap: () {
                         HapticService.onButtonPress(context);
@@ -286,8 +314,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ],
                 ),
               ),
+              _SettingsSection(title: localizations.dataManagement),
               Card(
-                margin: const EdgeInsets.only(bottom: 16),
                 child: Column(
                   children: [
                     ListTile(
@@ -295,12 +323,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       title: Text(localizations.exportData),
                       onTap: _isWorking ? null : _exportData,
                     ),
+                    const Divider(height: 1, indent: 56),
                     ListTile(
                       leading: const Icon(Icons.download_done_outlined),
                       title: Text(localizations
                           .importFrom(localizations.namelessAiSource)),
                       onTap: _isWorking ? null : _importFromNamelessAI,
                     ),
+                    const Divider(height: 1, indent: 56),
                     ListTile(
                       leading: const Icon(Icons.move_down_outlined),
                       title: Text(localizations
@@ -310,8 +340,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ],
                 ),
               ),
+              _SettingsSection(title: localizations.about),
               Card(
-                margin: const EdgeInsets.only(bottom: 16),
                 child: ListTile(
                   leading: const Icon(Icons.info_outline),
                   title: Text(localizations.about),

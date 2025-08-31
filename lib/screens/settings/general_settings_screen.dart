@@ -44,25 +44,14 @@ class GeneralSettingsScreen extends StatelessWidget {
             margin: const EdgeInsets.only(bottom: 16),
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                    child: Text(localizations.generalSettings,
-                        style: Theme.of(context).textTheme.titleMedium),
-                  ),
-                  SwitchListTile(
-                    title: Text(localizations.useFirstSentenceAsTitle),
-                    subtitle: Text(localizations.useFirstSentenceAsTitleHint),
-                    value: appConfig.useFirstSentenceAsTitle,
-                    onChanged: (value) {
-                      HapticService.onSwitchToggle(context);
-                      appConfig.setUseFirstSentenceAsTitle(value);
-                    },
-                    activeColor: Theme.of(context).colorScheme.primary,
-                  ),
-                ],
+              child: SwitchListTile(
+                title: Text(localizations.useFirstSentenceAsTitle),
+                subtitle: Text(localizations.useFirstSentenceAsTitleHint),
+                value: appConfig.useFirstSentenceAsTitle,
+                onChanged: (value) {
+                  HapticService.onSwitchToggle(context);
+                  appConfig.setUseFirstSentenceAsTitle(value);
+                },
               ),
             ),
           ),
@@ -73,11 +62,6 @@ class GeneralSettingsScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                    child: Text(localizations.scrollSettings,
-                        style: Theme.of(context).textTheme.titleMedium),
-                  ),
                   SwitchListTile(
                     title: Text(localizations.disableAutoScrollOnUp),
                     value: appConfig.disableAutoScrollOnUp,
@@ -85,8 +69,8 @@ class GeneralSettingsScreen extends StatelessWidget {
                       HapticService.onSwitchToggle(context);
                       appConfig.setDisableAutoScrollOnUp(value);
                     },
-                    activeColor: Theme.of(context).colorScheme.primary,
                   ),
+                  const Divider(height: 1, indent: 16, endIndent: 16),
                   SwitchListTile(
                     title: Text(localizations.resumeAutoScrollOnBottom),
                     value: appConfig.resumeAutoScrollOnBottom,
@@ -94,20 +78,25 @@ class GeneralSettingsScreen extends StatelessWidget {
                       HapticService.onSwitchToggle(context);
                       appConfig.setResumeAutoScrollOnBottom(value);
                     },
-                    activeColor: Theme.of(context).colorScheme.primary,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                    child: Text(
-                      localizations.scrollButtonPosition,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
+                ],
+              ),
+            ),
+          ),
+          Card(
+            margin: const EdgeInsets.only(bottom: 16),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    localizations.scrollButtonPosition,
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                    child: Text(
-                        '${localizations.scrollButtonBottomOffset}: ${appConfig.scrollButtonBottomOffset.toStringAsFixed(0)}'),
-                  ),
+                  const SizedBox(height: 8.0),
+                  Text(
+                      '${localizations.scrollButtonBottomOffset}: ${appConfig.scrollButtonBottomOffset.toStringAsFixed(0)}'),
                   Slider(
                     value: appConfig.scrollButtonBottomOffset,
                     min: 16.0,
@@ -120,11 +109,9 @@ class GeneralSettingsScreen extends StatelessWidget {
                       appConfig.setScrollButtonBottomOffset(value);
                     },
                   ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                    child: Text(
-                        '${localizations.scrollButtonRightOffset}: ${appConfig.scrollButtonRightOffset.toStringAsFixed(0)}'),
-                  ),
+                  const SizedBox(height: 8.0),
+                  Text(
+                      '${localizations.scrollButtonRightOffset}: ${appConfig.scrollButtonRightOffset.toStringAsFixed(0)}'),
                   Slider(
                     value: appConfig.scrollButtonRightOffset,
                     min: 0.0,
@@ -144,39 +131,27 @@ class GeneralSettingsScreen extends StatelessWidget {
             margin: const EdgeInsets.only(bottom: 16),
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                    child: Text(localizations.taskSettings,
-                        style: Theme.of(context).textTheme.titleMedium),
-                  ),
-                  ListTile(
-                    title: Text(localizations.asyncTaskRefreshInterval),
-                    subtitle: Text(localizations.asyncTaskRefreshIntervalHint),
-                    trailing: SizedBox(
-                      width: 80,
-                      child: TextFormField(
-                        controller: asyncTaskIntervalController,
-                        textAlign: TextAlign.center,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
-                        decoration: const InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(horizontal: 8),
-                        ),
-                        onChanged: (value) {
-                          final interval = int.tryParse(value);
-                          if (interval != null) {
-                            appConfig.setAsyncTaskRefreshInterval(interval);
-                          }
-                        },
-                      ),
+              child: ListTile(
+                title: Text(localizations.asyncTaskRefreshInterval),
+                subtitle: Text(localizations.asyncTaskRefreshIntervalHint),
+                trailing: SizedBox(
+                  width: 80,
+                  child: TextFormField(
+                    controller: asyncTaskIntervalController,
+                    textAlign: TextAlign.center,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    decoration: const InputDecoration(
+                      contentPadding: EdgeInsets.symmetric(horizontal: 8),
                     ),
+                    onChanged: (value) {
+                      final interval = int.tryParse(value);
+                      if (interval != null) {
+                        appConfig.setAsyncTaskRefreshInterval(interval);
+                      }
+                    },
                   ),
-                ],
+                ),
               ),
             ),
           ),
@@ -197,7 +172,6 @@ class GeneralSettingsScreen extends StatelessWidget {
                       HapticService.onSwitchToggle(context);
                       appConfig.setSendKeyOption(value!);
                     },
-                    activeColor: Theme.of(context).colorScheme.primary,
                   ),
                   RadioListTile<SendKeyOption>(
                     title: Text(localizations.sendWithCtrlEnter),
@@ -207,7 +181,6 @@ class GeneralSettingsScreen extends StatelessWidget {
                       HapticService.onSwitchToggle(context);
                       appConfig.setSendKeyOption(value!);
                     },
-                    activeColor: Theme.of(context).colorScheme.primary,
                   ),
                   RadioListTile<SendKeyOption>(
                     title: Text(localizations.sendWithShiftCtrlEnter),
@@ -217,17 +190,16 @@ class GeneralSettingsScreen extends StatelessWidget {
                       HapticService.onSwitchToggle(context);
                       appConfig.setSendKeyOption(value!);
                     },
-                    activeColor: Theme.of(context).colorScheme.primary,
                   ),
                   const Divider(),
                   SwitchListTile(
                     title: Text(localizations.shortcutInEditMode),
                     value: appConfig.useSendKeyInEditMode,
+                    contentPadding: EdgeInsets.zero,
                     onChanged: (value) {
                       HapticService.onSwitchToggle(context);
                       appConfig.setUseSendKeyInEditMode(value);
                     },
-                    activeColor: Theme.of(context).colorScheme.primary,
                   ),
                 ],
               ),

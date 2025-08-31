@@ -67,16 +67,18 @@ class HapticSettingsScreen extends StatelessWidget {
             ),
           Card(
             margin: const EdgeInsets.only(bottom: 16),
-            child: SwitchListTile(
-              title: Text(localizations.enableHapticFeedback),
-              value: appConfig.hapticsEnabled,
-              onChanged: isSupported
-                  ? (value) {
-                      appConfig.setHapticsEnabled(value);
-                      HapticService.onSwitchToggle(context);
-                    }
-                  : null,
-              activeColor: Theme.of(context).colorScheme.primary,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: SwitchListTile(
+                title: Text(localizations.enableHapticFeedback),
+                value: appConfig.hapticsEnabled,
+                onChanged: isSupported
+                    ? (value) {
+                        appConfig.setHapticsEnabled(value);
+                        HapticService.onSwitchToggle(context);
+                      }
+                    : null,
+              ),
             ),
           ),
           Card(
@@ -85,68 +87,71 @@ class HapticSettingsScreen extends StatelessWidget {
               absorbing: !appConfig.hapticsEnabled || !isSupported,
               child: Opacity(
                 opacity: appConfig.hapticsEnabled && isSupported ? 1.0 : 0.5,
-                child: Column(
-                  children: [
-                    _buildIntensitySlider(
-                      context: context,
-                      title: localizations.hapticButtonPress,
-                      value: appConfig.buttonPressIntensity,
-                      onChanged: (intensity) {
-                        appConfig.setButtonPressIntensity(intensity);
-                        HapticService.onButtonPress(context);
-                      },
-                    ),
-                    const Divider(height: 1, indent: 16, endIndent: 16),
-                    _buildIntensitySlider(
-                      context: context,
-                      title: localizations.hapticSwitchToggle,
-                      value: appConfig.switchToggleIntensity,
-                      onChanged: (intensity) {
-                        appConfig.setSwitchToggleIntensity(intensity);
-                        HapticService.onSwitchToggle(context);
-                      },
-                    ),
-                    const Divider(height: 1, indent: 16, endIndent: 16),
-                    _buildIntensitySlider(
-                      context: context,
-                      title: localizations.hapticLongPress,
-                      value: appConfig.longPressIntensity,
-                      onChanged: (intensity) {
-                        appConfig.setLongPressIntensity(intensity);
-                        HapticService.onLongPress(context);
-                      },
-                    ),
-                    const Divider(height: 1, indent: 16, endIndent: 16),
-                    _buildIntensitySlider(
-                      context: context,
-                      title: localizations.hapticSliderChanged,
-                      value: appConfig.sliderChangeIntensity,
-                      onChanged: (intensity) {
-                        appConfig.setSliderChangeIntensity(intensity);
-                        HapticService.onSliderChange(context);
-                      },
-                    ),
-                    const Divider(height: 1, indent: 16, endIndent: 16),
-                    _buildIntensitySlider(
-                      context: context,
-                      title: localizations.hapticStreamOutput,
-                      value: appConfig.streamOutputIntensity,
-                      onChanged: (intensity) {
-                        appConfig.setStreamOutputIntensity(intensity);
-                        HapticService.onSliderChange(context);
-                      },
-                    ),
-                    const Divider(height: 1, indent: 16, endIndent: 16),
-                    _buildIntensitySlider(
-                      context: context,
-                      title: localizations.hapticThinking,
-                      value: appConfig.thinkingIntensity,
-                      onChanged: (intensity) {
-                        appConfig.setThinkingIntensity(intensity);
-                        HapticService.onSliderChange(context);
-                      },
-                    ),
-                  ],
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Column(
+                    children: [
+                      _buildIntensitySlider(
+                        context: context,
+                        title: localizations.hapticButtonPress,
+                        value: appConfig.buttonPressIntensity,
+                        onChanged: (intensity) {
+                          appConfig.setButtonPressIntensity(intensity);
+                          HapticService.onButtonPress(context);
+                        },
+                      ),
+                      const Divider(height: 1, indent: 16, endIndent: 16),
+                      _buildIntensitySlider(
+                        context: context,
+                        title: localizations.hapticSwitchToggle,
+                        value: appConfig.switchToggleIntensity,
+                        onChanged: (intensity) {
+                          appConfig.setSwitchToggleIntensity(intensity);
+                          HapticService.onSwitchToggle(context);
+                        },
+                      ),
+                      const Divider(height: 1, indent: 16, endIndent: 16),
+                      _buildIntensitySlider(
+                        context: context,
+                        title: localizations.hapticLongPress,
+                        value: appConfig.longPressIntensity,
+                        onChanged: (intensity) {
+                          appConfig.setLongPressIntensity(intensity);
+                          HapticService.onLongPress(context);
+                        },
+                      ),
+                      const Divider(height: 1, indent: 16, endIndent: 16),
+                      _buildIntensitySlider(
+                        context: context,
+                        title: localizations.hapticSliderChanged,
+                        value: appConfig.sliderChangeIntensity,
+                        onChanged: (intensity) {
+                          appConfig.setSliderChangeIntensity(intensity);
+                          HapticService.onSliderChange(context);
+                        },
+                      ),
+                      const Divider(height: 1, indent: 16, endIndent: 16),
+                      _buildIntensitySlider(
+                        context: context,
+                        title: localizations.hapticStreamOutput,
+                        value: appConfig.streamOutputIntensity,
+                        onChanged: (intensity) {
+                          appConfig.setStreamOutputIntensity(intensity);
+                          HapticService.onStreamOutput(context);
+                        },
+                      ),
+                      const Divider(height: 1, indent: 16, endIndent: 16),
+                      _buildIntensitySlider(
+                        context: context,
+                        title: localizations.hapticThinking,
+                        value: appConfig.thinkingIntensity,
+                        onChanged: (intensity) {
+                          appConfig.setThinkingIntensity(intensity);
+                          HapticService.onThinking(context);
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

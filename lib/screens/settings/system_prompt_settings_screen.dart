@@ -38,6 +38,7 @@ class _SystemPromptSettingsScreenState
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final isDesktop = MediaQuery.of(context).size.width >= 600;
+
     return Scaffold(
       appBar: AppBar(
         flexibleSpace: _buildBlurBackground(context),
@@ -61,27 +62,20 @@ class _SystemPromptSettingsScreenState
             );
           }
           return ListView.builder(
-            padding: EdgeInsets.fromLTRB(8, 8, 8, isDesktop ? 16 : 96),
+            padding: EdgeInsets.fromLTRB(16, 8, 16, isDesktop ? 16 : 96),
             itemCount: manager.templates.length,
             itemBuilder: (context, index) {
               final template = manager.templates[index];
               return Card(
-                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(template.name,
-                          style: Theme.of(context).textTheme.titleLarge),
-                      const SizedBox(height: 12),
-                      SelectableText(
-                        template.prompt,
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                margin: const EdgeInsets.only(bottom: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ListTile(
+                      title: Text(template.name,
+                          style: Theme.of(context).textTheme.titleMedium),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
                             icon: const Icon(Icons.edit_outlined),
@@ -110,8 +104,16 @@ class _SystemPromptSettingsScreenState
                           ),
                         ],
                       ),
-                    ],
-                  ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          left: 16, right: 16, bottom: 16),
+                      child: SelectableText(
+                        template.prompt,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
+                  ],
                 ),
               );
             },

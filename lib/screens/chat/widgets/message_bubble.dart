@@ -380,7 +380,7 @@ class _MessageBubbleState extends State<MessageBubble>
         }
       }
     } catch (e) {
-      // It's a plain URL, do nothing.
+      // NULL
     }
 
     return Column(

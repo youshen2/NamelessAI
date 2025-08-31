@@ -7,36 +7,26 @@ import 'package:nameless_ai/l10n/app_localizations.dart';
 import 'package:nameless_ai/screens/chat/widgets/markdown_code_block.dart';
 import 'package:nameless_ai/services/haptic_service.dart';
 
-class AppearanceSettingsScreen extends StatelessWidget {
-  const AppearanceSettingsScreen({super.key});
+class _SettingsSection extends StatelessWidget {
+  final String title;
+  const _SettingsSection({required this.title});
 
-  Widget _buildRadioGroup<T>({
-    required BuildContext context,
-    required String title,
-    required T groupValue,
-    required List<(String, T)> options,
-    required ValueChanged<T?> onChanged,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: Text(title, style: Theme.of(context).textTheme.titleMedium),
-        ),
-        ...options.map((option) => RadioListTile<T>(
-              title: Text(option.$1),
-              value: option.$2,
-              groupValue: groupValue,
-              onChanged: (value) {
-                HapticService.onSwitchToggle(context);
-                onChanged(value);
-              },
-              activeColor: Theme.of(context).colorScheme.primary,
-            )),
-      ],
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+      child: Text(
+        title,
+        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              color: Theme.of(context).colorScheme.primary,
+            ),
+      ),
     );
   }
+}
+
+class AppearanceSettingsScreen extends StatelessWidget {
+  const AppearanceSettingsScreen({super.key});
 
   Widget _buildCodeThemePreview(BuildContext context, String themeKey) {
     final theme = themeMap[themeKey] ?? themeMap['github']!;
@@ -86,117 +76,35 @@ void main() {
         title: Text(localizations.appearanceSettings),
       ),
       body: ListView(
-        padding: EdgeInsets.fromLTRB(16, 16, 16, isDesktop ? 16 : 96),
+        padding: EdgeInsets.fromLTRB(16, 8, 16, isDesktop ? 16 : 96),
         children: [
-          Card(
-            margin: const EdgeInsets.only(bottom: 16),
-            child: Column(
-              children: [
-                _buildRadioGroup<Locale?>(
-                  context: context,
-                  title: localizations.language,
-                  groupValue: appConfig.locale,
-                  options: [
-                    (localizations.systemDefault, null),
-                    (localizations.english, const Locale('en')),
-                    (localizations.chinese, const Locale('zh')),
-                  ],
-                  onChanged: (value) => appConfig.setLocale(value),
-                ),
-                const Divider(height: 1),
-                _buildRadioGroup<ThemeMode>(
-                  context: context,
-                  title: localizations.theme,
-                  groupValue: appConfig.themeMode,
-                  options: [
-                    (localizations.systemDefault, ThemeMode.system),
-                    (localizations.light, ThemeMode.light),
-                    (localizations.dark, ThemeMode.dark),
-                  ],
-                  onChanged: (value) => appConfig.setThemeMode(value!),
-                ),
-                const Divider(height: 1),
-                SwitchListTile(
-                  title: Text(localizations.enableMonet),
-                  subtitle: Text(localizations.monetTheming),
-                  value: appConfig.enableMonet,
-                  onChanged: (value) {
-                    HapticService.onSwitchToggle(context);
-                    appConfig.setEnableMonet(value);
-                  },
-                  activeColor: Theme.of(context).colorScheme.primary,
-                ),
-              ],
-            ),
-          ),
-          Card(
-            margin: const EdgeInsets.only(bottom: 16),
-            child: Column(
-              children: [
-                SwitchListTile(
-                  title: Text(localizations.enableBlurEffect),
-                  subtitle: Text(localizations.enableBlurEffectHint),
-                  value: appConfig.enableBlurEffect,
-                  onChanged: (value) {
-                    HapticService.onSwitchToggle(context);
-                    appConfig.setEnableBlurEffect(value);
-                  },
-                  activeColor: Theme.of(context).colorScheme.primary,
-                ),
-                const Divider(height: 1),
-                ListTile(
-                  title: Text(localizations.pageTransition),
-                  trailing: DropdownButton<PageTransitionType>(
-                    value: appConfig.pageTransitionType,
-                    items: [
-                      DropdownMenuItem(
-                          value: PageTransitionType.system,
-                          child: Text(localizations.pageTransitionSystem)),
-                      DropdownMenuItem(
-                          value: PageTransitionType.slide,
-                          child: Text(localizations.pageTransitionSlide)),
-                      DropdownMenuItem(
-                          value: PageTransitionType.fade,
-                          child: Text(localizations.pageTransitionFade)),
-                      DropdownMenuItem(
-                          value: PageTransitionType.scale,
-                          child: Text(localizations.pageTransitionScale)),
-                    ],
-                    onChanged: (value) {
-                      if (value != null) {
-                        HapticService.onSwitchToggle(context);
-                        appConfig.setPageTransitionType(value);
-                      }
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
+          _SettingsSection(title: localizations.generalSettings),
           Card(
             margin: const EdgeInsets.only(bottom: 16),
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    '${localizations.cornerRadius}: ${appConfig.cornerRadius.toStringAsFixed(0)}',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  Text(
-                    localizations.cornerRadiusHint,
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  Slider(
-                    value: appConfig.cornerRadius,
-                    min: 0.0,
-                    max: 32.0,
-                    divisions: 32,
-                    label: appConfig.cornerRadius.toStringAsFixed(0),
-                    onChanged: (value) {
-                      HapticService.onSliderChange(context);
-                      appConfig.setCornerRadius(value);
+                  Text(localizations.language,
+                      style: Theme.of(context).textTheme.titleMedium),
+                  const SizedBox(height: 8.0),
+                  SegmentedButton<Locale?>(
+                    segments: [
+                      ButtonSegment(
+                          value: null,
+                          label: Text(localizations.systemDefault)),
+                      ButtonSegment(
+                          value: const Locale('en'),
+                          label: Text(localizations.english)),
+                      ButtonSegment(
+                          value: const Locale('zh'),
+                          label: Text(localizations.chinese)),
+                    ],
+                    selected: {appConfig.locale},
+                    onSelectionChanged: (value) {
+                      HapticService.onSwitchToggle(context);
+                      appConfig.setLocale(value.first);
                     },
                   ),
                 ],
@@ -206,23 +114,139 @@ void main() {
           Card(
             margin: const EdgeInsets.only(bottom: 16),
             child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(localizations.theme,
+                      style: Theme.of(context).textTheme.titleMedium),
+                  const SizedBox(height: 8),
+                  SegmentedButton<ThemeMode>(
+                    segments: [
+                      ButtonSegment(
+                          value: ThemeMode.light,
+                          label: Text(localizations.light),
+                          icon: const Icon(Icons.light_mode_outlined)),
+                      ButtonSegment(
+                          value: ThemeMode.dark,
+                          label: Text(localizations.dark),
+                          icon: const Icon(Icons.dark_mode_outlined)),
+                      ButtonSegment(
+                          value: ThemeMode.system,
+                          label: Text(localizations.systemDefault),
+                          icon: const Icon(Icons.brightness_auto_outlined)),
+                    ],
+                    selected: {appConfig.themeMode},
+                    onSelectionChanged: (newSelection) {
+                      HapticService.onSwitchToggle(context);
+                      appConfig.setThemeMode(newSelection.first);
+                    },
+                  ),
+                  const Divider(height: 24),
+                  SwitchListTile(
+                    title: Text(localizations.enableMonet),
+                    subtitle: Text(localizations.monetTheming),
+                    value: appConfig.enableMonet,
+                    onChanged: (value) {
+                      HapticService.onSwitchToggle(context);
+                      appConfig.setEnableMonet(value);
+                    },
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          _SettingsSection(title: 'UI'),
+          Card(
+            margin: const EdgeInsets.only(bottom: 16),
+            child: Padding(
+              padding: const EdgeInsets.only(top: 8, bottom: 8, right: 8),
+              child: Column(
+                children: [
+                  SwitchListTile(
+                    title: Text(localizations.enableBlurEffect),
+                    subtitle: Text(localizations.enableBlurEffectHint),
+                    value: appConfig.enableBlurEffect,
+                    onChanged: (value) {
+                      HapticService.onSwitchToggle(context);
+                      appConfig.setEnableBlurEffect(value);
+                    },
+                  ),
+                  const Divider(height: 1, indent: 16, endIndent: 16),
+                  ListTile(
+                    title: Text(localizations.pageTransition),
+                    trailing: DropdownButton<PageTransitionType>(
+                      value: appConfig.pageTransitionType,
+                      underline: const SizedBox.shrink(),
+                      items: [
+                        DropdownMenuItem(
+                            value: PageTransitionType.system,
+                            child: Text(localizations.pageTransitionSystem)),
+                        DropdownMenuItem(
+                            value: PageTransitionType.slide,
+                            child: Text(localizations.pageTransitionSlide)),
+                        DropdownMenuItem(
+                            value: PageTransitionType.fade,
+                            child: Text(localizations.pageTransitionFade)),
+                        DropdownMenuItem(
+                            value: PageTransitionType.scale,
+                            child: Text(localizations.pageTransitionScale)),
+                      ],
+                      onChanged: (value) {
+                        if (value != null) {
+                          HapticService.onSwitchToggle(context);
+                          appConfig.setPageTransitionType(value);
+                        }
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 0, 0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${localizations.cornerRadius}: ${appConfig.cornerRadius.toStringAsFixed(0)}',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        Text(
+                          localizations.cornerRadiusHint,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                        Slider(
+                          value: appConfig.cornerRadius,
+                          min: 0.0,
+                          max: 32.0,
+                          divisions: 32,
+                          label: appConfig.cornerRadius.toStringAsFixed(0),
+                          onChanged: (value) {
+                            HapticService.onSliderChange(context);
+                            appConfig.setCornerRadius(value);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          _SettingsSection(title: localizations.chatDisplay),
+          Card(
+            margin: const EdgeInsets.only(bottom: 16),
+            child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                    child: Text(localizations.chatDisplay,
-                        style: Theme.of(context).textTheme.titleMedium),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: DropdownButtonFormField<FontSize>(
                       value: appConfig.fontSize,
                       decoration: InputDecoration(
                         labelText: localizations.fontSize,
-                        contentPadding:
-                            const EdgeInsets.symmetric(horizontal: 12),
                       ),
                       items: [
                         DropdownMenuItem(
@@ -248,8 +272,6 @@ void main() {
                       value: appConfig.chatBubbleAlignment,
                       decoration: InputDecoration(
                         labelText: localizations.chatBubbleAlignment,
-                        contentPadding:
-                            const EdgeInsets.symmetric(horizontal: 12),
                       ),
                       items: [
                         DropdownMenuItem(
@@ -276,7 +298,6 @@ void main() {
                       HapticService.onSwitchToggle(context);
                       appConfig.setReverseBubbleAlignment(value);
                     },
-                    activeColor: Theme.of(context).colorScheme.primary,
                   ),
                   SwitchListTile(
                     title: Text(localizations.distinguishAssistantBubble),
@@ -287,7 +308,6 @@ void main() {
                       HapticService.onSwitchToggle(context);
                       appConfig.setDistinguishAssistantBubble(value);
                     },
-                    activeColor: Theme.of(context).colorScheme.primary,
                   ),
                   SwitchListTile(
                     title: Text(localizations.showTimestamps),
@@ -296,7 +316,6 @@ void main() {
                       HapticService.onSwitchToggle(context);
                       appConfig.setShowTimestamps(value);
                     },
-                    activeColor: Theme.of(context).colorScheme.primary,
                   ),
                   SwitchListTile(
                     title: Text(localizations.showModelName),
@@ -306,7 +325,6 @@ void main() {
                       HapticService.onSwitchToggle(context);
                       appConfig.setShowModelName(value);
                     },
-                    activeColor: Theme.of(context).colorScheme.primary,
                   ),
                   SwitchListTile(
                     title: Text(localizations.compactMode),
@@ -316,28 +334,31 @@ void main() {
                       HapticService.onSwitchToggle(context);
                       appConfig.setCompactMode(value);
                     },
-                    activeColor: Theme.of(context).colorScheme.primary,
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
                     child: Text(
                         '${localizations.chatBubbleWidth}: ${(appConfig.chatBubbleWidth * 100).round()}%'),
                   ),
-                  Slider(
-                    value: appConfig.chatBubbleWidth,
-                    min: 0.5,
-                    max: 1.0,
-                    divisions: 5,
-                    label: '${(appConfig.chatBubbleWidth * 100).round()}%',
-                    onChanged: (value) {
-                      HapticService.onSliderChange(context);
-                      appConfig.setChatBubbleWidth(value);
-                    },
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Slider(
+                      value: appConfig.chatBubbleWidth,
+                      min: 0.5,
+                      max: 1.0,
+                      divisions: 5,
+                      label: '${(appConfig.chatBubbleWidth * 100).round()}%',
+                      onChanged: (value) {
+                        HapticService.onSliderChange(context);
+                        appConfig.setChatBubbleWidth(value);
+                      },
+                    ),
                   ),
                 ],
               ),
             ),
           ),
+          _SettingsSection(title: localizations.codeBlockTheme),
           Card(
             margin: const EdgeInsets.only(bottom: 16),
             child: Padding(
@@ -346,18 +367,11 @@ void main() {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                    child: Text(localizations.codeBlockTheme,
-                        style: Theme.of(context).textTheme.titleMedium),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    padding: const EdgeInsets.all(16),
                     child: DropdownButtonFormField<String>(
                       value: appConfig.codeTheme,
                       decoration: InputDecoration(
                         labelText: localizations.codeBlockTheme,
-                        contentPadding:
-                            const EdgeInsets.symmetric(horizontal: 12),
                       ),
                       items: uniqueSortedThemeKeys
                           .map((String key) => DropdownMenuItem<String>(
@@ -377,18 +391,13 @@ void main() {
               ),
             ),
           ),
+          _SettingsSection(title: localizations.statisticsSettings),
           Card(
             margin: const EdgeInsets.only(bottom: 16),
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                    child: Text(localizations.statisticsSettings,
-                        style: Theme.of(context).textTheme.titleMedium),
-                  ),
                   SwitchListTile(
                     title: Text(localizations.showTotalTime),
                     value: appConfig.showTotalTime,
@@ -396,7 +405,6 @@ void main() {
                       HapticService.onSwitchToggle(context);
                       appConfig.setShowTotalTime(value);
                     },
-                    activeColor: Theme.of(context).colorScheme.primary,
                   ),
                   SwitchListTile(
                     title: Text(localizations.showFirstChunkTime),
@@ -405,7 +413,6 @@ void main() {
                       HapticService.onSwitchToggle(context);
                       appConfig.setShowFirstChunkTime(value);
                     },
-                    activeColor: Theme.of(context).colorScheme.primary,
                   ),
                   SwitchListTile(
                     title: Text(localizations.showTokenUsage),
@@ -414,7 +421,6 @@ void main() {
                       HapticService.onSwitchToggle(context);
                       appConfig.setShowTokenUsage(value);
                     },
-                    activeColor: Theme.of(context).colorScheme.primary,
                   ),
                   SwitchListTile(
                     title: Text(localizations.showOutputCharacters),
@@ -423,7 +429,6 @@ void main() {
                       HapticService.onSwitchToggle(context);
                       appConfig.setShowOutputCharacters(value);
                     },
-                    activeColor: Theme.of(context).colorScheme.primary,
                   ),
                 ],
               ),
