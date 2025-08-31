@@ -164,7 +164,7 @@ class _AboutScreenState extends State<AboutScreen>
               GestureDetector(
                 onTap: _handleTap,
                 child: Text(
-                  '${localizations.version} ${_packageInfo.version} (${_packageInfo.buildNumber})',
+                  '${localizations.version} ${_packageInfo.version}',
                   style: theme.textTheme.bodyLarge?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
