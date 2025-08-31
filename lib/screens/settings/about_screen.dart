@@ -107,7 +107,7 @@ class _AboutScreenState extends State<AboutScreen>
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
         child: Container(
-          color: Colors.transparent,
+          color: Theme.of(context).colorScheme.surface.withOpacity(0.6),
         ),
       ),
     );
@@ -118,14 +118,21 @@ class _AboutScreenState extends State<AboutScreen>
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final isDesktop = MediaQuery.of(context).size.width >= 600;
+    final appConfig = Provider.of<AppConfigProvider>(context);
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
+        backgroundColor: appConfig.enableBlurEffect ? Colors.transparent : null,
         flexibleSpace: _buildBlurBackground(context),
         title: Text(localizations.about),
       ),
       body: ListView(
-        padding: EdgeInsets.fromLTRB(0, 24, 0, isDesktop ? 24 : 96),
+        padding: EdgeInsets.fromLTRB(
+            0,
+            kToolbarHeight + MediaQuery.of(context).padding.top + 24,
+            0,
+            isDesktop ? 24 : 96),
         children: <Widget>[
           Column(
             children: [

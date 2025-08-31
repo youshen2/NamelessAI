@@ -28,7 +28,7 @@ class _SystemPromptSettingsScreenState
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
         child: Container(
-          color: Colors.transparent,
+          color: Theme.of(context).colorScheme.surface.withOpacity(0.6),
         ),
       ),
     );
@@ -38,8 +38,11 @@ class _SystemPromptSettingsScreenState
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final isDesktop = MediaQuery.of(context).size.width >= 600;
+    final appConfig = Provider.of<AppConfigProvider>(context);
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
+        backgroundColor: appConfig.enableBlurEffect ? Colors.transparent : null,
         flexibleSpace: _buildBlurBackground(context),
         title: Text(localizations.systemPromptTemplates),
         actions: [
@@ -61,7 +64,11 @@ class _SystemPromptSettingsScreenState
             );
           }
           return ListView.builder(
-            padding: EdgeInsets.fromLTRB(8, 8, 8, isDesktop ? 16 : 96),
+            padding: EdgeInsets.fromLTRB(
+                8,
+                kToolbarHeight + MediaQuery.of(context).padding.top + 8,
+                8,
+                isDesktop ? 16 : 96),
             itemCount: manager.templates.length,
             itemBuilder: (context, index) {
               final template = manager.templates[index];

@@ -140,7 +140,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
         child: Container(
-          color: Colors.transparent,
+          color: Theme.of(context).colorScheme.surface.withOpacity(0.6),
         ),
       ),
     );
@@ -150,19 +150,25 @@ class _HistoryScreenState extends State<HistoryScreen> {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final isDesktop = MediaQuery.of(context).size.width >= 600;
+    final appConfig = Provider.of<AppConfigProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(
-        flexibleSpace: _buildBlurBackground(context),
-        title: Text(localizations.history),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.delete_sweep_outlined),
-            tooltip: localizations.clearHistory,
-            onPressed: _clearHistory,
-          ),
-        ],
-      ),
+      extendBodyBehindAppBar: true,
+      appBar: isDesktop
+          ? null
+          : AppBar(
+              backgroundColor:
+                  appConfig.enableBlurEffect ? Colors.transparent : null,
+              flexibleSpace: _buildBlurBackground(context),
+              title: Text(localizations.history),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.delete_sweep_outlined),
+                  tooltip: localizations.clearHistory,
+                  onPressed: _clearHistory,
+                ),
+              ],
+            ),
       body: Consumer<ChatSessionManager>(
         builder: (context, manager, child) {
           if (manager.sessions.isEmpty) {
@@ -179,13 +185,33 @@ class _HistoryScreenState extends State<HistoryScreen> {
             return nameMatch || contentMatch;
           }).toList();
 
+          Widget content;
           if (isDesktop) {
-            return Row(
+            content = Row(
               children: [
                 SizedBox(
                   width: 300,
                   child: Column(
                     children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          children: [
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(localizations.history,
+                                  style:
+                                      Theme.of(context).textTheme.titleLarge),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete_sweep_outlined),
+                              tooltip: localizations.clearHistory,
+                              onPressed: _clearHistory,
+                            ),
+                            const SizedBox(width: 8),
+                          ],
+                        ),
+                      ),
                       _buildSearchBar(localizations),
                       Expanded(
                         child: _buildSessionList(
@@ -207,7 +233,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               ],
             );
           } else {
-            return Column(
+            content = Column(
               children: [
                 _buildSearchBar(localizations),
                 Expanded(
@@ -216,6 +242,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
               ],
             );
           }
+          return isDesktop
+              ? content
+              : Padding(
+                  padding: EdgeInsets.only(
+                      top: kToolbarHeight + MediaQuery.of(context).padding.top),
+                  child: content,
+                );
         },
       ),
     );
@@ -223,7 +256,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   Widget _buildSearchBar(AppLocalizations localizations) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
       child: TextField(
         controller: _searchController,
         decoration: InputDecoration(
