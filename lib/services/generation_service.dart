@@ -40,12 +40,13 @@ class GenerationService {
       Tiktoken encoding, List<Map<String, String>> messages) {
     int numTokens = 0;
     for (final message in messages) {
-      numTokens += 4;
+      numTokens +=
+          4; // every message follows <|start|>{role/name}\n{content}<|end|>\n
       message.forEach((key, value) {
         numTokens += encoding.encode(value).length;
       });
     }
-    numTokens += 2;
+    numTokens += 2; // every reply is primed with <|start|>assistant
     return numTokens;
   }
 

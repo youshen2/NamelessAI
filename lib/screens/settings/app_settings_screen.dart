@@ -60,76 +60,68 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
         children: [
           Card(
             margin: const EdgeInsets.only(bottom: 16),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Column(
-                children: [
-                  ListTile(
-                    title: Text(localizations.defaultStartupPage),
-                    trailing: DropdownButton<String>(
-                      value: appConfig.defaultScreen,
-                      underline: const SizedBox.shrink(),
-                      items: [
-                        DropdownMenuItem(
-                            value: '/', child: Text(localizations.chat)),
-                        DropdownMenuItem(
-                            value: '/history',
-                            child: Text(localizations.history)),
-                        DropdownMenuItem(
-                            value: '/settings',
-                            child: Text(localizations.settings)),
-                      ],
-                      onChanged: (value) {
-                        if (value != null) {
-                          HapticService.onSwitchToggle(context);
-                          appConfig.setDefaultScreen(value);
-                        }
-                      },
-                    ),
-                  ),
-                  const Divider(height: 1, indent: 16, endIndent: 16),
-                  SwitchListTile(
-                    title: Text(localizations.restoreLastSession),
-                    subtitle: Text(localizations.restoreLastSessionHint),
-                    value: appConfig.restoreLastSession,
+            child: Column(
+              children: [
+                ListTile(
+                  title: Text(localizations.defaultStartupPage),
+                  trailing: DropdownButton<String>(
+                    value: appConfig.defaultScreen,
+                    items: [
+                      DropdownMenuItem(
+                          value: '/', child: Text(localizations.chat)),
+                      DropdownMenuItem(
+                          value: '/history',
+                          child: Text(localizations.history)),
+                      DropdownMenuItem(
+                          value: '/settings',
+                          child: Text(localizations.settings)),
+                    ],
                     onChanged: (value) {
-                      HapticService.onSwitchToggle(context);
-                      appConfig.setRestoreLastSession(value);
+                      if (value != null) {
+                        HapticService.onSwitchToggle(context);
+                        appConfig.setDefaultScreen(value);
+                      }
                     },
-                    activeColor: Theme.of(context).colorScheme.primary,
                   ),
-                ],
-              ),
+                ),
+                SwitchListTile(
+                  title: Text(localizations.restoreLastSession),
+                  subtitle: Text(localizations.restoreLastSessionHint),
+                  value: appConfig.restoreLastSession,
+                  onChanged: (value) {
+                    HapticService.onSwitchToggle(context);
+                    appConfig.setRestoreLastSession(value);
+                  },
+                  activeColor: Theme.of(context).colorScheme.primary,
+                ),
+              ],
             ),
           ),
           Card(
             margin: const EdgeInsets.only(bottom: 16),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Column(
-                children: [
-                  SwitchListTile(
-                    title: Text(localizations.checkForUpdatesOnStartup),
-                    value: appConfig.checkForUpdatesOnStartup,
-                    onChanged: (value) {
-                      HapticService.onSwitchToggle(context);
-                      appConfig.setCheckForUpdatesOnStartup(value);
-                    },
-                    activeColor: Theme.of(context).colorScheme.primary,
-                  ),
-                  ListTile(
-                    title: Text(localizations.checkForUpdates),
-                    trailing: _isCheckingForUpdate
-                        ? const SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: CircularProgressIndicator(strokeWidth: 3),
-                          )
-                        : const Icon(Icons.system_update_alt),
-                    onTap: _isCheckingForUpdate ? null : _checkForUpdate,
-                  ),
-                ],
-              ),
+            child: Column(
+              children: [
+                SwitchListTile(
+                  title: Text(localizations.checkForUpdatesOnStartup),
+                  value: appConfig.checkForUpdatesOnStartup,
+                  onChanged: (value) {
+                    HapticService.onSwitchToggle(context);
+                    appConfig.setCheckForUpdatesOnStartup(value);
+                  },
+                  activeColor: Theme.of(context).colorScheme.primary,
+                ),
+                ListTile(
+                  title: Text(localizations.checkForUpdates),
+                  trailing: _isCheckingForUpdate
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(strokeWidth: 3),
+                        )
+                      : const Icon(Icons.system_update_alt),
+                  onTap: _isCheckingForUpdate ? null : _checkForUpdate,
+                ),
+              ],
             ),
           ),
         ],

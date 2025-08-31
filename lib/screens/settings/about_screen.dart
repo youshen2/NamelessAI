@@ -125,7 +125,7 @@ class _AboutScreenState extends State<AboutScreen>
         title: Text(localizations.about),
       ),
       body: ListView(
-        padding: EdgeInsets.fromLTRB(16, 24, 16, isDesktop ? 24 : 96),
+        padding: EdgeInsets.fromLTRB(0, 24, 0, isDesktop ? 24 : 96),
         children: <Widget>[
           Column(
             children: [
@@ -166,85 +166,93 @@ class _AboutScreenState extends State<AboutScreen>
             ],
           ),
           const SizedBox(height: 32),
-          Card(
-            margin: const EdgeInsets.only(bottom: 16),
-            child: ListTile(
-              leading: const Icon(Icons.person_outline),
-              title: Text(localizations.developer),
-              subtitle: Text(localizations.developerName),
-              onTap: () {
-                HapticService.onButtonPress(context);
-                launchUrl(Uri.parse('https://${localizations.developerUrl}'));
-              },
-              trailing: const Icon(Icons.open_in_new_rounded),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Card(
+              child: ListTile(
+                leading: const Icon(Icons.person_outline),
+                title: Text(localizations.developer),
+                subtitle: Text(localizations.developerName),
+                onTap: () {
+                  HapticService.onButtonPress(context);
+                  launchUrl(Uri.parse('https://${localizations.developerUrl}'));
+                },
+                trailing: const Icon(Icons.open_in_new_rounded),
+              ),
             ),
           ),
-          Card(
-            margin: const EdgeInsets.only(bottom: 16),
-            child: Column(
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.code_rounded),
-                  title: Text(localizations.sourceCode),
-                  subtitle: Text(localizations.sourceCodeUrl),
-                  onTap: () {
-                    HapticService.onButtonPress(context);
-                    launchUrl(
-                        Uri.parse('https://${localizations.sourceCodeUrl}'));
-                  },
-                  trailing: const Icon(Icons.open_in_new_rounded),
-                ),
-                const Divider(height: 1, indent: 56),
-                ListTile(
-                  leading: const Icon(Icons.gavel_rounded),
-                  title: Text(localizations.openSourceLicenses),
-                  onTap: () {
-                    HapticService.onButtonPress(context);
-                    showLicensePage(
-                      context: context,
-                      applicationName: "Nameless AI Box",
-                      applicationVersion: _packageInfo.version,
-                      applicationIcon: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: SvgPicture.asset(
-                          'assets/icon/icon.svg',
-                          colorFilter: ColorFilter.mode(
-                            theme.colorScheme.primary,
-                            BlendMode.srcIn,
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Card(
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.code_rounded),
+                    title: Text(localizations.sourceCode),
+                    subtitle: Text(localizations.sourceCodeUrl),
+                    onTap: () {
+                      HapticService.onButtonPress(context);
+                      launchUrl(
+                          Uri.parse('https://${localizations.sourceCodeUrl}'));
+                    },
+                    trailing: const Icon(Icons.open_in_new_rounded),
+                  ),
+                  const Divider(height: 1, indent: 16, endIndent: 16),
+                  ListTile(
+                    leading: const Icon(Icons.gavel_rounded),
+                    title: Text(localizations.openSourceLicenses),
+                    onTap: () {
+                      HapticService.onButtonPress(context);
+                      showLicensePage(
+                        context: context,
+                        applicationName: "Nameless AI Box",
+                        applicationVersion: _packageInfo.version,
+                        applicationIcon: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: SvgPicture.asset(
+                            'assets/icon/icon.svg',
+                            colorFilter: ColorFilter.mode(
+                              theme.colorScheme.primary,
+                              BlendMode.srcIn,
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
-                  trailing: const Icon(Icons.chevron_right_rounded),
-                ),
-                const Divider(height: 1, indent: 56),
-                ListTile(
-                  leading: const Icon(Icons.system_update_alt_rounded),
-                  title: Text(localizations.checkForUpdates),
-                  trailing: _isCheckingForUpdate
-                      ? const SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(strokeWidth: 3),
-                        )
-                      : const Icon(Icons.chevron_right_rounded),
-                  onTap: _isCheckingForUpdate ? null : _checkForUpdate,
-                ),
-              ],
+                      );
+                    },
+                    trailing: const Icon(Icons.chevron_right_rounded),
+                  ),
+                  const Divider(height: 1, indent: 16, endIndent: 16),
+                  ListTile(
+                    leading: const Icon(Icons.system_update_alt_rounded),
+                    title: Text(localizations.checkForUpdates),
+                    trailing: _isCheckingForUpdate
+                        ? const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(strokeWidth: 3),
+                          )
+                        : const Icon(Icons.chevron_right_rounded),
+                    onTap: _isCheckingForUpdate ? null : _checkForUpdate,
+                  ),
+                ],
+              ),
             ),
           ),
-          Card(
-            margin: const EdgeInsets.only(bottom: 16),
-            child: ListTile(
-              leading: const Icon(Icons.policy_rounded),
-              title: Text(localizations.apacheLicense),
-              onTap: () {
-                HapticService.onButtonPress(context);
-                launchUrl(
-                    Uri.parse('https://${localizations.apacheLicenseUrl}'));
-              },
-              trailing: const Icon(Icons.open_in_new_rounded),
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Card(
+              child: ListTile(
+                leading: const Icon(Icons.policy_rounded),
+                title: Text(localizations.apacheLicense),
+                onTap: () {
+                  HapticService.onButtonPress(context);
+                  launchUrl(
+                      Uri.parse('https://${localizations.apacheLicenseUrl}'));
+                },
+                trailing: const Icon(Icons.open_in_new_rounded),
+              ),
             ),
           ),
           const SizedBox(height: 32),
