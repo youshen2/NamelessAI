@@ -169,7 +169,7 @@ class MyApp extends StatelessWidget {
                     GlobalCupertinoLocalizations.delegate,
                   ],
                   supportedLocales: AppLocalizations.supportedLocales,
-                  routerConfig: AppRouter.router,
+                  routerConfig: AppRouter.getRouter(context),
                 );
               });
             },

@@ -32,22 +32,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final exportOptions = isDesktop
         ? await showDialog<Map<String, bool>>(
             context: context,
-            builder: (context) => const AlertDialog(
-              contentPadding: EdgeInsets.zero,
-              content: ExportOptionsSheet(),
+            builder: (context) => Dialog(
+              child: SizedBox(
+                width: 400,
+                child: ExportOptionsSheet(isDialog: true),
+              ),
             ),
           )
         : await showBlurredModalBottomSheet<Map<String, bool>>(
             context: context,
             isScrollControlled: true,
-            builder: (context) => const ExportOptionsSheet(),
+            builder: (context) => ExportOptionsSheet(),
           );
 
     if (exportOptions == null) return;
 
     setState(() => _isWorking = true);
     try {
-      await _backupService.exportData(context, options: exportOptions);
+      await _backupService.exportData(options: exportOptions);
       if (mounted) {
         showSnackBar(context, localizations.exportSuccess);
       }
@@ -158,8 +160,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         if (result != null) {
           final mode = result['mode'] as ImportMode;
           final categories = result['categories'] as Set<String>;
-          await _importService.importFromChatBox(
-              context, backupData, mode, categories);
+          await _importService.importFromChatBox(backupData, mode, categories);
 
           if (mounted) {
             showDialog(

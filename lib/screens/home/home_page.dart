@@ -24,17 +24,23 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _checkFirstLaunchAndUpdates();
+      _checkUpdates();
+      _handleSession();
     });
   }
 
-  void _checkFirstLaunchAndUpdates() {
+  void _checkUpdates() {
     if (!mounted) return;
     final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
-    if (appConfig.isFirstLaunch) {
-      context.go('/onboarding');
-      return;
+    if (appConfig.checkForUpdatesOnStartup) {
+      UpdateService().check(context);
     }
+  }
+
+  void _handleSession() {
+    final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
+    final chatSessionManager =
+        Provider.of<ChatSessionManager>(context, listen: false);
 
     final currentLocation = GoRouterState.of(context).uri.toString();
     if (currentLocation == '/') {
@@ -43,11 +49,6 @@ class _HomePageState extends State<HomePage> {
         context.go(defaultScreen);
       }
     }
-
-    final chatSessionManager =
-        Provider.of<ChatSessionManager>(context, listen: false);
-    final apiProviderManager =
-        Provider.of<APIProviderManager>(context, listen: false);
 
     if (appConfig.restoreLastSession) {
       if (chatSessionManager.currentSession == null) {
@@ -58,6 +59,8 @@ class _HomePageState extends State<HomePage> {
         });
       }
     } else {
+      final apiProviderManager =
+          Provider.of<APIProviderManager>(context, listen: false);
       if (chatSessionManager.currentSession == null ||
           !chatSessionManager.isNewSession) {
         chatSessionManager.startNewSession(
@@ -65,10 +68,6 @@ class _HomePageState extends State<HomePage> {
           modelId: apiProviderManager.selectedModel?.id,
         );
       }
-    }
-
-    if (appConfig.checkForUpdatesOnStartup) {
-      UpdateService().check(context);
     }
   }
 

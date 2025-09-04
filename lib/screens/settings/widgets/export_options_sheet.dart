@@ -3,7 +3,8 @@ import 'package:nameless_ai/l10n/app_localizations.dart';
 import 'package:nameless_ai/services/haptic_service.dart';
 
 class ExportOptionsSheet extends StatefulWidget {
-  const ExportOptionsSheet({super.key});
+  final bool isDialog;
+  const ExportOptionsSheet({super.key, this.isDialog = false});
 
   @override
   State<ExportOptionsSheet> createState() => _ExportOptionsSheetState();
@@ -23,15 +24,16 @@ class _ExportOptionsSheetState extends State<ExportOptionsSheet> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            height: 4,
-            width: 40,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.outlineVariant,
-              borderRadius: BorderRadius.circular(2),
+          if (!widget.isDialog)
+            Container(
+              height: 4,
+              width: 40,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.outlineVariant,
+                borderRadius: BorderRadius.circular(2),
+              ),
+              margin: const EdgeInsets.only(bottom: 16),
             ),
-            margin: const EdgeInsets.only(bottom: 16),
-          ),
           Text(
             localizations.exportSettings,
             style: Theme.of(context).textTheme.headlineSmall,
@@ -74,7 +76,9 @@ class _ExportOptionsSheetState extends State<ExportOptionsSheet> {
           Padding(
             padding: EdgeInsets.only(
               top: 16.0,
-              bottom: 24.0 + MediaQuery.of(context).padding.bottom,
+              bottom: widget.isDialog
+                  ? 16.0
+                  : 24.0 + MediaQuery.of(context).padding.bottom,
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,

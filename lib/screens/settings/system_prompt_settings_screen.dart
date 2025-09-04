@@ -130,23 +130,43 @@ class _SystemPromptSettingsScreenState
 
   void _showTemplateForm(BuildContext context,
       {SystemPromptTemplate? template}) {
-    showBlurredModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) {
-        return DraggableScrollableSheet(
-          initialChildSize: 0.7,
-          minChildSize: 0.4,
-          maxChildSize: 0.9,
-          expand: false,
-          builder: (_, scrollController) {
-            return SystemPromptTemplateForm(
-              template: template,
-              scrollController: scrollController,
-            );
-          },
-        );
-      },
-    );
+    final isDesktop = MediaQuery.of(context).size.width >= 600;
+
+    if (isDesktop) {
+      showDialog(
+        context: context,
+        builder: (dialogContext) {
+          return Dialog(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 500),
+              child: SystemPromptTemplateForm(
+                template: template,
+                isDialog: true,
+                scrollController: ScrollController(),
+              ),
+            ),
+          );
+        },
+      );
+    } else {
+      showBlurredModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (context) {
+          return DraggableScrollableSheet(
+            initialChildSize: 0.7,
+            minChildSize: 0.4,
+            maxChildSize: 0.9,
+            expand: false,
+            builder: (_, scrollController) {
+              return SystemPromptTemplateForm(
+                template: template,
+                scrollController: scrollController,
+              );
+            },
+          );
+        },
+      );
+    }
   }
 }

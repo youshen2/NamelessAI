@@ -8,9 +8,10 @@ import 'package:nameless_ai/services/haptic_service.dart';
 class SystemPromptTemplateForm extends StatefulWidget {
   final SystemPromptTemplate? template;
   final ScrollController? scrollController;
+  final bool isDialog;
 
   const SystemPromptTemplateForm(
-      {super.key, this.template, this.scrollController});
+      {super.key, this.template, this.scrollController, this.isDialog = false});
 
   @override
   State<SystemPromptTemplateForm> createState() =>
@@ -70,15 +71,16 @@ class _SystemPromptTemplateFormState extends State<SystemPromptTemplateForm> {
       ),
       child: Column(
         children: [
-          Container(
-            height: 4,
-            width: 40,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.outlineVariant,
-              borderRadius: BorderRadius.circular(2),
+          if (!widget.isDialog)
+            Container(
+              height: 4,
+              width: 40,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.outlineVariant,
+                borderRadius: BorderRadius.circular(2),
+              ),
+              margin: const EdgeInsets.only(bottom: 16),
             ),
-            margin: const EdgeInsets.only(bottom: 16),
-          ),
           Text(
             widget.template == null
                 ? localizations.addTemplate
@@ -121,7 +123,9 @@ class _SystemPromptTemplateFormState extends State<SystemPromptTemplateForm> {
           Padding(
             padding: EdgeInsets.only(
               top: 16.0,
-              bottom: 16.0 + MediaQuery.of(context).padding.bottom,
+              bottom: widget.isDialog
+                  ? 16.0
+                  : 16.0 + MediaQuery.of(context).padding.bottom,
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,

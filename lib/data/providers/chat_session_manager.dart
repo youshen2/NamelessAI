@@ -189,9 +189,6 @@ class ChatSessionManager extends ChangeNotifier {
       updatedAt: DateTime.now(),
     );
 
-    // No need to clear edit states if this is only to set the name for a new chat
-    // _clearAllEditingStates(_currentSession!);
-
     await AppDatabase.chatSessionsBox
         .put(_currentSession!.id, _currentSession!);
     _loadSessions();

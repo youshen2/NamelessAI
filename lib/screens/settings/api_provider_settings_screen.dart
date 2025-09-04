@@ -166,24 +166,47 @@ class _APIProviderSettingsScreenState extends State<APIProviderSettingsScreen> {
 
   void _showProviderForm(BuildContext context,
       {APIProvider? provider, bool isEditing = false}) {
-    showBlurredModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) {
-        return DraggableScrollableSheet(
-          initialChildSize: 0.8,
-          minChildSize: 0.5,
-          maxChildSize: 0.95,
-          expand: false,
-          builder: (_, scrollController) {
-            return APIProviderForm(
-              provider: provider,
-              isEditing: isEditing,
-              scrollController: scrollController,
+    final isDesktop = MediaQuery.of(context).size.width >= 600;
+
+    if (isDesktop) {
+      showDialog(
+          context: context,
+          builder: (dContext) {
+            return Dialog(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: 600,
+                  maxHeight: MediaQuery.of(context).size.height * 0.85,
+                ),
+                child: APIProviderForm(
+                  provider: provider,
+                  isEditing: isEditing,
+                  isDialog: true,
+                  scrollController: ScrollController(),
+                ),
+              ),
             );
-          },
-        );
-      },
-    );
+          });
+    } else {
+      showBlurredModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (context) {
+          return DraggableScrollableSheet(
+            initialChildSize: 0.8,
+            minChildSize: 0.5,
+            maxChildSize: 0.95,
+            expand: false,
+            builder: (_, scrollController) {
+              return APIProviderForm(
+                provider: provider,
+                isEditing: isEditing,
+                scrollController: scrollController,
+              );
+            },
+          );
+        },
+      );
+    }
   }
 }

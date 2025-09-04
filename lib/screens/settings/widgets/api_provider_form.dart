@@ -13,12 +13,15 @@ class APIProviderForm extends StatefulWidget {
   final APIProvider? provider;
   final bool isEditing;
   final ScrollController? scrollController;
+  final bool isDialog;
 
-  const APIProviderForm(
-      {super.key,
-      this.provider,
-      this.isEditing = false,
-      this.scrollController});
+  const APIProviderForm({
+    super.key,
+    this.provider,
+    this.isEditing = false,
+    this.scrollController,
+    this.isDialog = false,
+  });
 
   @override
   State<APIProviderForm> createState() => _APIProviderFormState();
@@ -51,15 +54,27 @@ class _APIProviderFormState extends State<APIProviderForm> {
 
   void _addOrEditModel({Model? model, int? index}) async {
     HapticService.onButtonPress(context);
-    final result = await showBlurredModalBottomSheet<Model>(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) => Padding(
-        padding:
-            EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-        child: ModelFormSheet(model: model),
-      ),
-    );
+    final isDesktop = MediaQuery.of(context).size.width >= 600;
+
+    final result = isDesktop
+        ? await showDialog<Model>(
+            context: context,
+            builder: (context) => Dialog(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 500),
+                child: ModelFormSheet(model: model),
+              ),
+            ),
+          )
+        : await showBlurredModalBottomSheet<Model>(
+            context: context,
+            isScrollControlled: true,
+            builder: (context) => Padding(
+              padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom),
+              child: ModelFormSheet(model: model),
+            ),
+          );
 
     if (result != null) {
       setState(() {
@@ -128,15 +143,16 @@ class _APIProviderFormState extends State<APIProviderForm> {
       ),
       child: Column(
         children: [
-          Container(
-            height: 4,
-            width: 40,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.outlineVariant,
-              borderRadius: BorderRadius.circular(2),
+          if (!widget.isDialog)
+            Container(
+              height: 4,
+              width: 40,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.outlineVariant,
+                borderRadius: BorderRadius.circular(2),
+              ),
+              margin: const EdgeInsets.only(bottom: 16),
             ),
-            margin: const EdgeInsets.only(bottom: 16),
-          ),
           Text(
             widget.isEditing
                 ? localizations.editProvider
@@ -267,7 +283,9 @@ class _APIProviderFormState extends State<APIProviderForm> {
           Padding(
             padding: EdgeInsets.only(
               top: 16.0,
-              bottom: 16.0 + MediaQuery.of(context).padding.bottom,
+              bottom: widget.isDialog
+                  ? 16.0
+                  : 16.0 + MediaQuery.of(context).padding.bottom,
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,

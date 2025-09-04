@@ -15,12 +15,14 @@ class ChatSettingsSheet extends StatefulWidget {
   final ChatSession session;
   final Function(Map<String, dynamic>) onSave;
   final ScrollController scrollController;
+  final bool isDialog;
 
   const ChatSettingsSheet({
     super.key,
     required this.session,
     required this.onSave,
     required this.scrollController,
+    this.isDialog = false,
   });
 
   @override
@@ -76,11 +78,24 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
 
   void _showTemplateSelection() async {
     HapticService.onButtonPress(context);
-    final selectedPrompt = await showBlurredModalBottomSheet<String>(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) => const TemplateSelectionSheet(),
-    );
+    final isDesktop = MediaQuery.of(context).size.width >= 600;
+
+    final selectedPrompt = isDesktop
+        ? await showDialog<String>(
+            context: context,
+            builder: (context) => Dialog(
+              child: SizedBox(
+                width: 500,
+                height: MediaQuery.of(context).size.height * 0.7,
+                child: const TemplateSelectionSheet(),
+              ),
+            ),
+          )
+        : await showBlurredModalBottomSheet<String>(
+            context: context,
+            isScrollControlled: true,
+            builder: (context) => const TemplateSelectionSheet(),
+          );
 
     if (selectedPrompt != null) {
       setState(() {
@@ -189,15 +204,16 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
       ),
       child: Column(
         children: [
-          Container(
-            height: 4,
-            width: 40,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.outlineVariant,
-              borderRadius: BorderRadius.circular(2),
+          if (!widget.isDialog)
+            Container(
+              height: 4,
+              width: 40,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.outlineVariant,
+                borderRadius: BorderRadius.circular(2),
+              ),
+              margin: const EdgeInsets.only(bottom: 16),
             ),
-            margin: const EdgeInsets.only(bottom: 16),
-          ),
           Text(
             localizations.chatSettings,
             style: Theme.of(context).textTheme.headlineSmall,
@@ -271,7 +287,9 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
           Padding(
             padding: EdgeInsets.only(
               top: 16.0,
-              bottom: 24.0 + MediaQuery.of(context).padding.bottom,
+              bottom: widget.isDialog
+                  ? 16.0
+                  : 24.0 + MediaQuery.of(context).padding.bottom,
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,

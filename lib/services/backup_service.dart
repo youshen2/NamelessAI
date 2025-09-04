@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:nameless_ai/data/app_database.dart';
 import 'package:nameless_ai/data/models/api_provider.dart';
@@ -12,28 +12,27 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 class BackupService {
-  Future<void> exportData(BuildContext context,
-      {required Map<String, bool> options}) async {
+  Future<void> exportData({required Map<String, bool> options}) async {
     final backupData = {
       'version': 1,
       'createdAt': DateTime.now().toIso8601String(),
     };
 
-    if (options['apiProviders'] ?? false) {
+    if (options['providers'] ?? false) {
       backupData['apiProviders'] =
           AppDatabase.apiProvidersBox.values.map((p) => p.toJson()).toList();
     }
-    if (options['chatSessions'] ?? false) {
+    if (options['chats'] ?? false) {
       backupData['chatSessions'] =
           AppDatabase.chatSessionsBox.values.map((s) => s.toJson()).toList();
     }
-    if (options['systemPromptTemplates'] ?? false) {
+    if (options['prompts'] ?? false) {
       backupData['systemPromptTemplates'] = AppDatabase
           .systemPromptTemplatesBox.values
           .map((t) => t.toJson())
           .toList();
     }
-    if (options['appConfig'] ?? false) {
+    if (options['settings'] ?? false) {
       backupData['appConfig'] = AppDatabase.appConfigBox.toMap();
     }
 
@@ -44,7 +43,7 @@ class BackupService {
     final jsonFile = File('${tempDir.path}/$backupFileName');
     await jsonFile.writeAsString(jsonString);
 
-    if (Platform.isAndroid || Platform.isIOS) {
+    if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
       await Share.shareXFiles([XFile(jsonFile.path, name: backupFileName)]);
     } else {
       final result = await FilePicker.platform.saveFile(

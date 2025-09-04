@@ -403,47 +403,71 @@ class _ChatScreenState extends State<ChatScreen> {
   void _showChatSettings() {
     HapticService.onButtonPress(context);
     final manager = Provider.of<ChatSessionManager>(context, listen: false);
+    final isDesktop = MediaQuery.of(context).size.width >= 600;
+
     if (manager.currentSession != null) {
-      showBlurredModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        builder: (context) => DraggableScrollableSheet(
-          expand: false,
-          initialChildSize: 0.8,
-          minChildSize: 0.5,
-          maxChildSize: 0.9,
-          builder: (context, scrollController) => ChatSettingsSheet(
-            session: manager.currentSession!,
-            onSave: (settings) {
-              manager.updateCurrentSessionDetails(
-                providerId: settings['providerId'],
-                modelId: settings['modelId'],
-                systemPrompt: settings['systemPrompt'],
-                temperature: settings['temperature'],
-                topP: settings['topP'],
-                useStreaming: settings['useStreaming'],
-                maxContextMessages: settings['maxContextMessages'],
-                imageSize: settings['imageSize'],
-                imageQuality: settings['imageQuality'],
-                imageStyle: settings['imageStyle'],
-              );
-              final apiManager =
-                  Provider.of<APIProviderManager>(context, listen: false);
-              if (settings['providerId'] != null) {
-                final provider = apiManager.providers
-                    .firstWhere((p) => p.id == settings['providerId']);
-                apiManager.setSelectedProvider(provider);
-              }
-              if (settings['modelId'] != null) {
-                final model = apiManager.availableModels
-                    .firstWhere((m) => m.id == settings['modelId']);
-                apiManager.setSelectedModel(model);
-              }
-            },
-            scrollController: scrollController,
+      void onSave(Map<String, dynamic> settings) {
+        manager.updateCurrentSessionDetails(
+          providerId: settings['providerId'],
+          modelId: settings['modelId'],
+          systemPrompt: settings['systemPrompt'],
+          temperature: settings['temperature'],
+          topP: settings['topP'],
+          useStreaming: settings['useStreaming'],
+          maxContextMessages: settings['maxContextMessages'],
+          imageSize: settings['imageSize'],
+          imageQuality: settings['imageQuality'],
+          imageStyle: settings['imageStyle'],
+        );
+        final apiManager =
+            Provider.of<APIProviderManager>(context, listen: false);
+        if (settings['providerId'] != null) {
+          final provider = apiManager.providers
+              .firstWhere((p) => p.id == settings['providerId']);
+          apiManager.setSelectedProvider(provider);
+        }
+        if (settings['modelId'] != null) {
+          final model = apiManager.availableModels
+              .firstWhere((m) => m.id == settings['modelId']);
+          apiManager.setSelectedModel(model);
+        }
+      }
+
+      if (isDesktop) {
+        showDialog(
+          context: context,
+          builder: (context) => Dialog(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: 450,
+                maxHeight: MediaQuery.of(context).size.height * 0.85,
+              ),
+              child: ChatSettingsSheet(
+                isDialog: true,
+                session: manager.currentSession!,
+                onSave: onSave,
+                scrollController: ScrollController(),
+              ),
+            ),
           ),
-        ),
-      );
+        );
+      } else {
+        showBlurredModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          builder: (context) => DraggableScrollableSheet(
+            expand: false,
+            initialChildSize: 0.8,
+            minChildSize: 0.5,
+            maxChildSize: 0.9,
+            builder: (context, scrollController) => ChatSettingsSheet(
+              session: manager.currentSession!,
+              onSave: onSave,
+              scrollController: scrollController,
+            ),
+          ),
+        );
+      }
     }
   }
 
@@ -549,7 +573,7 @@ class _ChatScreenState extends State<ChatScreen> {
               }),
         ),
         Positioned(
-          bottom: appConfig.scrollButtonBottomOffset,
+          bottom: isDesktop ? 20.0 : appConfig.scrollButtonBottomOffset,
           right: appConfig.scrollButtonRightOffset,
           child: Column(
             mainAxisSize: MainAxisSize.min,
