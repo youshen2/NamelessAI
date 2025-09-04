@@ -74,9 +74,10 @@ class ErrorApp extends StatelessWidget {
           lightColorScheme = lightDynamic;
           darkColorScheme = darkDynamic;
         } else {
-          lightColorScheme = ColorScheme.fromSeed(seedColor: Colors.blue);
+          lightColorScheme =
+              ColorScheme.fromSeed(seedColor: appConfig.seedColor);
           darkColorScheme = ColorScheme.fromSeed(
-              seedColor: Colors.blue, brightness: Brightness.dark);
+              seedColor: appConfig.seedColor, brightness: Brightness.dark);
         }
 
         return MaterialApp(
@@ -134,9 +135,11 @@ class MyApp extends StatelessWidget {
                 lightColorScheme = lightDynamic;
                 darkColorScheme = darkDynamic;
               } else {
-                lightColorScheme = ColorScheme.fromSeed(seedColor: Colors.blue);
+                lightColorScheme =
+                    ColorScheme.fromSeed(seedColor: appConfig.seedColor);
                 darkColorScheme = ColorScheme.fromSeed(
-                    seedColor: Colors.blue, brightness: Brightness.dark);
+                    seedColor: appConfig.seedColor,
+                    brightness: Brightness.dark);
               }
 
               return Builder(builder: (context) {

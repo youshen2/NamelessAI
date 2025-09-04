@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:nameless_ai/data/app_database.dart';
 
@@ -17,6 +18,7 @@ class AppConfigProvider extends ChangeNotifier {
   bool _enableMonet = true;
   SendKeyOption _sendKeyOption = SendKeyOption.ctrlEnter;
   bool _useSendKeyInEditMode = false;
+  Color _seedColor = Colors.blue;
 
   bool _showTotalTime = false;
   bool _showFirstChunkTime = false;
@@ -74,6 +76,7 @@ class AppConfigProvider extends ChangeNotifier {
   bool get enableMonet => _enableMonet;
   SendKeyOption get sendKeyOption => _sendKeyOption;
   bool get useSendKeyInEditMode => _useSendKeyInEditMode;
+  Color get seedColor => _seedColor;
 
   bool get showTotalTime => _showTotalTime;
   bool get showFirstChunkTime => _showFirstChunkTime;
@@ -131,10 +134,20 @@ class AppConfigProvider extends ChangeNotifier {
       _locale = Locale(localeCode);
     }
     _enableMonet = box.get('enableMonet', defaultValue: true);
+    final isDesktop = !kIsWeb &&
+        (defaultTargetPlatform == TargetPlatform.windows ||
+            defaultTargetPlatform == TargetPlatform.macOS ||
+            defaultTargetPlatform == TargetPlatform.linux);
+    if (isDesktop) {
+      _enableMonet = false;
+    }
+
     _sendKeyOption = SendKeyOption.values[
         box.get('sendKeyOption', defaultValue: SendKeyOption.ctrlEnter.index)];
     _useSendKeyInEditMode =
         box.get('useSendKeyInEditMode', defaultValue: false);
+    _seedColor = Color(box.get('seedColor', defaultValue: Colors.blue.value));
+
     _showTotalTime = box.get('showTotalTime', defaultValue: false);
     _showFirstChunkTime = box.get('showFirstChunkTime', defaultValue: false);
     _showTokenUsage = box.get('showTokenUsage', defaultValue: false);
@@ -238,6 +251,13 @@ class AppConfigProvider extends ChangeNotifier {
     if (_useSendKeyInEditMode != use) {
       _useSendKeyInEditMode = use;
       _updateValue('useSendKeyInEditMode', use);
+    }
+  }
+
+  void setSeedColor(Color color) {
+    if (_seedColor.value != color.value) {
+      _seedColor = color;
+      _updateValue('seedColor', color.value);
     }
   }
 

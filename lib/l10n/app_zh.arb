@@ -441,5 +441,6 @@
   "distinguishAssistantBubbleHint": "为AI的气泡添加边框，让它区别于背景色。",
   "scrollButtonPosition": "滚动按钮位置",
   "scrollButtonBottomOffset": "底部偏移",
-  "scrollButtonRightOffset": "右侧偏移"
+  "scrollButtonRightOffset": "右侧偏移",
+  "accentColor": "强调色"
 }

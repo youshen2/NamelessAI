@@ -1100,4 +1100,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get scrollButtonRightOffset => '右侧偏移';
+
+  @override
+  String get accentColor => '强调色';
 }

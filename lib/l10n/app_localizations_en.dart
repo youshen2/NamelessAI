@@ -1134,4 +1134,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get scrollButtonRightOffset => 'Right Offset';
+
+  @override
+  String get accentColor => 'Accent Color';
 }

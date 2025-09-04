@@ -441,5 +441,6 @@
   "distinguishAssistantBubbleHint": "Add a border to the assistant's bubble to distinguish it from the background.",
   "scrollButtonPosition": "Scroll Button Position",
   "scrollButtonBottomOffset": "Bottom Offset",
-  "scrollButtonRightOffset": "Right Offset"
+  "scrollButtonRightOffset": "Right Offset",
+  "accentColor": "Accent Color"
 }

@@ -2227,6 +2227,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Right Offset'**
   String get scrollButtonRightOffset;
+
+  /// No description provided for @accentColor.
+  ///
+  /// In en, this message translates to:
+  /// **'Accent Color'**
+  String get accentColor;
 }
 
 class _AppLocalizationsDelegate

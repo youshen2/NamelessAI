@@ -1,3 +1,5 @@
+import 'package:dynamic_color/dynamic_color.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -206,57 +208,145 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
+  Widget _buildColorPicker(BuildContext context, AppLocalizations localizations,
+      AppConfigProvider appConfig) {
+    final List<Color> presetColors = [
+      Colors.blue,
+      Colors.deepPurple,
+      Colors.teal,
+      Colors.amber,
+      Colors.redAccent,
+      Colors.pink,
+      Colors.green,
+      Colors.orange
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(localizations.accentColor,
+            style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 16.0,
+          runSpacing: 12.0,
+          alignment: WrapAlignment.center,
+          children: presetColors.map((color) {
+            final bool isSelected = appConfig.seedColor.value == color.value;
+            return GestureDetector(
+              onTap: () {
+                HapticService.onSwitchToggle(context);
+                appConfig.setSeedColor(color);
+              },
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: color,
+                  shape: BoxShape.circle,
+                  border: isSelected
+                      ? Border.all(
+                          color: Theme.of(context).colorScheme.primary,
+                          width: 3)
+                      : Border.all(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .outline
+                              .withOpacity(0.5),
+                          width: 1.5),
+                ),
+                child: isSelected
+                    ? Icon(Icons.check,
+                        color: ThemeData.estimateBrightnessForColor(color) ==
+                                Brightness.dark
+                            ? Colors.white
+                            : Colors.black,
+                        size: 24)
+                    : null,
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
   Widget _buildAppearancePage(BuildContext context,
       AppLocalizations localizations, AppConfigProvider appConfig) {
+    final isDesktop = !kIsWeb &&
+        (defaultTargetPlatform == TargetPlatform.windows ||
+            defaultTargetPlatform == TargetPlatform.macOS ||
+            defaultTargetPlatform == TargetPlatform.linux);
+
     return _buildPage(
       context: context,
       icon: Icons.palette_outlined,
       title: localizations.onboardingPage2Title,
       body: localizations.onboardingPage2Body,
-      content: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(localizations.theme,
-                  style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 8),
-              SegmentedButton<ThemeMode>(
-                segments: [
-                  ButtonSegment(
-                      value: ThemeMode.light,
-                      label: Text(localizations.light),
-                      icon: const Icon(Icons.light_mode_outlined)),
-                  ButtonSegment(
-                      value: ThemeMode.dark,
-                      label: Text(localizations.dark),
-                      icon: const Icon(Icons.dark_mode_outlined)),
-                  ButtonSegment(
-                      value: ThemeMode.system,
-                      label: Text(localizations.systemDefault),
-                      icon: const Icon(Icons.brightness_auto_outlined)),
+      content: DynamicColorBuilder(builder: (lightDynamic, darkDynamic) {
+        final bool monetAvailable = lightDynamic != null && darkDynamic != null;
+        return Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(localizations.theme,
+                    style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 8),
+                SegmentedButton<ThemeMode>(
+                  segments: [
+                    ButtonSegment(
+                        value: ThemeMode.light,
+                        label: Text(localizations.light),
+                        icon: const Icon(Icons.light_mode_outlined)),
+                    ButtonSegment(
+                        value: ThemeMode.dark,
+                        label: Text(localizations.dark),
+                        icon: const Icon(Icons.dark_mode_outlined)),
+                    ButtonSegment(
+                        value: ThemeMode.system,
+                        label: Text(localizations.systemDefault),
+                        icon: const Icon(Icons.brightness_auto_outlined)),
+                  ],
+                  selected: {appConfig.themeMode},
+                  onSelectionChanged: (newSelection) {
+                    HapticService.onSwitchToggle(context);
+                    appConfig.setThemeMode(newSelection.first);
+                  },
+                ),
+                if (monetAvailable && !isDesktop) ...[
+                  const Divider(height: 24),
+                  SwitchListTile(
+                    title: Text(localizations.enableMonet),
+                    subtitle: Text(localizations.monetTheming),
+                    value: appConfig.enableMonet,
+                    onChanged: (value) {
+                      HapticService.onSwitchToggle(context);
+                      appConfig.setEnableMonet(value);
+                    },
+                    contentPadding: EdgeInsets.zero,
+                  ),
                 ],
-                selected: {appConfig.themeMode},
-                onSelectionChanged: (newSelection) {
-                  HapticService.onSwitchToggle(context);
-                  appConfig.setThemeMode(newSelection.first);
-                },
-              ),
-              const Divider(height: 24),
-              SwitchListTile(
-                title: Text(localizations.enableBlurEffect),
-                value: appConfig.enableBlurEffect,
-                onChanged: (value) {
-                  HapticService.onSwitchToggle(context);
-                  appConfig.setEnableBlurEffect(value);
-                },
-                contentPadding: EdgeInsets.zero,
-              ),
-            ],
+                if (!appConfig.enableMonet || !monetAvailable || isDesktop) ...[
+                  const Divider(height: 24),
+                  _buildColorPicker(context, localizations, appConfig),
+                ],
+                const Divider(height: 24),
+                SwitchListTile(
+                  title: Text(localizations.enableBlurEffect),
+                  value: appConfig.enableBlurEffect,
+                  onChanged: (value) {
+                    HapticService.onSwitchToggle(context);
+                    appConfig.setEnableBlurEffect(value);
+                  },
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ],
+            ),
           ),
-        ),
-      ),
+        );
+      }),
     );
   }
 
