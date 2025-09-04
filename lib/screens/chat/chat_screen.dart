@@ -4,6 +4,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nameless_ai/data/models/chat_session.dart';
 import 'package:nameless_ai/data/models/model.dart';
 import 'package:nameless_ai/data/models/model_type.dart';
 import 'package:nameless_ai/services/haptic_service.dart';
@@ -30,6 +31,9 @@ class _ChatScreenState extends State<ChatScreen> {
   final ScrollController _scrollController = ScrollController();
   final FocusNode _inputFocusNode = FocusNode();
   late ChatSessionManager _chatSessionManager;
+  final TextEditingController _historySearchController =
+      TextEditingController();
+  String _historySearchQuery = '';
 
   String? _currentSessionId;
   bool _userScrolledUp = false;
@@ -49,6 +53,13 @@ class _ChatScreenState extends State<ChatScreen> {
       _currentSessionId = _chatSessionManager.currentSession?.id;
       _chatSessionManager.addListener(_chatUpdateListener);
       _scrollController.addListener(_scrollListener);
+      _historySearchController.addListener(() {
+        if (mounted) {
+          setState(() {
+            _historySearchQuery = _historySearchController.text.toLowerCase();
+          });
+        }
+      });
     });
   }
 
@@ -488,19 +499,206 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
     final isDesktop = MediaQuery.of(context).size.width >= 600;
+    return isDesktop ? _buildDesktopLayout() : _buildMobileLayout();
+  }
 
+  Widget _buildMobileLayout() {
+    final localizations = AppLocalizations.of(context)!;
+    final appConfig = context.watch<AppConfigProvider>();
     return Scaffold(
       extendBody: true,
       extendBodyBehindAppBar: true,
       appBar: _buildAppBar(context, localizations),
-      body: _buildBody(context, localizations, isDesktop),
+      body: Stack(
+        children: [
+          _buildChatList(localizations, false),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Selector<ChatSessionManager, bool>(
+                selector: (_, manager) => manager.isGenerating,
+                builder: (context, isGenerating, _) {
+                  return _buildInputArea(localizations, isGenerating,
+                      isDesktop: false);
+                }),
+          ),
+          Positioned(
+            bottom: appConfig.scrollButtonBottomOffset,
+            right: appConfig.scrollButtonRightOffset,
+            child: _buildScrollButtons(localizations, appConfig),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDesktopLayout() {
+    final localizations = AppLocalizations.of(context)!;
+    final appConfig = context.watch<AppConfigProvider>();
+    return Scaffold(
+      body: Row(
+        children: [
+          _buildDesktopHistoryPanel(localizations),
+          VerticalDivider(
+              thickness: 1,
+              width: 1,
+              color: Theme.of(context)
+                  .colorScheme
+                  .outlineVariant
+                  .withOpacity(0.5)),
+          Expanded(
+            child: Column(
+              children: [
+                _buildAppBar(context, localizations, isDesktop: true),
+                Expanded(
+                  child: Stack(
+                    children: [
+                      _buildChatList(localizations, true),
+                      Positioned(
+                        bottom: 20.0,
+                        right: appConfig.scrollButtonRightOffset,
+                        child: _buildScrollButtons(localizations, appConfig),
+                      ),
+                    ],
+                  ),
+                ),
+                Divider(
+                    height: 1,
+                    color: Theme.of(context)
+                        .colorScheme
+                        .outlineVariant
+                        .withOpacity(0.5)),
+                Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Selector<ChatSessionManager, bool>(
+                      selector: (_, manager) => manager.isGenerating,
+                      builder: (context, isGenerating, _) {
+                        return _buildInputArea(localizations, isGenerating,
+                            isDesktop: true);
+                      }),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDesktopHistoryPanel(AppLocalizations localizations) {
+    return Material(
+      color: Theme.of(context).colorScheme.surface,
+      child: SizedBox(
+        width: 240,
+        child: Column(
+          children: [
+            SizedBox(height: MediaQuery.of(context).padding.top + 8),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(localizations.history,
+                        style: Theme.of(context).textTheme.titleLarge),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.add_circle_outline),
+                    tooltip: localizations.newChat,
+                    onPressed: _startNewChat,
+                  ),
+                  const SizedBox(width: 8),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: TextField(
+                controller: _historySearchController,
+                decoration: InputDecoration(
+                  hintText: localizations.searchHint,
+                  prefixIcon: const Icon(Icons.search),
+                  suffixIcon: _historySearchQuery.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () {
+                            HapticService.onButtonPress(context);
+                            _historySearchController.clear();
+                          },
+                        )
+                      : null,
+                ),
+              ),
+            ),
+            Expanded(
+              child: Consumer<ChatSessionManager>(
+                  builder: (context, manager, child) {
+                if (manager.sessions.isEmpty) {
+                  return Center(
+                    child: Text(localizations.noChatHistory),
+                  );
+                }
+
+                final filteredSessions = manager.sessions.where((session) {
+                  if (_historySearchQuery.isEmpty) return true;
+                  final nameMatch =
+                      session.name.toLowerCase().contains(_historySearchQuery);
+                  final contentMatch = session.messages.any((msg) =>
+                      msg.content.toLowerCase().contains(_historySearchQuery));
+                  return nameMatch || contentMatch;
+                }).toList();
+
+                if (filteredSessions.isEmpty) {
+                  return Center(child: Text(localizations.noResultsFound));
+                }
+
+                return ListView.builder(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    itemCount: filteredSessions.length,
+                    itemBuilder: (context, index) {
+                      final session = filteredSessions[index];
+                      final isSelected =
+                          manager.currentSession?.id == session.id;
+                      return Card(
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 4),
+                        color: isSelected
+                            ? Theme.of(context).colorScheme.secondaryContainer
+                            : Theme.of(context).colorScheme.surfaceContainer,
+                        child: ListTile(
+                          title: Text(session.name,
+                              maxLines: 1, overflow: TextOverflow.ellipsis),
+                          subtitle: Text(
+                            session.messages.isNotEmpty
+                                ? session.messages.last.content
+                                : localizations.noChatHistory,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                          onTap: () {
+                            HapticService.onButtonPress(context);
+                            _chatSessionManager.loadSession(session.id);
+                          },
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      );
+                    });
+              }),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
   PreferredSizeWidget _buildAppBar(
-      BuildContext context, AppLocalizations localizations) {
+      BuildContext context, AppLocalizations localizations,
+      {bool isDesktop = false}) {
     final appConfig = context.watch<AppConfigProvider>();
     return AppBar(
       backgroundColor: appConfig.enableBlurEffect ? Colors.transparent : null,
@@ -545,72 +743,14 @@ class _ChatScreenState extends State<ChatScreen> {
         },
       ),
       actions: [
-        _buildAppBarModelSelector(localizations),
-        IconButton(
-          icon: const Icon(Icons.add_circle_outline),
-          tooltip: localizations.newChat,
-          onPressed: _startNewChat,
-        ),
-        const SizedBox(width: 8),
-      ],
-    );
-  }
-
-  Widget _buildBody(
-      BuildContext context, AppLocalizations localizations, bool isDesktop) {
-    final appConfig = context.watch<AppConfigProvider>();
-    return Stack(
-      children: [
-        _buildChatList(localizations, isDesktop),
-        Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
-          child: Selector<ChatSessionManager, bool>(
-              selector: (_, manager) => manager.isGenerating,
-              builder: (context, isGenerating, _) {
-                return _buildInputArea(localizations, isGenerating);
-              }),
-        ),
-        Positioned(
-          bottom: isDesktop ? 20.0 : appConfig.scrollButtonBottomOffset,
-          right: appConfig.scrollButtonRightOffset,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (_showScrollUpButton)
-                _buildScrollButton(
-                  icon: Icons.vertical_align_top,
-                  onPressed: _scrollToTop,
-                  tooltip: localizations.scrollToTop,
-                ),
-              if (_showScrollPageUpButton)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: _buildScrollButton(
-                    icon: Icons.arrow_upward,
-                    onPressed: _scrollPageUp,
-                    tooltip: localizations.pageUp,
-                  ),
-                ),
-              if (_showScrollDownButton)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: _buildScrollButton(
-                    icon: Icons.arrow_downward,
-                    onPressed: () {
-                      HapticService.onButtonPress(context);
-                      setState(() {
-                        _userScrolledUp = false;
-                      });
-                      _scrollToBottom(instant: true);
-                    },
-                    tooltip: localizations.scrollToBottom,
-                  ),
-                ),
-            ],
+        if (!isDesktop) _buildMobileAppBarModelSelector(localizations),
+        if (!isDesktop)
+          IconButton(
+            icon: const Icon(Icons.add_circle_outline),
+            tooltip: localizations.newChat,
+            onPressed: _startNewChat,
           ),
-        ),
+        const SizedBox(width: 8),
       ],
     );
   }
@@ -637,7 +777,7 @@ class _ChatScreenState extends State<ChatScreen> {
           itemCount: messages.length,
           padding: EdgeInsets.only(
               top: kToolbarHeight + MediaQuery.of(context).padding.top + 8.0,
-              bottom: isDesktop ? 90.0 : 140.0),
+              bottom: isDesktop ? 8.0 : 140.0),
           itemBuilder: (context, index) {
             final message = messages[index];
             final manager =
@@ -680,6 +820,45 @@ class _ChatScreenState extends State<ChatScreen> {
           },
         );
       },
+    );
+  }
+
+  Widget _buildScrollButtons(
+      AppLocalizations localizations, AppConfigProvider appConfig) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (_showScrollUpButton)
+          _buildScrollButton(
+            icon: Icons.vertical_align_top,
+            onPressed: _scrollToTop,
+            tooltip: localizations.scrollToTop,
+          ),
+        if (_showScrollPageUpButton)
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: _buildScrollButton(
+              icon: Icons.arrow_upward,
+              onPressed: _scrollPageUp,
+              tooltip: localizations.pageUp,
+            ),
+          ),
+        if (_showScrollDownButton)
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: _buildScrollButton(
+              icon: Icons.arrow_downward,
+              onPressed: () {
+                HapticService.onButtonPress(context);
+                setState(() {
+                  _userScrolledUp = false;
+                });
+                _scrollToBottom(instant: true);
+              },
+              tooltip: localizations.scrollToBottom,
+            ),
+          ),
+      ],
     );
   }
 
@@ -730,7 +909,15 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget _buildInputArea(AppLocalizations localizations, bool isLoading) {
+  Widget _buildInputArea(AppLocalizations localizations, bool isLoading,
+      {required bool isDesktop}) {
+    if (isDesktop) {
+      return _buildDesktopInputArea(localizations, isLoading);
+    }
+    return _buildMobileInputArea(localizations, isLoading);
+  }
+
+  Widget _buildMobileInputArea(AppLocalizations localizations, bool isLoading) {
     final apiManager = Provider.of<APIProviderManager>(context, listen: false);
     final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
     final selectedModel = apiManager.selectedModel;
@@ -816,6 +1003,100 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  Widget _buildDesktopInputArea(
+      AppLocalizations localizations, bool isLoading) {
+    final apiManager = Provider.of<APIProviderManager>(context, listen: false);
+    final selectedModel = apiManager.selectedModel;
+    final isMidjourney = selectedModel?.modelType == ModelType.image &&
+        selectedModel?.imageGenerationMode == ImageGenerationMode.asynchronous;
+
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+        child: Column(
+          children: [
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxHeight: 250),
+              child: Focus(
+                focusNode: _inputFocusNode,
+                onKey: _handleKeyEvent,
+                child: TextField(
+                  controller: _messageController,
+                  decoration: InputDecoration(
+                    hintText: isMidjourney
+                        ? localizations.midjourneyPromptHint
+                        : localizations.sendMessage,
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    errorBorder: InputBorder.none,
+                    focusedErrorBorder: InputBorder.none,
+                    filled: false,
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+                  ),
+                  maxLines: null,
+                  keyboardType: TextInputType.multiline,
+                  textCapitalization: TextCapitalization.sentences,
+                ),
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.tune),
+                      onPressed: _showChatSettings,
+                      tooltip: localizations.chatSettings,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    _buildDesktopModelSelector(localizations),
+                    const SizedBox(width: 8),
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 200),
+                      transitionBuilder: (child, animation) {
+                        return ScaleTransition(scale: animation, child: child);
+                      },
+                      child: isLoading
+                          ? IconButton(
+                              key: const ValueKey('stop_button_desktop'),
+                              icon: const Icon(Icons.stop),
+                              tooltip: localizations.stopGenerating,
+                              onPressed: () {
+                                HapticService.onButtonPress(context);
+                                if (_chatSessionManager.currentSession !=
+                                    null) {
+                                  _chatSessionManager.cancelGeneration(
+                                      _chatSessionManager.currentSession!.id);
+                                }
+                              },
+                              color: Theme.of(context).colorScheme.error,
+                            )
+                          : IconButton(
+                              key: const ValueKey('send_button_desktop'),
+                              icon: const Icon(Icons.send),
+                              tooltip: localizations.sendMessage,
+                              onPressed: _sendMessage,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                    ),
+                  ],
+                )
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildStopButton() {
     return SizedBox(
       key: const ValueKey('stop_button'),
@@ -856,7 +1137,7 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget _buildAppBarModelSelector(AppLocalizations localizations) {
+  Widget _buildMobileAppBarModelSelector(AppLocalizations localizations) {
     return Consumer<APIProviderManager>(builder: (context, apiManager, _) {
       final providers = apiManager.providers;
 
@@ -871,107 +1152,155 @@ class _ChatScreenState extends State<ChatScreen> {
         );
       }
 
-      return PopupMenuButton<dynamic>(
-        tooltip: localizations.modelSelection,
-        onSelected: (value) {
-          HapticService.onButtonPress(context);
-          if (value is Model) {
-            APIProvider? providerOfSelectedModel;
-            for (var p in providers) {
-              if (p.models.any((m) => m.id == value.id)) {
-                providerOfSelectedModel = p;
-                break;
-              }
-            }
-            if (providerOfSelectedModel != null) {
-              apiManager.setSelectedProvider(providerOfSelectedModel);
-              apiManager.setSelectedModel(value);
+      return _buildModelSelectorMenu(localizations, apiManager, providers);
+    });
+  }
 
-              final chatManager =
-                  Provider.of<ChatSessionManager>(context, listen: false);
-              if (chatManager.currentSession != null) {
-                chatManager.updateCurrentSessionDetails(
-                  providerId: providerOfSelectedModel.id,
-                  modelId: value.id,
-                );
-              }
+  Widget _buildDesktopModelSelector(AppLocalizations localizations) {
+    return Consumer<APIProviderManager>(builder: (context, apiManager, _) {
+      final providers = apiManager.providers;
+
+      if (providers.isEmpty) {
+        return TextButton(
+          onPressed: () {
+            HapticService.onButtonPress(context);
+            context.go('/settings/api_providers');
+          },
+          child: Text(localizations.addProvider),
+        );
+      }
+
+      return _buildModelSelectorMenu(localizations, apiManager, providers,
+          isDesktop: true);
+    });
+  }
+
+  Widget _buildModelSelectorMenu(AppLocalizations localizations,
+      APIProviderManager apiManager, List<APIProvider> providers,
+      {bool isDesktop = false}) {
+    return PopupMenuButton<dynamic>(
+      tooltip: localizations.modelSelection,
+      onSelected: (value) {
+        HapticService.onButtonPress(context);
+        if (value is Model) {
+          APIProvider? providerOfSelectedModel;
+          for (var p in providers) {
+            if (p.models.any((m) => m.id == value.id)) {
+              providerOfSelectedModel = p;
+              break;
             }
           }
-        },
-        itemBuilder: (context) {
-          List<PopupMenuEntry<dynamic>> items = [];
-          for (var provider in providers) {
+          if (providerOfSelectedModel != null) {
+            apiManager.setSelectedProvider(providerOfSelectedModel);
+            apiManager.setSelectedModel(value);
+
+            final chatManager =
+                Provider.of<ChatSessionManager>(context, listen: false);
+            if (chatManager.currentSession != null) {
+              chatManager.updateCurrentSessionDetails(
+                providerId: providerOfSelectedModel.id,
+                modelId: value.id,
+              );
+            }
+          }
+        }
+      },
+      itemBuilder: (context) {
+        List<PopupMenuEntry<dynamic>> items = [];
+        for (var provider in providers) {
+          items.add(PopupMenuItem(
+            enabled: false,
+            height: 32,
+            child: Text(
+              provider.name,
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+          ));
+          for (var model in provider.models) {
+            final bool isSelected = apiManager.selectedModel?.id == model.id;
             items.add(PopupMenuItem(
-              enabled: false,
-              height: 32,
-              child: Text(
-                provider.name,
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
+              value: model,
+              child: Row(
+                children: [
+                  Icon(
+                    isSelected ? Icons.check_circle : Icons.circle_outlined,
+                    size: 20,
+                    color: isSelected
+                        ? Theme.of(context).colorScheme.primary
+                        : Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(child: Text(model.name)),
+                ],
               ),
             ));
-            for (var model in provider.models) {
-              final bool isSelected = apiManager.selectedModel?.id == model.id;
-              items.add(PopupMenuItem(
-                value: model,
-                child: Row(
-                  children: [
-                    Icon(
-                      isSelected ? Icons.check_circle : Icons.circle_outlined,
-                      size: 20,
-                      color: isSelected
-                          ? Theme.of(context).colorScheme.primary
-                          : Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(child: Text(model.name)),
-                  ],
-                ),
-              ));
-            }
-            if (providers.indexOf(provider) < providers.length - 1) {
-              items.add(const PopupMenuDivider());
-            }
           }
-          return items;
-        },
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceContainer,
-            borderRadius: BorderRadius.circular(12.0),
-            border: Border.all(
-              color:
-                  Theme.of(context).colorScheme.outlineVariant.withOpacity(0.5),
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.model_training_outlined,
-                  size: 18,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant),
-              const SizedBox(width: 8),
-              ConstrainedBox(
-                constraints: BoxConstraints(
-                    maxWidth: MediaQuery.of(context).size.width * 0.2),
-                child: Text(
-                  apiManager.selectedModel?.name ?? localizations.selectModel,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                  overflow: TextOverflow.ellipsis,
+          if (providers.indexOf(provider) < providers.length - 1) {
+            items.add(const PopupMenuDivider());
+          }
+        }
+        return items;
+      },
+      child: isDesktop
+          ? Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    apiManager.selectedModel?.name ?? localizations.selectModel,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  ),
+                  const SizedBox(width: 4),
+                  Icon(Icons.arrow_drop_down,
+                      size: 20,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant),
+                ],
+              ),
+            )
+          : Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainer,
+                borderRadius: BorderRadius.circular(12.0),
+                border: Border.all(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .outlineVariant
+                      .withOpacity(0.5),
                 ),
               ),
-              const SizedBox(width: 4),
-              Icon(Icons.arrow_drop_down,
-                  size: 20,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant),
-            ],
-          ),
-        ),
-      );
-    });
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.model_training_outlined,
+                      size: 18,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  const SizedBox(width: 8),
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                        maxWidth: MediaQuery.of(context).size.width * 0.2),
+                    child: Text(
+                      apiManager.selectedModel?.name ??
+                          localizations.selectModel,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Icon(Icons.arrow_drop_down,
+                      size: 20,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant),
+                ],
+              ),
+            ),
+    );
   }
 
   @override
@@ -981,6 +1310,7 @@ class _ChatScreenState extends State<ChatScreen> {
     _scrollController.removeListener(_scrollListener);
     _scrollController.dispose();
     _chatSessionManager.removeListener(_chatUpdateListener);
+    _historySearchController.dispose();
     super.dispose();
   }
 }

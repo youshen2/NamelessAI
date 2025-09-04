@@ -73,27 +73,49 @@ class _HomePageState extends State<HomePage> {
 
   int _calculateSelectedIndex(BuildContext context) {
     final String location = GoRouterState.of(context).uri.toString();
-    if (location.startsWith('/history')) {
-      return 1;
+    final isDesktop = MediaQuery.of(context).size.width >= 600;
+
+    if (isDesktop) {
+      if (location.startsWith('/settings')) {
+        return 1;
+      }
+      return 0;
+    } else {
+      if (location.startsWith('/history')) {
+        return 1;
+      }
+      if (location.startsWith('/settings')) {
+        return 2;
+      }
+      return 0;
     }
-    if (location.startsWith('/settings')) {
-      return 2;
-    }
-    return 0;
   }
 
   void _onItemTapped(int index, BuildContext context) {
     HapticService.onButtonPress(context);
-    switch (index) {
-      case 0:
-        context.go('/');
-        break;
-      case 1:
-        context.go('/history');
-        break;
-      case 2:
-        context.go('/settings');
-        break;
+    final isDesktop = MediaQuery.of(context).size.width >= 600;
+
+    if (isDesktop) {
+      switch (index) {
+        case 0:
+          context.go('/');
+          break;
+        case 1:
+          context.go('/settings');
+          break;
+      }
+    } else {
+      switch (index) {
+        case 0:
+          context.go('/');
+          break;
+        case 1:
+          context.go('/history');
+          break;
+        case 2:
+          context.go('/settings');
+          break;
+      }
     }
   }
 
@@ -157,10 +179,6 @@ class _HomePageState extends State<HomePage> {
                 NavigationRailDestination(
                   icon: const Icon(Icons.chat_bubble_outline),
                   label: Text(localizations.chat),
-                ),
-                NavigationRailDestination(
-                  icon: const Icon(Icons.history),
-                  label: Text(localizations.history),
                 ),
                 NavigationRailDestination(
                   icon: const Icon(Icons.settings),
