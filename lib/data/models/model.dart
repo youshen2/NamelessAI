@@ -16,6 +16,23 @@ enum ImageGenerationMode {
 enum CompatibilityMode {
   @HiveField(0)
   midjourneyProxy,
+  @HiveField(1)
+  gemini,
+}
+
+// Helper function for parsing nullable CompatibilityMode
+CompatibilityMode? _compatibilityModeFromJson(String? name) {
+  if (name == null) {
+    return null;
+  }
+  for (var mode in CompatibilityMode.values) {
+    if (mode.name == name) {
+      return mode;
+    }
+  }
+  // Optionally, you can add a debugPrint here if you want to log unknown enum names
+  // debugPrint('Warning: Unknown CompatibilityMode name "$name" found in JSON. Returning null.');
+  return null;
 }
 
 @HiveType(typeId: 1)
@@ -127,11 +144,8 @@ class Model extends HiveObject {
         imageGenerationMode: ImageGenerationMode.values.firstWhere(
             (e) => e.name == json['imageGenerationMode'],
             orElse: () => ImageGenerationMode.instant),
-        compatibilityMode: json['compatibilityMode'] == null
-            ? null
-            : CompatibilityMode.values.firstWhere(
-                (e) => e.name == json['compatibilityMode'],
-                orElse: () => CompatibilityMode.midjourneyProxy),
+        compatibilityMode: _compatibilityModeFromJson(
+            json['compatibilityMode']), // Use the helper function here
         imaginePath: json['imaginePath'],
         fetchPath: json['fetchPath'],
         chatPath: json['chatPath'],

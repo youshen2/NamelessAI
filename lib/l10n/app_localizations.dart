@@ -200,6 +200,18 @@ abstract class AppLocalizations {
   /// **'Midjourney Proxy'**
   String get compatibilityModeMidjourney;
 
+  /// No description provided for @compatibilityModeGemini.
+  ///
+  /// In en, this message translates to:
+  /// **'Gemini'**
+  String get compatibilityModeGemini;
+
+  /// No description provided for @compatibilityModeNone.
+  ///
+  /// In en, this message translates to:
+  /// **'OpenAI (Default)'**
+  String get compatibilityModeNone;
+
   /// No description provided for @saveToGallery.
   ///
   /// In en, this message translates to:
@@ -2108,6 +2120,12 @@ abstract class AppLocalizations {
   /// **'DeepSeek AI'**
   String get presetDeepseek;
 
+  /// No description provided for @presetGemini.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Gemini'**
+  String get presetGemini;
+
   /// No description provided for @crashReport.
   ///
   /// In en, this message translates to:
@@ -2209,6 +2227,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add a border to the assistant\'s bubble to distinguish it from the background.'**
   String get distinguishAssistantBubbleHint;
+
+  /// No description provided for @reserveActionSpace.
+  ///
+  /// In en, this message translates to:
+  /// **'Reserve Action Button Space'**
+  String get reserveActionSpace;
+
+  /// No description provided for @reserveActionSpaceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep space for action buttons even when they are hidden to prevent layout shifts.'**
+  String get reserveActionSpaceHint;
 
   /// No description provided for @scrollButtonPosition.
   ///

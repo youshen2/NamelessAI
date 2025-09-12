@@ -43,13 +43,15 @@ class ChatMessageAdapter extends TypeAdapter<ChatMessage> {
       rawResponseJson: fields[20] as String?,
       enhancedPrompt: fields[21] as String?,
       videoUrl: fields[22] as String?,
+      nextRefreshTime: fields[23] as DateTime?,
+      isTokenCountEstimated: fields[24] == null ? false : fields[24] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, ChatMessage obj) {
     writer
-      ..writeByte(23)
+      ..writeByte(25)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -95,7 +97,11 @@ class ChatMessageAdapter extends TypeAdapter<ChatMessage> {
       ..writeByte(21)
       ..write(obj.enhancedPrompt)
       ..writeByte(22)
-      ..write(obj.videoUrl);
+      ..write(obj.videoUrl)
+      ..writeByte(23)
+      ..write(obj.nextRefreshTime)
+      ..writeByte(24)
+      ..write(obj.isTokenCountEstimated);
   }
 
   @override

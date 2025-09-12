@@ -164,6 +164,10 @@ class _MessageBubbleState extends State<MessageBubble>
   Widget build(BuildContext context) {
     final appConfig = Provider.of<AppConfigProvider>(context);
     final isUser = widget.message.role == 'user';
+    final platform = Theme.of(context).platform;
+    final isTouchDevice = platform == TargetPlatform.android ||
+        platform == TargetPlatform.iOS ||
+        platform == TargetPlatform.fuchsia;
 
     CrossAxisAlignment alignment;
     switch (appConfig.chatBubbleAlignment) {
@@ -199,19 +203,32 @@ class _MessageBubbleState extends State<MessageBubble>
                 if (!widget.isReadOnly)
                   MessageMetaInfo(
                       message: widget.message, alignment: alignment),
-                if (!widget.isReadOnly &&
-                    !widget.message.isEditing &&
-                    !widget.message.isLoading)
-                  MessageActionBar(
-                    message: widget.message,
-                    isHovering: _isHovering,
-                    onCopy: () => widget.onCopy(
-                        widget.message.videoUrl ?? widget.message.content),
-                    onRegenerate: () => widget.onRegenerate(widget.message),
-                    onEdit: () => widget.onEdit(widget.message, true),
-                    onDelete: () => widget.onDelete(widget.message),
-                    onRefresh: () => widget.onRefresh(widget.message),
-                  ),
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  transitionBuilder:
+                      (Widget child, Animation<double> animation) {
+                    return FadeTransition(opacity: animation, child: child);
+                  },
+                  child: (!widget.isReadOnly &&
+                          !widget.message.isEditing &&
+                          !widget.message.isLoading &&
+                          (_isHovering || isTouchDevice))
+                      ? MessageActionBar(
+                          key: ValueKey(widget.message.id),
+                          message: widget.message,
+                          onCopy: () => widget.onCopy(widget.message.videoUrl ??
+                              widget.message.content),
+                          onRegenerate: () =>
+                              widget.onRegenerate(widget.message),
+                          onEdit: () => widget.onEdit(widget.message, true),
+                          onDelete: () => widget.onDelete(widget.message),
+                          onRefresh: () => widget.onRefresh(widget.message),
+                        )
+                      : (appConfig.reserveActionSpace
+                          ? const SizedBox(
+                              key: ValueKey('reserved_space'), height: 34.0)
+                          : const SizedBox.shrink(key: ValueKey('empty'))),
+                ),
                 if (widget.branchCount > 1)
                   MessageBranchNavigator(
                     branchCount: widget.branchCount,

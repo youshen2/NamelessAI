@@ -400,6 +400,16 @@ void main() {
                         },
                         activeColor: Theme.of(context).colorScheme.primary,
                       ),
+                      SwitchListTile(
+                        title: Text(localizations.reserveActionSpace),
+                        subtitle: Text(localizations.reserveActionSpaceHint),
+                        value: appConfig.reserveActionSpace,
+                        onChanged: (value) {
+                          HapticService.onSwitchToggle(context);
+                          appConfig.setReserveActionSpace(value);
+                        },
+                        activeColor: Theme.of(context).colorScheme.primary,
+                      ),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
                         child: Text(

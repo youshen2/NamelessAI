@@ -27,7 +27,7 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
   late bool _isStreamable;
   late ModelType _modelType;
   late ImageGenerationMode _imageGenerationMode;
-  late CompatibilityMode _compatibilityMode;
+  late CompatibilityMode? _compatibilityMode;
 
   @override
   void initState() {
@@ -39,8 +39,7 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
     _modelType = widget.model?.modelType ?? ModelType.language;
     _imageGenerationMode =
         widget.model?.imageGenerationMode ?? ImageGenerationMode.instant;
-    _compatibilityMode =
-        widget.model?.compatibilityMode ?? CompatibilityMode.midjourneyProxy;
+    _compatibilityMode = widget.model?.compatibilityMode;
     _imaginePathController =
         TextEditingController(text: widget.model?.imaginePath);
     _fetchPathController = TextEditingController(text: widget.model?.fetchPath);
@@ -105,6 +104,20 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
         return localizations.modelTypeVideo;
       case ModelType.tts:
         return localizations.modelTypeTts;
+    }
+  }
+
+  String _getLocalizedCompatibilityModeName(
+      BuildContext context, CompatibilityMode? mode) {
+    final localizations = AppLocalizations.of(context)!;
+    switch (mode) {
+      case CompatibilityMode.gemini:
+        return localizations.compatibilityModeGemini;
+      case CompatibilityMode.midjourneyProxy:
+        return localizations.compatibilityModeMidjourney;
+      case null:
+      default:
+        return localizations.compatibilityModeNone;
     }
   }
 
@@ -328,6 +341,29 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
   Widget _buildLanguageModelSettings(AppLocalizations localizations) {
     return Column(
       children: [
+        DropdownButtonFormField<CompatibilityMode?>(
+          value: _compatibilityMode,
+          decoration:
+              InputDecoration(labelText: localizations.compatibilityMode),
+          items: [
+            DropdownMenuItem(
+              value: null,
+              child: Text(_getLocalizedCompatibilityModeName(context, null)),
+            ),
+            DropdownMenuItem(
+              value: CompatibilityMode.gemini,
+              child: Text(_getLocalizedCompatibilityModeName(
+                  context, CompatibilityMode.gemini)),
+            ),
+          ],
+          onChanged: (value) {
+            HapticService.onSwitchToggle(context);
+            setState(() {
+              _compatibilityMode = value;
+            });
+          },
+        ),
+        const SizedBox(height: 16),
         TextFormField(
           controller: _maxTokensController,
           decoration: InputDecoration(labelText: localizations.maxTokens),
@@ -402,6 +438,11 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
               HapticService.onSwitchToggle(context);
               setState(() {
                 _imageGenerationMode = value;
+                if (value == ImageGenerationMode.asynchronous) {
+                  _compatibilityMode = CompatibilityMode.midjourneyProxy;
+                } else {
+                  _compatibilityMode = null;
+                }
                 _autoPopulatePaths();
               });
             }
@@ -409,8 +450,8 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
         ),
         const SizedBox(height: 16),
         if (_imageGenerationMode == ImageGenerationMode.asynchronous) ...[
-          DropdownButtonFormField<CompatibilityMode>(
-            value: _compatibilityMode,
+          DropdownButtonFormField<CompatibilityMode?>(
+            value: CompatibilityMode.midjourneyProxy,
             decoration:
                 InputDecoration(labelText: localizations.compatibilityMode),
             items: [
@@ -419,14 +460,7 @@ class _ModelFormSheetState extends State<ModelFormSheet> {
                 child: Text(localizations.compatibilityModeMidjourney),
               ),
             ],
-            onChanged: (value) {
-              if (value != null) {
-                HapticService.onSwitchToggle(context);
-                setState(() {
-                  _compatibilityMode = value;
-                });
-              }
-            },
+            onChanged: null,
           ),
           const SizedBox(height: 16),
         ],

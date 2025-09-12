@@ -36,6 +36,7 @@ class AppConfigProvider extends ChangeNotifier {
   bool _compactMode = false;
   double _chatBubbleWidth = 0.8;
   bool _distinguishAssistantBubble = true;
+  bool _reserveActionSpace = true;
 
   bool _useFirstSentenceAsTitle = true;
   String _codeTheme = 'github';
@@ -94,6 +95,7 @@ class AppConfigProvider extends ChangeNotifier {
   bool get compactMode => _compactMode;
   double get chatBubbleWidth => _chatBubbleWidth;
   bool get distinguishAssistantBubble => _distinguishAssistantBubble;
+  bool get reserveActionSpace => _reserveActionSpace;
 
   bool get useFirstSentenceAsTitle => _useFirstSentenceAsTitle;
   String get codeTheme => _codeTheme;
@@ -170,6 +172,7 @@ class AppConfigProvider extends ChangeNotifier {
     _chatBubbleWidth = box.get('chatBubbleWidth', defaultValue: 0.8);
     _distinguishAssistantBubble =
         box.get('distinguishAssistantBubble', defaultValue: true);
+    _reserveActionSpace = box.get('reserveActionSpace', defaultValue: true);
     _useFirstSentenceAsTitle =
         box.get('useFirstSentenceAsTitle', defaultValue: true);
     _codeTheme = box.get('codeTheme', defaultValue: 'github');
@@ -356,6 +359,13 @@ class AppConfigProvider extends ChangeNotifier {
     if (_distinguishAssistantBubble != value) {
       _distinguishAssistantBubble = value;
       _updateValue('distinguishAssistantBubble', value);
+    }
+  }
+
+  void setReserveActionSpace(bool value) {
+    if (_reserveActionSpace != value) {
+      _reserveActionSpace = value;
+      _updateValue('reserveActionSpace', value);
     }
   }
 

@@ -9,7 +9,6 @@ import 'package:nameless_ai/widgets/json_viewer.dart';
 
 class MessageActionBar extends StatelessWidget {
   final ChatMessage message;
-  final bool isHovering;
   final VoidCallback onCopy;
   final VoidCallback onRegenerate;
   final VoidCallback onEdit;
@@ -19,7 +18,6 @@ class MessageActionBar extends StatelessWidget {
   const MessageActionBar({
     super.key,
     required this.message,
-    required this.isHovering,
     required this.onCopy,
     required this.onRegenerate,
     required this.onEdit,
@@ -85,10 +83,6 @@ class MessageActionBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
-    final platform = Theme.of(context).platform;
-    final isTouchDevice = platform == TargetPlatform.android ||
-        platform == TargetPlatform.iOS ||
-        platform == TargetPlatform.fuchsia;
     final isUser = message.role == 'user';
     final isAiMedia = message.role == 'assistant' &&
         (message.messageType == MessageType.image ||
@@ -97,41 +91,37 @@ class MessageActionBar extends StatelessWidget {
     final isTaskFinished = message.asyncTaskStatus == AsyncTaskStatus.success ||
         message.asyncTaskStatus == AsyncTaskStatus.failure;
 
-    return AnimatedOpacity(
-      opacity: isHovering || isTouchDevice ? 1.0 : 0.0,
-      duration: const Duration(milliseconds: 200),
-      child: Padding(
-        padding: const EdgeInsets.only(top: 4.0, right: 4.0),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (!isAsyncTask || isTaskFinished)
-              _actionButton(context, Icons.copy_all_outlined,
-                  localizations.copyMessage, onCopy, appConfig.compactMode),
-            if (!isUser)
-              _actionButton(
-                  context,
-                  Icons.refresh,
-                  localizations.regenerateResponse,
-                  onRegenerate,
-                  appConfig.compactMode),
-            if (isAsyncTask && !isTaskFinished)
-              _actionButton(context, Icons.sync, localizations.refresh,
-                  onRefresh, appConfig.compactMode),
-            if (!isAiMedia)
-              _actionButton(context, Icons.edit_outlined,
-                  localizations.editMessage, onEdit, appConfig.compactMode),
-            _actionButton(context, Icons.delete_outline,
-                localizations.deleteMessage, onDelete, appConfig.compactMode),
-            if (appConfig.showDebugButton)
-              _actionButton(
-                  context,
-                  Icons.bug_report_outlined,
-                  localizations.debugInfo,
-                  () => _showDebugInfo(context),
-                  appConfig.compactMode),
-          ],
-        ),
+    return Padding(
+      padding: const EdgeInsets.only(top: 4.0, right: 4.0),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (!isAsyncTask || isTaskFinished)
+            _actionButton(context, Icons.copy_all_outlined,
+                localizations.copyMessage, onCopy, appConfig.compactMode),
+          if (!isUser)
+            _actionButton(
+                context,
+                Icons.refresh,
+                localizations.regenerateResponse,
+                onRegenerate,
+                appConfig.compactMode),
+          if (isAsyncTask && !isTaskFinished)
+            _actionButton(context, Icons.sync, localizations.refresh, onRefresh,
+                appConfig.compactMode),
+          if (!isAiMedia)
+            _actionButton(context, Icons.edit_outlined,
+                localizations.editMessage, onEdit, appConfig.compactMode),
+          _actionButton(context, Icons.delete_outline,
+              localizations.deleteMessage, onDelete, appConfig.compactMode),
+          if (appConfig.showDebugButton)
+            _actionButton(
+                context,
+                Icons.bug_report_outlined,
+                localizations.debugInfo,
+                () => _showDebugInfo(context),
+                appConfig.compactMode),
+        ],
       ),
     );
   }

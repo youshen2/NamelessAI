@@ -9,10 +9,10 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
-  String get appName => 'Nameless AI Box';
+  String get appName => '无名AI盒子';
 
   @override
-  String get chat => '聊天';
+  String get chat => '对话';
 
   @override
   String get history => '历史';
@@ -21,28 +21,28 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings => '设置';
 
   @override
-  String get newChat => '新聊天';
+  String get newChat => '新对话';
 
   @override
-  String get saveChat => '保存聊天';
+  String get saveChat => '保存对话';
 
   @override
-  String get sendMessage => '发送消息...';
+  String get sendMessage => '说点什么...';
 
   @override
   String get modelSelection => '模型选择';
 
   @override
-  String get systemPrompt => '系统提示词';
+  String get systemPrompt => '角色设定';
 
   @override
-  String get enterSystemPrompt => '输入系统提示词...';
+  String get enterSystemPrompt => '为 AI 设定一个身份...';
 
   @override
-  String get apiProviderSettings => 'API 提供商';
+  String get apiProviderSettings => 'API 服务商';
 
   @override
-  String get systemPromptTemplates => '提示词模板';
+  String get systemPromptTemplates => '设定模板';
 
   @override
   String get taskSettings => '任务设置';
@@ -51,13 +51,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get asyncTaskRefreshInterval => '异步任务刷新间隔 (秒)';
 
   @override
-  String get asyncTaskRefreshIntervalHint => '用于图片/视频生成。设置为0则禁用。';
+  String get asyncTaskRefreshIntervalHint => '用于图片/视频生成。设为0则禁用。';
 
   @override
   String get compatibilityMode => '兼容模式';
 
   @override
   String get compatibilityModeMidjourney => 'Midjourney 代理';
+
+  @override
+  String get compatibilityModeGemini => 'Gemini';
+
+  @override
+  String get compatibilityModeNone => 'OpenAI (默认)';
 
   @override
   String get saveToGallery => '保存到相册';
@@ -86,16 +92,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get streamable => '流式';
 
   @override
-  String get addProvider => '添加提供商';
+  String get addProvider => '添加服务商';
 
   @override
-  String get editProvider => '编辑提供商';
+  String get editProvider => '编辑服务商';
 
   @override
-  String get deleteProvider => '删除提供商';
+  String get deleteProvider => '删除服务商';
 
   @override
-  String get providerName => '提供商名称';
+  String get providerName => '服务商名称';
 
   @override
   String get baseUrl => '基础 URL';
@@ -138,7 +144,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String deleteConfirmation(Object itemType) {
-    return '您确定要删除此$itemType吗？';
+    return '您确定要删除这个$itemType吗？';
   }
 
   @override
@@ -157,16 +163,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get templatePrompt => '模板内容';
 
   @override
-  String get noProvidersAdded => '尚未添加 API 提供商。请前往“设置”添加。';
+  String get noProvidersAdded => '还没有添加 API 服务商，请前往“设置”添加。';
 
   @override
-  String get noModelsConfigured => '此提供商未配置任何模型。';
+  String get noModelsConfigured => '此服务商还没有配置任何模型。';
 
   @override
-  String get noChatHistory => '暂无聊天记录。开始新的聊天吧！';
+  String get noChatHistory => '还没有对话记录，开始新的对话吧！';
 
   @override
-  String get noSystemPromptTemplates => '暂无提示词模板。添加一个吧！';
+  String get noSystemPromptTemplates => '还没有设定模板，去添加一个吧！';
 
   @override
   String get editMessage => '编辑消息';
@@ -187,13 +193,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get copiedToClipboard => '已复制到剪贴板！';
 
   @override
-  String get error => '错误';
+  String get error => '出错了';
 
   @override
-  String get somethingWentWrong => '发生了一些错误。';
+  String get somethingWentWrong => '发生了一些意料之外的问题。';
 
   @override
-  String get providerNameRequired => '提供商名称不能为空。';
+  String get providerNameRequired => '服务商名称不能为空。';
 
   @override
   String get baseUrlRequired => '基础 URL 不能为空。';
@@ -214,19 +220,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get templatePromptRequired => '模板内容不能为空。';
 
   @override
-  String get chatName => '聊天名称';
+  String get chatName => '对话标题';
 
   @override
-  String get enterChatName => '输入聊天名称...';
+  String get enterChatName => '输入对话标题...';
 
   @override
-  String get chatSaved => '聊天已成功保存！';
+  String get chatSaved => '对话已保存！';
 
   @override
-  String get chatNameRequired => '聊天名称不能为空。';
+  String get chatNameRequired => '对话标题不能为空。';
 
   @override
-  String get selectModel => '请选择一个模型以开始聊天。';
+  String get selectModel => '请选择一个模型以开始对话。';
 
   @override
   String get language => '语言';
@@ -259,7 +265,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get saveAndResubmit => '保存并重新提交';
 
   @override
-  String get editChatName => '修改聊天名称';
+  String get editChatName => '编辑对话标题';
 
   @override
   String get sendKeySettings => '发送快捷键';
@@ -277,7 +283,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get shortcutInEditMode => '在编辑模式下使用快捷键';
 
   @override
-  String get chatSettings => '聊天设置';
+  String get chatSettings => '对话设置';
 
   @override
   String get temperature => 'Temperature';
@@ -316,7 +322,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get clearAllData => '清除所有数据';
 
   @override
-  String get clearDataConfirmation => '此操作将删除所有提供商、聊天记录和设置，且无法撤销。您确定吗？';
+  String get clearDataConfirmation => '此操作将删除所有服务商、对话记录和设置，且无法撤销。您确定吗？';
 
   @override
   String get dataCleared => '所有数据已清除。';
@@ -356,22 +362,22 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String thinking(String duration) {
-    return '正在思考... $duration';
+    return '思考中... $duration';
   }
 
   @override
   String thinkingTimeTaken(String duration) {
-    return '思考耗时: $duration';
+    return '思考耗时：$duration';
   }
 
   @override
-  String get thinkingTitle => '思考';
+  String get thinkingTitle => '思考中';
 
   @override
-  String get maxContextMessages => '最大上下文数量';
+  String get maxContextMessages => '附带历史消息数';
 
   @override
-  String get maxContextMessagesHint => '要发送的消息数量 (0或留空则无限制)';
+  String get maxContextMessagesHint => '每次请求附带的最近消息数（0或留空则不限制）';
 
   @override
   String get appearanceSettings => '外观设置';
@@ -392,7 +398,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get search => '搜索';
 
   @override
-  String get noResultsFound => '未找到结果。';
+  String get noResultsFound => '没有找到结果。';
 
   @override
   String get stopGenerating => '停止生成';
@@ -440,7 +446,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get showModelNameHint => '在每条AI回复下方显示模型名称。';
 
   @override
-  String get regenerateResponse => '重新生成';
+  String get regenerateResponse => '重新回答';
 
   @override
   String get copyMessage => '复制';
@@ -498,10 +504,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get importConfirmation => '这将覆盖所有当前数据，此操作无法撤销。您确定要从备份中恢复吗？';
 
   @override
-  String get useFirstSentenceAsTitle => '使用首条消息作为标题';
+  String get useFirstSentenceAsTitle => '使用首条消息作为对话标题';
 
   @override
-  String get useFirstSentenceAsTitleHint => '自动使用发送的第一条消息作为该聊天会话的标题。';
+  String get useFirstSentenceAsTitleHint => '自动使用发送的第一条消息作为对话的标题。';
 
   @override
   String get dataManagement => '数据管理';
@@ -604,7 +610,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get expand => '展开';
 
   @override
-  String get unsupportedModelTypeInChat => '此模型类型不支持聊天。';
+  String get unsupportedModelTypeInChat => '此模型类型不支持对话。';
 
   @override
   String get modelTypeLanguage => '语言';
@@ -733,10 +739,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get midjourneyPromptHint => '输入提示词，可附带 --ar 16:9 等参数';
 
   @override
-  String get clearHistory => '清空历史记录';
+  String get clearHistory => '清空对话历史';
 
   @override
-  String get clearHistoryConfirmation => '您确定要删除所有聊天记录吗？此操作无法撤销。';
+  String get clearHistoryConfirmation => '确定要删除所有对话记录吗？此操作无法撤销。';
 
   @override
   String get jsonDebugViewer => 'JSON 查看器';
@@ -745,7 +751,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get searchHint => '搜索...';
 
   @override
-  String get historyCleared => '历史记录已清空。';
+  String get historyCleared => '对话历史已清空。';
 
   @override
   String get imageExpirationWarning => '图片存在有效期，请及时下载。';
@@ -913,7 +919,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get unsupportedData => '不支持的数据类型，将被跳过。';
 
   @override
-  String get noSystemPrompt => '无系统提示词';
+  String get noSystemPrompt => '无角色设定';
 
   @override
   String get import => '导入';
@@ -928,7 +934,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get restoreLastSession => '启动时恢复上次会话';
 
   @override
-  String get restoreLastSessionHint => '如果禁用，每次启动都会开始一个新的聊天。';
+  String get restoreLastSessionHint => '如果禁用，每次启动都会开始一个新的对话。';
 
   @override
   String get importOptions => '导入选项';
@@ -1005,7 +1011,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get onboardingPage4Title => '一切就绪！';
 
   @override
-  String get onboardingPage4Body => '您可以开始聊天了。请记得在“设置”中添加 API 提供商以开始使用。';
+  String get onboardingPage4Body => '你已经准备好开始对话了。记得在“设置”中添加一个 API 服务商才能开始使用哦。';
 
   @override
   String get onboardingNext => '下一步';
@@ -1041,6 +1047,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get presetDeepseek => '深度求索 (DeepSeek)';
 
   @override
+  String get presetGemini => 'Google Gemini';
+
+  @override
   String get crashReport => '崩溃报告';
 
   @override
@@ -1056,7 +1065,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get crashTest => '崩溃测试';
 
   @override
-  String get crashTestDescription => '点击以触发一次测试崩溃。';
+  String get crashTestDescription => '点击以触发一次测试崩溃，用于显示错误报告界面。';
 
   @override
   String get anErrorOccurred => '发生了一个意外错误。';
@@ -1090,7 +1099,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get distinguishAssistantBubble => '区分 AI 气泡';
 
   @override
-  String get distinguishAssistantBubbleHint => '为AI的气泡添加边框，让它区别于背景色。';
+  String get distinguishAssistantBubbleHint => '为 AI 的气泡添加边框，以区别于背景色。';
+
+  @override
+  String get reserveActionSpace => '为操作按钮保留空间';
+
+  @override
+  String get reserveActionSpaceHint => '即使按钮隐藏也为其保留空间，以防止布局跳动。';
 
   @override
   String get scrollButtonPosition => '滚动按钮位置';
@@ -1109,7 +1124,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get baseUrlEndsWithV1WarningContent =>
-      '基础URL以 \'/v1\' 结尾。这通常是不正确的，应该被移除。您想自动移除并保存吗？';
+      '基础 URL 以 \'/v1\' 结尾。这通常是不正确的，应该移除。要自动移除并保存吗？';
 
   @override
   String get removeAndSave => '移除并保存';

@@ -62,6 +62,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get compatibilityModeMidjourney => 'Midjourney Proxy';
 
   @override
+  String get compatibilityModeGemini => 'Gemini';
+
+  @override
+  String get compatibilityModeNone => 'OpenAI (Default)';
+
+  @override
   String get saveToGallery => 'Save to Gallery';
 
   @override
@@ -1073,6 +1079,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get presetDeepseek => 'DeepSeek AI';
 
   @override
+  String get presetGemini => 'Google Gemini';
+
+  @override
   String get crashReport => 'Crash Report';
 
   @override
@@ -1125,6 +1134,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get distinguishAssistantBubbleHint =>
       'Add a border to the assistant\'s bubble to distinguish it from the background.';
+
+  @override
+  String get reserveActionSpace => 'Reserve Action Button Space';
+
+  @override
+  String get reserveActionSpaceHint =>
+      'Keep space for action buttons even when they are hidden to prevent layout shifts.';
 
   @override
   String get scrollButtonPosition => 'Scroll Button Position';

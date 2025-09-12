@@ -6,6 +6,48 @@ import 'package:nameless_ai/data/models/api_provider.dart';
 import 'package:nameless_ai/data/models/model.dart';
 import 'package:uuid/uuid.dart';
 
+List<Map<String, dynamic>> _transformMessagesToGemini(
+    List<Map<String, String>> messages) {
+  final List<Map<String, dynamic>> geminiContents = [];
+  for (var message in messages) {
+    if (message['role'] == 'system') continue;
+    final role = message['role'] == 'assistant' ? 'model' : 'user';
+    geminiContents.add({
+      'role': role,
+      'parts': [
+        {'text': message['content'] ?? ''}
+      ]
+    });
+  }
+
+  if (geminiContents.isEmpty) return geminiContents;
+
+  final List<Map<String, dynamic>> mergedContents = [geminiContents.first];
+  for (int i = 1; i < geminiContents.length; i++) {
+    if (geminiContents[i]['role'] == mergedContents.last['role']) {
+      final lastText =
+          (mergedContents.last['parts'] as List).first['text'] as String;
+      final currentText =
+          (geminiContents[i]['parts'] as List).first['text'] as String;
+      (mergedContents.last['parts'] as List).first['text'] =
+          '$lastText\n\n$currentText';
+    } else {
+      mergedContents.add(geminiContents[i]);
+    }
+  }
+
+  if (mergedContents.isNotEmpty && mergedContents.first['role'] == 'model') {
+    mergedContents.insert(0, {
+      'role': 'user',
+      'parts': [
+        {'text': ' '}
+      ]
+    });
+  }
+
+  return mergedContents;
+}
+
 class ApiService {
   final Dio _dio;
   final APIProvider provider;
@@ -24,6 +66,10 @@ class ApiService {
   Future<ChatCompletionResponse> getChatCompletion(
       ChatCompletionRequest request,
       [CancelToken? cancelToken]) async {
+    if (request.model.compatibilityMode == CompatibilityMode.gemini) {
+      return _getGeminiChatCompletion(request, cancelToken);
+    }
+
     try {
       final requestBody = jsonEncode(request.toJson());
       debugPrint("NamelessAI - Sending Request: $requestBody");
@@ -71,6 +117,137 @@ class ApiService {
   }
 
   Stream<dynamic> getChatCompletionStream(ChatCompletionRequest request,
+      [CancelToken? cancelToken]) {
+    if (request.model.compatibilityMode == CompatibilityMode.gemini) {
+      return _getGeminiChatCompletionStream(request, cancelToken);
+    }
+    return _getOpenAIChatCompletionStream(request, cancelToken);
+  }
+
+  Future<ChatCompletionResponse> _getGeminiChatCompletion(
+      ChatCompletionRequest request,
+      [CancelToken? cancelToken]) async {
+    final systemPrompt = request.messages
+        .firstWhere((m) => m['role'] == 'system', orElse: () => {})['content'];
+    final userMessages =
+        request.messages.where((m) => m['role'] != 'system').toList();
+    final geminiMessages = _transformMessagesToGemini(userMessages);
+
+    final Map<String, dynamic> requestData = {'contents': geminiMessages};
+    if (systemPrompt != null && systemPrompt.isNotEmpty) {
+      requestData['system_instruction'] = {
+        'parts': [
+          {'text': systemPrompt}
+        ]
+      };
+    }
+
+    final requestBody = jsonEncode(requestData);
+    debugPrint("NamelessAI - Sending Gemini Request: $requestBody");
+    final path = request.model.chatPath ??
+        '/v1beta/models/${request.model.name}:generateContent';
+
+    final response = await _dio.post(
+      path,
+      data: requestBody,
+      queryParameters: {'key': provider.apiKey},
+      options: Options(headers: {'Authorization': null}),
+      cancelToken: cancelToken,
+    );
+
+    final rawResponseString = jsonEncode(response.data);
+    debugPrint("NamelessAI - Received Gemini Response: $rawResponseString");
+
+    final candidates = response.data['candidates'] as List?;
+    if (candidates == null || candidates.isEmpty) {
+      throw Exception('Gemini API returned no candidates.');
+    }
+    final content = candidates.first['content'];
+    final parts = content['parts'] as List;
+    final text = parts.first['text'];
+
+    return ChatCompletionResponse(
+      id: 'gemini-${const Uuid().v4()}',
+      object: 'chat.completion',
+      created: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      model: request.model.name,
+      choices: [
+        ChatChoice(
+          index: 0,
+          message: ChatMessageResponse(role: 'assistant', content: text),
+          finishReason: 'stop',
+        ),
+      ],
+      rawResponse: rawResponseString,
+    );
+  }
+
+  Stream<dynamic> _getGeminiChatCompletionStream(ChatCompletionRequest request,
+      [CancelToken? cancelToken]) async* {
+    final systemPrompt = request.messages
+        .firstWhere((m) => m['role'] == 'system', orElse: () => {})['content'];
+    final userMessages =
+        request.messages.where((m) => m['role'] != 'system').toList();
+    final geminiMessages = _transformMessagesToGemini(userMessages);
+
+    final Map<String, dynamic> requestData = {'contents': geminiMessages};
+    if (systemPrompt != null && systemPrompt.isNotEmpty) {
+      requestData['system_instruction'] = {
+        'parts': [
+          {'text': systemPrompt}
+        ]
+      };
+    }
+    final requestBody = jsonEncode(requestData);
+    debugPrint("NamelessAI - Sending Gemini Stream Request: $requestBody");
+
+    final basePath = request.model.chatPath ??
+        '/v1beta/models/${request.model.name}:generateContent';
+    final path =
+        basePath.replaceFirst(':generateContent', ':streamGenerateContent');
+
+    final response = await _dio.post(
+      path,
+      data: requestBody,
+      queryParameters: {'key': provider.apiKey, 'alt': 'sse'},
+      options: Options(
+        responseType: ResponseType.stream,
+        headers: {'Authorization': null, 'Accept': 'text/event-stream'},
+      ),
+      cancelToken: cancelToken,
+    );
+
+    String buffer = '';
+    await for (final chunk in response.data!.stream!) {
+      buffer += utf8.decode(chunk);
+      int lineEndIndex;
+      while ((lineEndIndex = buffer.indexOf('\n')) != -1) {
+        final line = buffer.substring(0, lineEndIndex).trim();
+        buffer = buffer.substring(lineEndIndex + 1);
+
+        if (line.startsWith('data: ')) {
+          final String jsonStr = line.substring(6).trim();
+          if (jsonStr.isEmpty) continue;
+          try {
+            final Map<String, dynamic> json = jsonDecode(jsonStr);
+            final candidates = json['candidates'] as List?;
+            if (candidates != null && candidates.isNotEmpty) {
+              final content = candidates.first['content'];
+              final parts = content['parts'] as List;
+              final text = parts.first['text'] as String?;
+              if (text != null) {
+                yield text;
+              }
+            }
+          } catch (e) {
+            debugPrint('Error parsing Gemini stream chunk: $e, data: $jsonStr');
+          }
+        }
+      }
+    }
+  }
+
+  Stream<dynamic> _getOpenAIChatCompletionStream(ChatCompletionRequest request,
       [CancelToken? cancelToken]) async* {
     try {
       final requestBody = jsonEncode(request.toJson());

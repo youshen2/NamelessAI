@@ -124,6 +124,8 @@ class CompatibilityModeAdapter extends TypeAdapter<CompatibilityMode> {
     switch (reader.readByte()) {
       case 0:
         return CompatibilityMode.midjourneyProxy;
+      case 1:
+        return CompatibilityMode.gemini;
       default:
         return CompatibilityMode.midjourneyProxy;
     }
@@ -134,6 +136,9 @@ class CompatibilityModeAdapter extends TypeAdapter<CompatibilityMode> {
     switch (obj) {
       case CompatibilityMode.midjourneyProxy:
         writer.writeByte(0);
+        break;
+      case CompatibilityMode.gemini:
+        writer.writeByte(1);
         break;
     }
   }

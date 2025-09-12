@@ -1,5 +1,6 @@
 import 'package:nameless_ai/data/models/api_provider.dart';
 import 'package:nameless_ai/data/models/model.dart';
+import 'package:nameless_ai/data/models/model_type.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
 
 List<APIProvider> getProviderPresets(AppLocalizations localizations) {
@@ -21,24 +22,51 @@ List<APIProvider> getProviderPresets(AppLocalizations localizations) {
       ],
     ),
     APIProvider(
+      name: localizations.presetGemini,
+      baseUrl: 'https://generativelanguage.googleapis.com',
+      apiKey: '',
+      models: [
+        Model(
+          name: 'gemini-2.5-pro-latest',
+          isStreamable: true,
+          chatPath: '/v1beta/models/gemini-2.5-pro-latest:generateContent',
+          compatibilityMode: CompatibilityMode.gemini,
+        ),
+        Model(
+          name: 'gemini-2.5-flash-latest',
+          isStreamable: true,
+          chatPath: '/v1beta/models/gemini-2.5-flash-latest:generateContent',
+          compatibilityMode: CompatibilityMode.gemini,
+        ),
+        Model(
+          name: 'gemini-1.5-flash-latest',
+          isStreamable: true,
+          chatPath: '/v1beta/models/gemini-1.5-flash-latest:generateContent',
+          compatibilityMode: CompatibilityMode.gemini,
+        ),
+      ],
+    ),
+    APIProvider(
       name: localizations.presetGroq,
       baseUrl: 'https://api.groq.com/openai',
       apiKey: '',
       models: [
         Model(
+            name: 'llama3-70b-8192',
+            isStreamable: true,
+            chatPath: defaultChatPath),
+        Model(
             name: 'llama3-8b-8192',
             isStreamable: true,
             chatPath: defaultChatPath),
         Model(
-            name: 'llama3-70b-8192',
+            name: 'gemma2-9b-it',
             isStreamable: true,
             chatPath: defaultChatPath),
         Model(
             name: 'mixtral-8x7b-32768',
             isStreamable: true,
             chatPath: defaultChatPath),
-        Model(
-            name: 'gemma-7b-it', isStreamable: true, chatPath: defaultChatPath),
       ],
     ),
     APIProvider(
