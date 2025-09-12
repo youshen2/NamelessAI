@@ -97,9 +97,41 @@ class _APIProviderFormState extends State<APIProviderForm> {
   Future<void> _saveProvider() async {
     HapticService.onButtonPress(context);
     if (_formKey.currentState!.validate()) {
+      final localizations = AppLocalizations.of(context)!;
+      String baseUrl = _baseUrlController.text.trim();
+
+      if (baseUrl.endsWith('/v1')) {
+        final confirmed = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(localizations.baseUrlEndsWithV1WarningTitle),
+            content: Text(localizations.baseUrlEndsWithV1WarningContent),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  HapticService.onButtonPress(context);
+                  Navigator.of(context).pop(false);
+                },
+                child: Text(localizations.cancel),
+              ),
+              FilledButton(
+                onPressed: () {
+                  HapticService.onButtonPress(context);
+                  Navigator.of(context).pop(true);
+                },
+                child: Text(localizations.removeAndSave),
+              ),
+            ],
+          ),
+        );
+
+        if (confirmed != true) {
+          return;
+        }
+      }
+
       final manager = Provider.of<APIProviderManager>(context, listen: false);
 
-      String baseUrl = _baseUrlController.text.trim();
       if (baseUrl.endsWith('/v1')) {
         baseUrl = baseUrl.substring(0, baseUrl.length - 3);
       }

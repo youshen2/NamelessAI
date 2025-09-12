@@ -97,7 +97,6 @@ class _MessageBubbleState extends State<MessageBubble>
     super.didUpdateWidget(oldWidget);
 
     if (widget.message.content != oldWidget.message.content) {
-      _editController.text = widget.message.content;
       if (widget.message.isLoading &&
           !widget.isReadOnly &&
           widget.message.role == 'assistant' &&

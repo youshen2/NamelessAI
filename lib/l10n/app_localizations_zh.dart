@@ -1103,4 +1103,14 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get accentColor => '强调色';
+
+  @override
+  String get baseUrlEndsWithV1WarningTitle => '潜在问题';
+
+  @override
+  String get baseUrlEndsWithV1WarningContent =>
+      '基础URL以 \'/v1\' 结尾。这通常是不正确的，应该被移除。您想自动移除并保存吗？';
+
+  @override
+  String get removeAndSave => '移除并保存';
 }

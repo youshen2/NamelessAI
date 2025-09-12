@@ -442,5 +442,8 @@
   "scrollButtonPosition": "Scroll Button Position",
   "scrollButtonBottomOffset": "Bottom Offset",
   "scrollButtonRightOffset": "Right Offset",
-  "accentColor": "Accent Color"
+  "accentColor": "Accent Color",
+  "baseUrlEndsWithV1WarningTitle": "Potential Issue",
+  "baseUrlEndsWithV1WarningContent": "The Base URL ends with '/v1'. This is usually incorrect and should be removed. Do you want to automatically remove it and save?",
+  "removeAndSave": "Remove & Save"
 }

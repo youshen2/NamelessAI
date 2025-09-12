@@ -442,5 +442,8 @@
   "scrollButtonPosition": "滚动按钮位置",
   "scrollButtonBottomOffset": "底部偏移",
   "scrollButtonRightOffset": "右侧偏移",
-  "accentColor": "强调色"
+  "accentColor": "强调色",
+  "baseUrlEndsWithV1WarningTitle": "潜在问题",
+  "baseUrlEndsWithV1WarningContent": "基础URL以 '/v1' 结尾。这通常是不正确的，应该被移除。您想自动移除并保存吗？",
+  "removeAndSave": "移除并保存"
 }

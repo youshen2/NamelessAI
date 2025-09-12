@@ -112,10 +112,18 @@ class ChatBoxBackup {
           );
         }).toList();
 
+        String baseUrl = providerDetails['apiHost'];
+        if (baseUrl.endsWith('/v1')) {
+          baseUrl = baseUrl.substring(0, baseUrl.length - 3);
+        }
+        while (baseUrl.endsWith('/')) {
+          baseUrl = baseUrl.substring(0, baseUrl.length - 1);
+        }
+
         providers.add(APIProvider(
           id: providerId,
           name: providerMeta['name'],
-          baseUrl: providerDetails['apiHost'],
+          baseUrl: baseUrl,
           apiKey: providerDetails['apiKey'],
           models: models,
         ));

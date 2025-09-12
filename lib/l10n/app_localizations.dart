@@ -2233,6 +2233,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Accent Color'**
   String get accentColor;
+
+  /// No description provided for @baseUrlEndsWithV1WarningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Potential Issue'**
+  String get baseUrlEndsWithV1WarningTitle;
+
+  /// No description provided for @baseUrlEndsWithV1WarningContent.
+  ///
+  /// In en, this message translates to:
+  /// **'The Base URL ends with \'/v1\'. This is usually incorrect and should be removed. Do you want to automatically remove it and save?'**
+  String get baseUrlEndsWithV1WarningContent;
+
+  /// No description provided for @removeAndSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove & Save'**
+  String get removeAndSave;
 }
 
 class _AppLocalizationsDelegate

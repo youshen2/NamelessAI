@@ -1137,4 +1137,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accentColor => 'Accent Color';
+
+  @override
+  String get baseUrlEndsWithV1WarningTitle => 'Potential Issue';
+
+  @override
+  String get baseUrlEndsWithV1WarningContent =>
+      'The Base URL ends with \'/v1\'. This is usually incorrect and should be removed. Do you want to automatically remove it and save?';
+
+  @override
+  String get removeAndSave => 'Remove & Save';
 }
