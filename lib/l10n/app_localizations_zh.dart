@@ -33,16 +33,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get modelSelection => '模型选择';
 
   @override
-  String get systemPrompt => '角色设定';
+  String get systemPrompt => '提示词';
 
   @override
-  String get enterSystemPrompt => '为 AI 设定一个身份...';
+  String get enterSystemPrompt => '输入提示词...';
 
   @override
   String get apiProviderSettings => 'API 服务商';
 
   @override
-  String get systemPromptTemplates => '设定模板';
+  String get systemPromptTemplates => '提示词模板';
 
   @override
   String get taskSettings => '任务设置';
@@ -172,7 +172,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get noChatHistory => '还没有对话记录，开始新的对话吧！';
 
   @override
-  String get noSystemPromptTemplates => '还没有设定模板，去添加一个吧！';
+  String get noSystemPromptTemplates => '还没有提示词模板，去添加一个吧！';
 
   @override
   String get editMessage => '编辑消息';
@@ -377,7 +377,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get maxContextMessages => '附带历史消息数';
 
   @override
-  String get maxContextMessagesHint => '每次请求附带的最近消息数（0或留空则不限制）';
+  String get maxContextMessagesHint => '每次请求附带的最近消息数（0为不限制）';
+
+  @override
+  String get unlimited => '无限制';
 
   @override
   String get appearanceSettings => '外观设置';
@@ -919,7 +922,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get unsupportedData => '不支持的数据类型，将被跳过。';
 
   @override
-  String get noSystemPrompt => '无角色设定';
+  String get noSystemPrompt => '无提示词';
 
   @override
   String get import => '导入';

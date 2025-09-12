@@ -383,7 +383,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get maxContextMessagesHint =>
-      'Number of recent messages to send (0 or empty = unlimited)';
+      'Number of recent messages to send (0 = unlimited)';
+
+  @override
+  String get unlimited => 'Unlimited';
 
   @override
   String get appearanceSettings => 'Appearance';

@@ -821,8 +821,14 @@ abstract class AppLocalizations {
   /// No description provided for @maxContextMessagesHint.
   ///
   /// In en, this message translates to:
-  /// **'Number of recent messages to send (0 or empty = unlimited)'**
+  /// **'Number of recent messages to send (0 = unlimited)'**
   String get maxContextMessagesHint;
+
+  /// No description provided for @unlimited.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited'**
+  String get unlimited;
 
   /// No description provided for @appearanceSettings.
   ///

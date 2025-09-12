@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:nameless_ai/data/models/api_provider.dart';
 import 'package:nameless_ai/data/models/model.dart';
 import 'package:nameless_ai/services/haptic_service.dart';
@@ -31,7 +30,6 @@ class ChatSettingsSheet extends StatefulWidget {
 
 class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
   late TextEditingController _systemPromptController;
-  late TextEditingController _maxContextController;
   late TextEditingController _temperatureController;
   late TextEditingController _topPController;
 
@@ -40,6 +38,7 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
   late bool? _useStreaming;
   late String? _selectedProviderId;
   late String? _selectedModelId;
+  late int _maxContextMessages;
 
   late String _imageSize;
   late String _imageQuality;
@@ -50,8 +49,7 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
     super.initState();
     _systemPromptController =
         TextEditingController(text: widget.session.systemPrompt);
-    _maxContextController = TextEditingController(
-        text: widget.session.maxContextMessages?.toString() ?? '');
+    _maxContextMessages = widget.session.maxContextMessages ?? 0;
     _temperature = widget.session.temperature;
     _topP = widget.session.topP;
     _useStreaming = widget.session.useStreaming;
@@ -70,7 +68,6 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
   @override
   void dispose() {
     _systemPromptController.dispose();
-    _maxContextController.dispose();
     _temperatureController.dispose();
     _topPController.dispose();
     super.dispose();
@@ -269,16 +266,26 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
                 else
                   _buildLanguageSettings(localizations),
                 const Divider(height: 32),
-                Text(localizations.maxContextMessages,
+                Text(
+                    '${localizations.maxContextMessages}: ${_maxContextMessages == 0 ? localizations.unlimited : _maxContextMessages}',
                     style: Theme.of(context).textTheme.titleMedium),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: _maxContextController,
-                  decoration: InputDecoration(
-                    hintText: localizations.maxContextMessagesHint,
-                  ),
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                const SizedBox(height: 4),
+                Text(localizations.maxContextMessagesHint,
+                    style: Theme.of(context).textTheme.bodySmall),
+                Slider(
+                  value: _maxContextMessages.toDouble(),
+                  min: 0,
+                  max: 50,
+                  divisions: 50,
+                  label: _maxContextMessages == 0
+                      ? localizations.unlimited
+                      : _maxContextMessages.toString(),
+                  onChanged: (value) {
+                    HapticService.onSliderChange(context);
+                    setState(() {
+                      _maxContextMessages = value.round();
+                    });
+                  },
                 ),
                 const SizedBox(height: 16),
               ],
@@ -305,11 +312,11 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
                 FilledButton(
                   onPressed: () {
                     HapticService.onButtonPress(context);
-                    final maxContext = int.tryParse(_maxContextController.text);
                     final settings = {
                       'providerId': _selectedProviderId,
                       'modelId': _selectedModelId,
-                      'maxContextMessages': maxContext == 0 ? null : maxContext,
+                      'maxContextMessages':
+                          _maxContextMessages == 0 ? null : _maxContextMessages,
                     };
 
                     if (selectedModel?.modelType == ModelType.image) {
