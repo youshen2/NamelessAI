@@ -11,9 +11,9 @@ import 'package:nameless_ai/services/update_service.dart';
 import 'package:nameless_ai/widgets/responsive_layout.dart';
 
 class HomePage extends StatefulWidget {
-  final Widget child;
+  final StatefulNavigationShell navigationShell;
 
-  const HomePage({super.key, required this.child});
+  const HomePage({super.key, required this.navigationShell});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -46,7 +46,10 @@ class _HomePageState extends State<HomePage> {
     if (currentLocation == '/') {
       final defaultScreen = appConfig.defaultScreen;
       if (defaultScreen != '/') {
-        context.go(defaultScreen);
+        int targetIndex = 0;
+        if (defaultScreen == '/history') targetIndex = 1;
+        if (defaultScreen == '/settings') targetIndex = 2;
+        widget.navigationShell.goBranch(targetIndex);
       }
     }
 
@@ -71,52 +74,12 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  int _calculateSelectedIndex(BuildContext context) {
-    final String location = GoRouterState.of(context).uri.toString();
-    final isDesktop = MediaQuery.of(context).size.width >= 600;
-
-    if (isDesktop) {
-      if (location.startsWith('/settings')) {
-        return 1;
-      }
-      return 0;
-    } else {
-      if (location.startsWith('/history')) {
-        return 1;
-      }
-      if (location.startsWith('/settings')) {
-        return 2;
-      }
-      return 0;
-    }
-  }
-
-  void _onItemTapped(int index, BuildContext context) {
+  void _onItemTapped(int index) {
     HapticService.onButtonPress(context);
-    final isDesktop = MediaQuery.of(context).size.width >= 600;
-
-    if (isDesktop) {
-      switch (index) {
-        case 0:
-          context.go('/');
-          break;
-        case 1:
-          context.go('/settings');
-          break;
-      }
-    } else {
-      switch (index) {
-        case 0:
-          context.go('/');
-          break;
-        case 1:
-          context.go('/history');
-          break;
-        case 2:
-          context.go('/settings');
-          break;
-      }
-    }
+    widget.navigationShell.goBranch(
+      index,
+      initialLocation: index == widget.navigationShell.currentIndex,
+    );
   }
 
   Widget _buildBottomNavBar(
@@ -128,7 +91,7 @@ class _HomePageState extends State<HomePage> {
           : Theme.of(context).colorScheme.surface,
       elevation: 0,
       currentIndex: selectedIndex,
-      onTap: (index) => _onItemTapped(index, context),
+      onTap: _onItemTapped,
       items: [
         BottomNavigationBarItem(
           icon: const Icon(Icons.chat_bubble_outline),
@@ -159,21 +122,22 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    final selectedIndex = _calculateSelectedIndex(context);
 
     return ResponsiveLayout(
       mobileBody: Scaffold(
         extendBody: true,
-        body: widget.child,
-        bottomNavigationBar:
-            _buildBottomNavBar(context, localizations, selectedIndex),
+        body: widget.navigationShell,
+        bottomNavigationBar: _buildBottomNavBar(
+            context, localizations, widget.navigationShell.currentIndex),
       ),
       desktopBody: Scaffold(
         body: Row(
           children: [
             NavigationRail(
-              selectedIndex: selectedIndex,
-              onDestinationSelected: (index) => _onItemTapped(index, context),
+              selectedIndex: widget.navigationShell.currentIndex == 2 ? 1 : 0,
+              onDestinationSelected: (index) {
+                _onItemTapped(index == 0 ? 0 : 2);
+              },
               labelType: NavigationRailLabelType.all,
               destinations: [
                 NavigationRailDestination(
@@ -187,7 +151,7 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
             const VerticalDivider(thickness: 1, width: 1),
-            Expanded(child: widget.child),
+            Expanded(child: widget.navigationShell),
           ],
         ),
       ),

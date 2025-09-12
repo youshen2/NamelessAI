@@ -75,140 +75,162 @@ class AppRouter {
         return null;
       },
       routes: [
-        ShellRoute(
-          builder: (context, state, child) => HomePage(child: child),
-          routes: [
-            GoRoute(
-              path: '/',
-              name: 'chat',
-              pageBuilder: (context, state) {
-                final appConfig = Provider.of<AppConfigProvider>(context);
-                return _buildPageWithTransition(
-                  state: state,
-                  child: const ChatScreen(),
-                  transitionType: appConfig.pageTransitionType,
-                );
-              },
-            ),
-            GoRoute(
-              path: '/history',
-              name: 'history',
-              pageBuilder: (context, state) {
-                final appConfig = Provider.of<AppConfigProvider>(context);
-                return _buildPageWithTransition(
-                  state: state,
-                  child: const HistoryScreen(),
-                  transitionType: appConfig.pageTransitionType,
-                );
-              },
-            ),
-            GoRoute(
-              path: '/settings',
-              name: 'settings',
-              pageBuilder: (context, state) {
-                final appConfig = Provider.of<AppConfigProvider>(context);
-                return _buildPageWithTransition(
-                  state: state,
-                  child: const SettingsScreen(),
-                  transitionType: appConfig.pageTransitionType,
-                );
-              },
+        StatefulShellRoute.indexedStack(
+          builder: (context, state, navigationShell) {
+            return HomePage(navigationShell: navigationShell);
+          },
+          branches: [
+            StatefulShellBranch(
               routes: [
                 GoRoute(
-                  path: 'api_providers',
-                  name: 'api_providers',
+                  path: '/',
+                  name: 'chat',
                   pageBuilder: (context, state) {
                     final appConfig = Provider.of<AppConfigProvider>(context);
                     return _buildPageWithTransition(
                       state: state,
-                      child: const APIProviderSettingsScreen(),
+                      child: const ChatScreen(),
                       transitionType: appConfig.pageTransitionType,
                     );
                   },
                 ),
+              ],
+            ),
+            StatefulShellBranch(
+              routes: [
                 GoRoute(
-                  path: 'system_prompts',
-                  name: 'system_prompts',
+                  path: '/history',
+                  name: 'history',
                   pageBuilder: (context, state) {
                     final appConfig = Provider.of<AppConfigProvider>(context);
                     return _buildPageWithTransition(
                       state: state,
-                      child: const SystemPromptSettingsScreen(),
+                      child: const HistoryScreen(),
                       transitionType: appConfig.pageTransitionType,
                     );
                   },
                 ),
+              ],
+            ),
+            StatefulShellBranch(
+              routes: [
                 GoRoute(
-                  path: 'about',
-                  name: 'about',
+                  path: '/settings',
+                  name: 'settings',
                   pageBuilder: (context, state) {
                     final appConfig = Provider.of<AppConfigProvider>(context);
                     return _buildPageWithTransition(
                       state: state,
-                      child: const AboutScreen(),
+                      child: const SettingsScreen(),
                       transitionType: appConfig.pageTransitionType,
                     );
                   },
-                ),
-                GoRoute(
-                  path: 'developer_options',
-                  name: 'developer_options',
-                  pageBuilder: (context, state) {
-                    final appConfig = Provider.of<AppConfigProvider>(context);
-                    return _buildPageWithTransition(
-                      state: state,
-                      child: const DeveloperOptionsScreen(),
-                      transitionType: appConfig.pageTransitionType,
-                    );
-                  },
-                ),
-                GoRoute(
-                  path: 'appearance',
-                  name: 'appearance_settings',
-                  pageBuilder: (context, state) {
-                    final appConfig = Provider.of<AppConfigProvider>(context);
-                    return _buildPageWithTransition(
-                      state: state,
-                      child: const AppearanceSettingsScreen(),
-                      transitionType: appConfig.pageTransitionType,
-                    );
-                  },
-                ),
-                GoRoute(
-                  path: 'general',
-                  name: 'general_settings',
-                  pageBuilder: (context, state) {
-                    final appConfig = Provider.of<AppConfigProvider>(context);
-                    return _buildPageWithTransition(
-                      state: state,
-                      child: const GeneralSettingsScreen(),
-                      transitionType: appConfig.pageTransitionType,
-                    );
-                  },
-                ),
-                GoRoute(
-                  path: 'app',
-                  name: 'app_settings',
-                  pageBuilder: (context, state) {
-                    final appConfig = Provider.of<AppConfigProvider>(context);
-                    return _buildPageWithTransition(
-                      state: state,
-                      child: const AppSettingsScreen(),
-                      transitionType: appConfig.pageTransitionType,
-                    );
-                  },
-                ),
-                GoRoute(
-                  path: 'haptics',
-                  name: 'haptic_settings',
-                  pageBuilder: (context, state) {
-                    final appConfig = Provider.of<AppConfigProvider>(context);
-                    return _buildPageWithTransition(
-                      state: state,
-                      child: const HapticSettingsScreen(),
-                      transitionType: appConfig.pageTransitionType,
-                    );
-                  },
+                  routes: [
+                    GoRoute(
+                      path: 'api_providers',
+                      name: 'api_providers',
+                      pageBuilder: (context, state) {
+                        final appConfig =
+                            Provider.of<AppConfigProvider>(context);
+                        return _buildPageWithTransition(
+                          state: state,
+                          child: const APIProviderSettingsScreen(),
+                          transitionType: appConfig.pageTransitionType,
+                        );
+                      },
+                    ),
+                    GoRoute(
+                      path: 'system_prompts',
+                      name: 'system_prompts',
+                      pageBuilder: (context, state) {
+                        final appConfig =
+                            Provider.of<AppConfigProvider>(context);
+                        return _buildPageWithTransition(
+                          state: state,
+                          child: const SystemPromptSettingsScreen(),
+                          transitionType: appConfig.pageTransitionType,
+                        );
+                      },
+                    ),
+                    GoRoute(
+                      path: 'about',
+                      name: 'about',
+                      pageBuilder: (context, state) {
+                        final appConfig =
+                            Provider.of<AppConfigProvider>(context);
+                        return _buildPageWithTransition(
+                          state: state,
+                          child: const AboutScreen(),
+                          transitionType: appConfig.pageTransitionType,
+                        );
+                      },
+                    ),
+                    GoRoute(
+                      path: 'developer_options',
+                      name: 'developer_options',
+                      pageBuilder: (context, state) {
+                        final appConfig =
+                            Provider.of<AppConfigProvider>(context);
+                        return _buildPageWithTransition(
+                          state: state,
+                          child: const DeveloperOptionsScreen(),
+                          transitionType: appConfig.pageTransitionType,
+                        );
+                      },
+                    ),
+                    GoRoute(
+                      path: 'appearance',
+                      name: 'appearance_settings',
+                      pageBuilder: (context, state) {
+                        final appConfig =
+                            Provider.of<AppConfigProvider>(context);
+                        return _buildPageWithTransition(
+                          state: state,
+                          child: const AppearanceSettingsScreen(),
+                          transitionType: appConfig.pageTransitionType,
+                        );
+                      },
+                    ),
+                    GoRoute(
+                      path: 'general',
+                      name: 'general_settings',
+                      pageBuilder: (context, state) {
+                        final appConfig =
+                            Provider.of<AppConfigProvider>(context);
+                        return _buildPageWithTransition(
+                          state: state,
+                          child: const GeneralSettingsScreen(),
+                          transitionType: appConfig.pageTransitionType,
+                        );
+                      },
+                    ),
+                    GoRoute(
+                      path: 'app',
+                      name: 'app_settings',
+                      pageBuilder: (context, state) {
+                        final appConfig =
+                            Provider.of<AppConfigProvider>(context);
+                        return _buildPageWithTransition(
+                          state: state,
+                          child: const AppSettingsScreen(),
+                          transitionType: appConfig.pageTransitionType,
+                        );
+                      },
+                    ),
+                    GoRoute(
+                      path: 'haptics',
+                      name: 'haptic_settings',
+                      pageBuilder: (context, state) {
+                        final appConfig =
+                            Provider.of<AppConfigProvider>(context);
+                        return _buildPageWithTransition(
+                          state: state,
+                          child: const HapticSettingsScreen(),
+                          transitionType: appConfig.pageTransitionType,
+                        );
+                      },
+                    ),
+                  ],
                 ),
               ],
             ),
