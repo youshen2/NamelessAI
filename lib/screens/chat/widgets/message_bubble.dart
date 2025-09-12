@@ -66,10 +66,6 @@ class _MessageBubbleState extends State<MessageBubble>
   late final Animation<Offset> _slideAnimation;
   late final Animation<double> _fadeAnimation;
 
-  Widget? _cachedDisplayContent;
-  String? _cachedCodeTheme;
-  FontSize? _cachedFontSize;
-
   @override
   void initState() {
     super.initState();
@@ -97,16 +93,8 @@ class _MessageBubbleState extends State<MessageBubble>
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _updateCachedContentIfNeeded();
-  }
-
-  @override
   void didUpdateWidget(covariant MessageBubble oldWidget) {
     super.didUpdateWidget(oldWidget);
-
-    _updateCachedContentIfNeeded(oldWidget: oldWidget);
 
     if (widget.message.content != oldWidget.message.content) {
       _editController.text = widget.message.content;
@@ -126,53 +114,16 @@ class _MessageBubbleState extends State<MessageBubble>
 
     if (oldWidget.message.isEditing != widget.message.isEditing) {
       if (widget.message.isEditing) {
-        if (_editController.text != widget.message.content) {
-          _editController.text = widget.message.content;
-        }
+        _editController.text = widget.message.content;
         SchedulerBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
             _editFocusNode.requestFocus();
+            _editController.selection = TextSelection.fromPosition(
+                TextPosition(offset: _editController.text.length));
           }
         });
       }
     }
-  }
-
-  void _updateCachedContentIfNeeded({MessageBubble? oldWidget}) {
-    final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
-
-    final bool messageChanged = oldWidget == null ||
-        widget.message.content != oldWidget.message.content ||
-        widget.message.isLoading != oldWidget.message.isLoading ||
-        widget.message.isError != oldWidget.message.isError ||
-        widget.message.messageType != oldWidget.message.messageType ||
-        widget.message.asyncTaskStatus != oldWidget.message.asyncTaskStatus ||
-        widget.message.videoUrl != oldWidget.message.videoUrl;
-
-    final bool configChanged = appConfig.codeTheme != _cachedCodeTheme ||
-        appConfig.fontSize != _cachedFontSize;
-
-    if (_cachedDisplayContent == null || messageChanged || configChanged) {
-      _updateCachedContent();
-      _cachedCodeTheme = appConfig.codeTheme;
-      _cachedFontSize = appConfig.fontSize;
-    }
-  }
-
-  void _updateCachedContent() {
-    final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
-    final isUser = widget.message.role == 'user';
-    final isError = widget.message.isError;
-    final theme = Theme.of(context);
-
-    final textColor = isError
-        ? theme.colorScheme.onErrorContainer
-        : isUser
-            ? theme.colorScheme.onPrimaryContainer
-            : theme.colorScheme.onSurface;
-
-    _cachedDisplayContent =
-        _buildDisplayModeContent(context, textColor, appConfig);
   }
 
   @override
@@ -325,7 +276,7 @@ class _MessageBubbleState extends State<MessageBubble>
                   child: _buildEditModeContent(context, textColor),
                 )
               else
-                _cachedDisplayContent ?? const SizedBox.shrink(),
+                _buildDisplayModeContent(context, textColor, appConfig),
             ],
           ),
         ),
@@ -639,6 +590,7 @@ class _MessageBubbleState extends State<MessageBubble>
 
   Widget _buildTextContent(
       BuildContext context, Color textColor, AppConfigProvider appConfig) {
+    final isUser = widget.message.role == 'user';
     final isError = widget.message.isError;
     double fontSize;
     switch (appConfig.fontSize) {
@@ -661,47 +613,55 @@ class _MessageBubbleState extends State<MessageBubble>
       );
     }
 
-    final markdownStyleSheet = MarkdownStyleSheet(
-      p: TextStyle(color: textColor, fontSize: fontSize, height: 1.4),
-      code: TextStyle(
-        backgroundColor: Theme.of(context)
-            .colorScheme
-            .surfaceContainerHighest
-            .withOpacity(0.6),
-        color: Theme.of(context).colorScheme.onSurface,
-        fontFamily: 'monospace',
-      ),
-      a: TextStyle(color: Theme.of(context).colorScheme.primary),
-    );
-
-    final markdownContent = SelectionArea(
-      child: MarkdownBody(
-        data: widget.message.content,
-        selectable: false,
-        styleSheet: markdownStyleSheet,
-        extensionSet: md.ExtensionSet(
-          md.ExtensionSet.gitHubWeb.blockSyntaxes,
-          [
-            ...md.ExtensionSet.gitHubWeb.inlineSyntaxes,
-            MathInlineSyntax(),
-            MathDisplaySyntax(),
-          ],
+    Widget contentWidget;
+    if (isUser) {
+      contentWidget = SelectableText(
+        widget.message.content,
+        style: TextStyle(color: textColor, fontSize: fontSize, height: 1.4),
+      );
+    } else {
+      final markdownStyleSheet = MarkdownStyleSheet(
+        p: TextStyle(color: textColor, fontSize: fontSize, height: 1.4),
+        code: TextStyle(
+          backgroundColor: Theme.of(context)
+              .colorScheme
+              .surfaceContainerHighest
+              .withOpacity(0.6),
+          color: Theme.of(context).colorScheme.onSurface,
+          fontFamily: 'monospace',
         ),
-        builders: {
-          'code':
-              MarkdownCodeBlockBuilder(context: context, isSelectable: false),
-          'math_inline': MathBuilder(context: context, fontSize: fontSize),
-          'math_display': MathBuilder(context: context, fontSize: fontSize),
-          'hr': HrBuilder(context: context),
-        },
-        onTapLink: (text, href, title) {
-          if (href != null) {
-            HapticService.onButtonPress(context);
-            launchUrl(Uri.parse(href));
-          }
-        },
-      ),
-    );
+        a: TextStyle(color: Theme.of(context).colorScheme.primary),
+      );
+
+      contentWidget = SelectionArea(
+        child: MarkdownBody(
+          data: widget.message.content,
+          selectable: false,
+          styleSheet: markdownStyleSheet,
+          extensionSet: md.ExtensionSet(
+            md.ExtensionSet.gitHubWeb.blockSyntaxes,
+            [
+              ...md.ExtensionSet.gitHubWeb.inlineSyntaxes,
+              MathInlineSyntax(),
+              MathDisplaySyntax(),
+            ],
+          ),
+          builders: {
+            'code':
+                MarkdownCodeBlockBuilder(context: context, isSelectable: false),
+            'math_inline': MathBuilder(context: context, fontSize: fontSize),
+            'math_display': MathBuilder(context: context, fontSize: fontSize),
+            'hr': HrBuilder(context: context),
+          },
+          onTapLink: (text, href, title) {
+            if (href != null) {
+              HapticService.onButtonPress(context);
+              launchUrl(Uri.parse(href));
+            }
+          },
+        ),
+      );
+    }
 
     return Padding(
       padding: EdgeInsets.symmetric(
@@ -717,11 +677,11 @@ class _MessageBubbleState extends State<MessageBubble>
               children: [
                 Icon(Icons.error_outline, color: textColor, size: 20),
                 const SizedBox(width: 8),
-                Expanded(child: markdownContent),
+                Expanded(child: contentWidget),
               ],
             )
           else
-            markdownContent,
+            contentWidget,
           if (widget.message.isLoading &&
               widget.message.asyncTaskStatus == AsyncTaskStatus.none)
             const Padding(
