@@ -1,6 +1,6 @@
 {
   "@@locale": "zh",
-  "appName": "无名AI盒子",
+  "appName": "Nameless AI Box",
   "chat": "对话",
   "history": "历史",
   "settings": "设置",
@@ -208,8 +208,6 @@
   "dataManagement": "数据管理",
   "modelLabel": "模型",
   "timeLabel": "时间",
-  "reverseBubbleAlignment": "反转气泡",
-  "reverseBubbleAlignmentHint": "用户消息在左，AI消息在右",
   "exportSettings": "导出设置",
   "selectContentToExport": "选择要导出的内容",
   "appSettings": "应用设置",
@@ -451,5 +449,12 @@
   "accentColor": "强调色",
   "baseUrlEndsWithV1WarningTitle": "潜在问题",
   "baseUrlEndsWithV1WarningContent": "基础 URL 以 '/v1' 结尾。这通常是不正确的，应该移除。要自动移除并保存吗？",
-  "removeAndSave": "移除并保存"
+  "removeAndSave": "移除并保存",
+  "plainTextMode": "纯文本模式",
+  "plainTextModeHint": "不显示聊天气泡，以纯文本展示消息。",
+  "bubbleAlignment": "气泡对齐",
+  "bubbleAlignmentStandard": "标准 (用户在右，AI在左)",
+  "bubbleAlignmentReversed": "反转 (用户在左，AI在右)",
+  "bubbleAlignmentAllLeft": "全部居左",
+  "bubbleAlignmentAllRight": "全部居右"
 }

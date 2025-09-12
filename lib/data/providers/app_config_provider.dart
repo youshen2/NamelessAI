@@ -6,6 +6,8 @@ enum SendKeyOption { enter, ctrlEnter, shiftCtrlEnter }
 
 enum ChatBubbleAlignment { normal, center }
 
+enum BubbleAlignmentOption { standard, reversed, allLeft, allRight }
+
 enum FontSize { small, medium, large }
 
 enum HapticIntensity { none, light, medium, heavy, selection }
@@ -29,7 +31,7 @@ class AppConfigProvider extends ChangeNotifier {
   bool _resumeAutoScrollOnBottom = true;
 
   ChatBubbleAlignment _chatBubbleAlignment = ChatBubbleAlignment.normal;
-  bool _reverseBubbleAlignment = false;
+  BubbleAlignmentOption _bubbleAlignmentOption = BubbleAlignmentOption.standard;
   FontSize _fontSize = FontSize.medium;
   bool _showTimestamps = true;
   bool _showModelName = true;
@@ -37,6 +39,7 @@ class AppConfigProvider extends ChangeNotifier {
   double _chatBubbleWidth = 0.8;
   bool _distinguishAssistantBubble = true;
   bool _reserveActionSpace = true;
+  bool _plainTextMode = false;
 
   bool _useFirstSentenceAsTitle = true;
   String _codeTheme = 'github';
@@ -88,7 +91,7 @@ class AppConfigProvider extends ChangeNotifier {
   bool get resumeAutoScrollOnBottom => _resumeAutoScrollOnBottom;
 
   ChatBubbleAlignment get chatBubbleAlignment => _chatBubbleAlignment;
-  bool get reverseBubbleAlignment => _reverseBubbleAlignment;
+  BubbleAlignmentOption get bubbleAlignmentOption => _bubbleAlignmentOption;
   FontSize get fontSize => _fontSize;
   bool get showTimestamps => _showTimestamps;
   bool get showModelName => _showModelName;
@@ -96,6 +99,7 @@ class AppConfigProvider extends ChangeNotifier {
   double get chatBubbleWidth => _chatBubbleWidth;
   bool get distinguishAssistantBubble => _distinguishAssistantBubble;
   bool get reserveActionSpace => _reserveActionSpace;
+  bool get plainTextMode => _plainTextMode;
 
   bool get useFirstSentenceAsTitle => _useFirstSentenceAsTitle;
   String get codeTheme => _codeTheme;
@@ -162,8 +166,18 @@ class AppConfigProvider extends ChangeNotifier {
     _chatBubbleAlignment = ChatBubbleAlignment.values[box.get(
         'chatBubbleAlignment',
         defaultValue: ChatBubbleAlignment.normal.index)];
-    _reverseBubbleAlignment =
-        box.get('reverseBubbleAlignment', defaultValue: false);
+
+    final oldReverse = box.get('reverseBubbleAlignment');
+    if (oldReverse != null) {
+      _bubbleAlignmentOption = oldReverse
+          ? BubbleAlignmentOption.reversed
+          : BubbleAlignmentOption.standard;
+    } else {
+      _bubbleAlignmentOption = BubbleAlignmentOption.values[box.get(
+          'bubbleAlignmentOption',
+          defaultValue: BubbleAlignmentOption.standard.index)];
+    }
+
     _fontSize = FontSize
         .values[box.get('fontSize', defaultValue: FontSize.medium.index)];
     _showTimestamps = box.get('showTimestamps', defaultValue: true);
@@ -173,6 +187,7 @@ class AppConfigProvider extends ChangeNotifier {
     _distinguishAssistantBubble =
         box.get('distinguishAssistantBubble', defaultValue: true);
     _reserveActionSpace = box.get('reserveActionSpace', defaultValue: true);
+    _plainTextMode = box.get('plainTextMode', defaultValue: false);
     _useFirstSentenceAsTitle =
         box.get('useFirstSentenceAsTitle', defaultValue: true);
     _codeTheme = box.get('codeTheme', defaultValue: 'github');
@@ -313,10 +328,10 @@ class AppConfigProvider extends ChangeNotifier {
     }
   }
 
-  void setReverseBubbleAlignment(bool reverse) {
-    if (_reverseBubbleAlignment != reverse) {
-      _reverseBubbleAlignment = reverse;
-      _updateValue('reverseBubbleAlignment', reverse);
+  void setBubbleAlignmentOption(BubbleAlignmentOption option) {
+    if (_bubbleAlignmentOption != option) {
+      _bubbleAlignmentOption = option;
+      _updateValue('bubbleAlignmentOption', option.index);
     }
   }
 
@@ -366,6 +381,13 @@ class AppConfigProvider extends ChangeNotifier {
     if (_reserveActionSpace != value) {
       _reserveActionSpace = value;
       _updateValue('reserveActionSpace', value);
+    }
+  }
+
+  void setPlainTextMode(bool enabled) {
+    if (_plainTextMode != enabled) {
+      _plainTextMode = enabled;
+      _updateValue('plainTextMode', enabled);
     }
   }
 

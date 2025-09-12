@@ -12,11 +12,13 @@ import 'package:url_launcher/url_launcher.dart';
 class ThinkingContentWidget extends StatelessWidget {
   final ChatMessage message;
   final Color textColor;
+  final bool isPlainText;
 
   const ThinkingContentWidget({
     super.key,
     required this.message,
     required this.textColor,
+    this.isPlainText = false,
   });
 
   @override
@@ -38,9 +40,12 @@ class ThinkingContentWidget extends StatelessWidget {
             'thinking_tile_${message.id}_${message.thinkingDurationMs != null}'),
         onExpansionChanged: (isExpanded) =>
             HapticService.onSwitchToggle(context),
-        backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-        collapsedBackgroundColor:
-            Theme.of(context).colorScheme.surfaceContainerHigh,
+        backgroundColor: isPlainText
+            ? Colors.transparent
+            : Theme.of(context).colorScheme.surfaceContainerHighest,
+        collapsedBackgroundColor: isPlainText
+            ? Colors.transparent
+            : Theme.of(context).colorScheme.surfaceContainerHigh,
         tilePadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
         childrenPadding: const EdgeInsets.only(left: 12, right: 12, bottom: 10),
         leading:

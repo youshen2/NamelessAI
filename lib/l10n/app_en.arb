@@ -208,8 +208,6 @@
   "dataManagement": "Data Management",
   "modelLabel": "Model",
   "timeLabel": "Time",
-  "reverseBubbleAlignment": "Reverse Bubble Alignment",
-  "reverseBubbleAlignmentHint": "User messages on the left, AI on the right",
   "exportSettings": "Export Settings",
   "selectContentToExport": "Select content to export",
   "appSettings": "App Settings",
@@ -451,5 +449,12 @@
   "accentColor": "Accent Color",
   "baseUrlEndsWithV1WarningTitle": "Potential Issue",
   "baseUrlEndsWithV1WarningContent": "The Base URL ends with '/v1'. This is usually incorrect and should be removed. Do you want to automatically remove it and save?",
-  "removeAndSave": "Remove & Save"
+  "removeAndSave": "Remove & Save",
+  "plainTextMode": "Plain Text Mode",
+  "plainTextModeHint": "Display messages without chat bubbles.",
+  "bubbleAlignment": "Bubble Alignment",
+  "bubbleAlignmentStandard": "Standard (User right, AI left)",
+  "bubbleAlignmentReversed": "Reversed (User left, AI right)",
+  "bubbleAlignmentAllLeft": "All Left",
+  "bubbleAlignmentAllRight": "All Right"
 }

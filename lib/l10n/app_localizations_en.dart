@@ -533,13 +533,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get timeLabel => 'Time';
 
   @override
-  String get reverseBubbleAlignment => 'Reverse Bubble Alignment';
-
-  @override
-  String get reverseBubbleAlignmentHint =>
-      'User messages on the left, AI on the right';
-
-  @override
   String get exportSettings => 'Export Settings';
 
   @override
@@ -1166,4 +1159,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get removeAndSave => 'Remove & Save';
+
+  @override
+  String get plainTextMode => 'Plain Text Mode';
+
+  @override
+  String get plainTextModeHint => 'Display messages without chat bubbles.';
+
+  @override
+  String get bubbleAlignment => 'Bubble Alignment';
+
+  @override
+  String get bubbleAlignmentStandard => 'Standard (User right, AI left)';
+
+  @override
+  String get bubbleAlignmentReversed => 'Reversed (User left, AI right)';
+
+  @override
+  String get bubbleAlignmentAllLeft => 'All Left';
+
+  @override
+  String get bubbleAlignmentAllRight => 'All Right';
 }

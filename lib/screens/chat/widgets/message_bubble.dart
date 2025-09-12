@@ -170,20 +170,24 @@ class _MessageBubbleState extends State<MessageBubble>
         platform == TargetPlatform.fuchsia;
 
     CrossAxisAlignment alignment;
-    switch (appConfig.chatBubbleAlignment) {
-      case ChatBubbleAlignment.center:
-        alignment = CrossAxisAlignment.center;
+
+    switch (appConfig.bubbleAlignmentOption) {
+      case BubbleAlignmentOption.standard:
+        alignment = isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start;
         break;
-      case ChatBubbleAlignment.normal:
-      default:
-        if (appConfig.reverseBubbleAlignment) {
-          alignment =
-              isUser ? CrossAxisAlignment.start : CrossAxisAlignment.end;
-        } else {
-          alignment =
-              isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start;
-        }
+      case BubbleAlignmentOption.reversed:
+        alignment = isUser ? CrossAxisAlignment.start : CrossAxisAlignment.end;
         break;
+      case BubbleAlignmentOption.allLeft:
+        alignment = CrossAxisAlignment.start;
+        break;
+      case BubbleAlignmentOption.allRight:
+        alignment = CrossAxisAlignment.end;
+        break;
+    }
+
+    if (appConfig.chatBubbleAlignment == ChatBubbleAlignment.center) {
+      alignment = CrossAxisAlignment.center;
     }
 
     return FadeTransition(
@@ -248,54 +252,90 @@ class _MessageBubbleState extends State<MessageBubble>
     final isUser = widget.message.role == 'user';
     final isError = widget.message.isError;
 
-    final bubbleColor = isError
-        ? Theme.of(context).colorScheme.errorContainer
-        : isUser
-            ? Theme.of(context).colorScheme.primaryContainer
-            : Theme.of(context).colorScheme.surfaceContainer;
-    final textColor = isError
-        ? Theme.of(context).colorScheme.onErrorContainer
-        : isUser
-            ? Theme.of(context).colorScheme.onPrimaryContainer
-            : Theme.of(context).colorScheme.onSurface;
+    final Widget content;
+
+    if (appConfig.plainTextMode) {
+      final textColor = isError
+          ? Theme.of(context).colorScheme.error
+          : isUser
+              ? Theme.of(context).colorScheme.primary
+              : Theme.of(context).colorScheme.onSurface;
+      content = Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (widget.message.thinkingContent != null &&
+                widget.message.thinkingContent!.isNotEmpty)
+              ThinkingContentWidget(
+                message: widget.message,
+                textColor: textColor,
+                isPlainText: true,
+              ),
+            if (widget.message.isEditing)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: _buildEditModeContent(context, textColor),
+              )
+            else
+              _buildDisplayModeContent(context, textColor, appConfig),
+          ],
+        ),
+      );
+    } else {
+      final bubbleColor = isError
+          ? Theme.of(context).colorScheme.errorContainer
+          : isUser
+              ? Theme.of(context).colorScheme.primaryContainer
+              : Theme.of(context).colorScheme.surfaceContainer;
+      final textColor = isError
+          ? Theme.of(context).colorScheme.onErrorContainer
+          : isUser
+              ? Theme.of(context).colorScheme.onPrimaryContainer
+              : Theme.of(context).colorScheme.onSurface;
+
+      content = Card(
+        color: bubbleColor,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: !isUser && !isError && appConfig.distinguishAssistantBubble
+              ? BorderSide(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .outlineVariant
+                      .withOpacity(0.5),
+                )
+              : BorderSide.none,
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (widget.message.thinkingContent != null &&
+                widget.message.thinkingContent!.isNotEmpty)
+              ThinkingContentWidget(
+                message: widget.message,
+                textColor: textColor,
+              ),
+            if (widget.message.isEditing)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: _buildEditModeContent(context, textColor),
+              )
+            else
+              _buildDisplayModeContent(context, textColor, appConfig),
+          ],
+        ),
+      );
+    }
 
     return ConstrainedBox(
       constraints: BoxConstraints(
         maxWidth: MediaQuery.of(context).size.width * appConfig.chatBubbleWidth,
       ),
       child: RepaintBoundary(
-        child: Card(
-          color: bubbleColor,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: !isUser && !isError && appConfig.distinguishAssistantBubble
-                ? BorderSide(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .outlineVariant
-                        .withOpacity(0.5),
-                  )
-                : BorderSide.none,
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (widget.message.thinkingContent != null &&
-                  widget.message.thinkingContent!.isNotEmpty)
-                ThinkingContentWidget(
-                    message: widget.message, textColor: textColor),
-              if (widget.message.isEditing)
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: _buildEditModeContent(context, textColor),
-                )
-              else
-                _buildDisplayModeContent(context, textColor, appConfig),
-            ],
-          ),
-        ),
+        child: content,
       ),
     );
   }

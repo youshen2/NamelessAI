@@ -348,15 +348,50 @@ void main() {
                           },
                         ),
                       ),
+                      const SizedBox(height: 16),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: DropdownButtonFormField<BubbleAlignmentOption>(
+                          value: appConfig.bubbleAlignmentOption,
+                          decoration: InputDecoration(
+                            labelText: localizations.bubbleAlignment,
+                            contentPadding:
+                                const EdgeInsets.symmetric(horizontal: 12),
+                          ),
+                          items: [
+                            DropdownMenuItem(
+                                value: BubbleAlignmentOption.standard,
+                                child: Text(
+                                    localizations.bubbleAlignmentStandard)),
+                            DropdownMenuItem(
+                                value: BubbleAlignmentOption.reversed,
+                                child: Text(
+                                    localizations.bubbleAlignmentReversed)),
+                            DropdownMenuItem(
+                                value: BubbleAlignmentOption.allLeft,
+                                child:
+                                    Text(localizations.bubbleAlignmentAllLeft)),
+                            DropdownMenuItem(
+                                value: BubbleAlignmentOption.allRight,
+                                child: Text(
+                                    localizations.bubbleAlignmentAllRight)),
+                          ],
+                          onChanged: (value) {
+                            HapticService.onSwitchToggle(context);
+                            if (value != null) {
+                              appConfig.setBubbleAlignmentOption(value);
+                            }
+                          },
+                        ),
+                      ),
                       const SizedBox(height: 8),
                       SwitchListTile(
-                        title: Text(localizations.reverseBubbleAlignment),
-                        subtitle:
-                            Text(localizations.reverseBubbleAlignmentHint),
-                        value: appConfig.reverseBubbleAlignment,
+                        title: Text(localizations.plainTextMode),
+                        subtitle: Text(localizations.plainTextModeHint),
+                        value: appConfig.plainTextMode,
                         onChanged: (value) {
                           HapticService.onSwitchToggle(context);
-                          appConfig.setReverseBubbleAlignment(value);
+                          appConfig.setPlainTextMode(value);
                         },
                         activeColor: Theme.of(context).colorScheme.primary,
                       ),

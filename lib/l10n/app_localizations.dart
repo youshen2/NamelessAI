@@ -1094,18 +1094,6 @@ abstract class AppLocalizations {
   /// **'Time'**
   String get timeLabel;
 
-  /// No description provided for @reverseBubbleAlignment.
-  ///
-  /// In en, this message translates to:
-  /// **'Reverse Bubble Alignment'**
-  String get reverseBubbleAlignment;
-
-  /// No description provided for @reverseBubbleAlignmentHint.
-  ///
-  /// In en, this message translates to:
-  /// **'User messages on the left, AI on the right'**
-  String get reverseBubbleAlignmentHint;
-
   /// No description provided for @exportSettings.
   ///
   /// In en, this message translates to:
@@ -2287,6 +2275,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remove & Save'**
   String get removeAndSave;
+
+  /// No description provided for @plainTextMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Plain Text Mode'**
+  String get plainTextMode;
+
+  /// No description provided for @plainTextModeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Display messages without chat bubbles.'**
+  String get plainTextModeHint;
+
+  /// No description provided for @bubbleAlignment.
+  ///
+  /// In en, this message translates to:
+  /// **'Bubble Alignment'**
+  String get bubbleAlignment;
+
+  /// No description provided for @bubbleAlignmentStandard.
+  ///
+  /// In en, this message translates to:
+  /// **'Standard (User right, AI left)'**
+  String get bubbleAlignmentStandard;
+
+  /// No description provided for @bubbleAlignmentReversed.
+  ///
+  /// In en, this message translates to:
+  /// **'Reversed (User left, AI right)'**
+  String get bubbleAlignmentReversed;
+
+  /// No description provided for @bubbleAlignmentAllLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'All Left'**
+  String get bubbleAlignmentAllLeft;
+
+  /// No description provided for @bubbleAlignmentAllRight.
+  ///
+  /// In en, this message translates to:
+  /// **'All Right'**
+  String get bubbleAlignmentAllRight;
 }
 
 class _AppLocalizationsDelegate

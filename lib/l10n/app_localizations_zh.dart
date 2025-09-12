@@ -9,7 +9,7 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
-  String get appName => '无名AI盒子';
+  String get appName => 'Nameless AI Box';
 
   @override
   String get chat => '对话';
@@ -520,12 +520,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get timeLabel => '时间';
-
-  @override
-  String get reverseBubbleAlignment => '反转气泡';
-
-  @override
-  String get reverseBubbleAlignmentHint => '用户消息在左，AI消息在右';
 
   @override
   String get exportSettings => '导出设置';
@@ -1131,4 +1125,25 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get removeAndSave => '移除并保存';
+
+  @override
+  String get plainTextMode => '纯文本模式';
+
+  @override
+  String get plainTextModeHint => '不显示聊天气泡，以纯文本展示消息。';
+
+  @override
+  String get bubbleAlignment => '气泡对齐';
+
+  @override
+  String get bubbleAlignmentStandard => '标准 (用户在右，AI在左)';
+
+  @override
+  String get bubbleAlignmentReversed => '反转 (用户在左，AI在右)';
+
+  @override
+  String get bubbleAlignmentAllLeft => '全部居左';
+
+  @override
+  String get bubbleAlignmentAllRight => '全部居右';
 }
