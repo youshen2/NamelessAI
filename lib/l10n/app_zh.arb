@@ -483,5 +483,20 @@
   "authenticateToContinue": "请验证身份以继续",
   "unlock": "解锁",
   "authenticationFailed": "身份验证失败，请重试。",
-  "biometricsNotAvailable": "此设备不支持生物识别。"
+  "biometricsNotAvailable": "此设备不支持生物识别。",
+  "statistics": "统计",
+  "totalChats": "对话",
+  "totalMessages": "消息",
+  "modelUsage": "模型使用分布",
+  "chatsLast7Days": "近7日对话",
+  "noDataForChart": "暂无图表数据。",
+  "averageResponseTime": "平均响应时间",
+  "totalTokensUsed": "Token 总量",
+  "promptTokens": "输入 Token",
+  "completionTokens": "输出 Token",
+  "generalStats": "概览",
+  "usageTrends": "使用趋势",
+  "secondsAbbr": "秒",
+  "statisticsDetails": "统计详情",
+  "breakdown": "数据明细"
 }

@@ -12,6 +12,7 @@ import 'package:nameless_ai/data/providers/api_provider_manager.dart';
 import 'package:nameless_ai/data/providers/app_config_provider.dart';
 import 'package:nameless_ai/data/providers/authentication_provider.dart';
 import 'package:nameless_ai/data/providers/chat_session_manager.dart';
+import 'package:nameless_ai/data/providers/statistics_provider.dart';
 import 'package:nameless_ai/data/providers/system_prompt_template_manager.dart';
 import 'package:nameless_ai/router/app_router.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
@@ -134,6 +135,12 @@ class MyApp extends StatelessWidget {
               sessionManager!..setApiProviderManager(apiManager),
         ),
         ChangeNotifierProvider(create: (_) => SystemPromptTemplateManager()),
+        ChangeNotifierProxyProvider<ChatSessionManager, StatisticsProvider>(
+          create: (context) => StatisticsProvider(
+              Provider.of<ChatSessionManager>(context, listen: false)),
+          update: (context, chatManager, statisticsProvider) =>
+              statisticsProvider!..update(chatManager),
+        ),
       ],
       child: const AppLifecycleObserver(
         child: ThemedApp(),

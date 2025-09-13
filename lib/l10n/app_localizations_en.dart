@@ -1266,4 +1266,49 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get biometricsNotAvailable =>
       'Biometrics not available on this device.';
+
+  @override
+  String get statistics => 'Statistics';
+
+  @override
+  String get totalChats => 'Chats';
+
+  @override
+  String get totalMessages => 'Messages';
+
+  @override
+  String get modelUsage => 'Model Usage Distribution';
+
+  @override
+  String get chatsLast7Days => 'Daily Chats (Last 7 Days)';
+
+  @override
+  String get noDataForChart => 'No data available for chart.';
+
+  @override
+  String get averageResponseTime => 'Avg. Response Time';
+
+  @override
+  String get totalTokensUsed => 'Total Tokens';
+
+  @override
+  String get promptTokens => 'Prompt Tokens';
+
+  @override
+  String get completionTokens => 'Completion Tokens';
+
+  @override
+  String get generalStats => 'General';
+
+  @override
+  String get usageTrends => 'Usage Trends';
+
+  @override
+  String get secondsAbbr => 's';
+
+  @override
+  String get statisticsDetails => 'Details';
+
+  @override
+  String get breakdown => 'Breakdown';
 }

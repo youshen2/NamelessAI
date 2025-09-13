@@ -17,6 +17,7 @@ import 'package:nameless_ai/screens/settings/haptic_settings_screen.dart';
 import 'package:nameless_ai/screens/settings/notification_settings_screen.dart';
 import 'package:nameless_ai/screens/settings/settings_screen.dart';
 import 'package:nameless_ai/screens/settings/system_prompt_settings_screen.dart';
+import 'package:nameless_ai/screens/statistics/statistics_screen.dart';
 import 'package:provider/provider.dart';
 
 class AppRouter {
@@ -109,6 +110,22 @@ class AppRouter {
                     return _buildPageWithTransition(
                       state: state,
                       child: const HistoryScreen(),
+                      transitionType: appConfig.pageTransitionType,
+                    );
+                  },
+                ),
+              ],
+            ),
+            StatefulShellBranch(
+              routes: [
+                GoRoute(
+                  path: '/statistics',
+                  name: 'statistics',
+                  pageBuilder: (context, state) {
+                    final appConfig = Provider.of<AppConfigProvider>(context);
+                    return _buildPageWithTransition(
+                      state: state,
+                      child: const StatisticsScreen(),
                       transitionType: appConfig.pageTransitionType,
                     );
                   },

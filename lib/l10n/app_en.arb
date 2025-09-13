@@ -483,5 +483,20 @@
   "authenticateToContinue": "Authenticate to continue",
   "unlock": "Unlock",
   "authenticationFailed": "Authentication failed. Please try again.",
-  "biometricsNotAvailable": "Biometrics not available on this device."
+  "biometricsNotAvailable": "Biometrics not available on this device.",
+  "statistics": "Statistics",
+  "totalChats": "Chats",
+  "totalMessages": "Messages",
+  "modelUsage": "Model Usage Distribution",
+  "chatsLast7Days": "Daily Chats (Last 7 Days)",
+  "noDataForChart": "No data available for chart.",
+  "averageResponseTime": "Avg. Response Time",
+  "totalTokensUsed": "Total Tokens",
+  "promptTokens": "Prompt Tokens",
+  "completionTokens": "Completion Tokens",
+  "generalStats": "General",
+  "usageTrends": "Usage Trends",
+  "secondsAbbr": "s",
+  "statisticsDetails": "Details",
+  "breakdown": "Breakdown"
 }

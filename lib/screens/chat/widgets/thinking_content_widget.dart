@@ -23,18 +23,19 @@ class ThinkingContentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final markdownStyleSheet = MarkdownStyleSheet(
       p: TextStyle(
           color: textColor.withOpacity(0.8), fontSize: 14, height: 1.3),
       code: TextStyle(
-        backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+        backgroundColor: theme.colorScheme.surfaceContainerHighest,
         color: textColor.withOpacity(0.8),
         fontFamily: 'monospace',
       ),
     );
 
     return Theme(
-      data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+      data: theme.copyWith(dividerColor: Colors.transparent),
       child: ExpansionTile(
         key: ValueKey(
             'thinking_tile_${message.id}_${message.thinkingDurationMs != null}'),
@@ -42,14 +43,14 @@ class ThinkingContentWidget extends StatelessWidget {
             HapticService.onSwitchToggle(context),
         backgroundColor: isPlainText
             ? Colors.transparent
-            : Theme.of(context).colorScheme.surfaceContainerHighest,
+            : theme.colorScheme.surfaceContainerHighest,
         collapsedBackgroundColor: isPlainText
             ? Colors.transparent
-            : Theme.of(context).colorScheme.surfaceContainerHigh,
+            : theme.colorScheme.surfaceContainerHigh,
         tilePadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
         childrenPadding: const EdgeInsets.only(left: 12, right: 12, bottom: 10),
-        leading:
-            Icon(Icons.psychology_outlined, color: textColor.withOpacity(0.8)),
+        leading: Icon(Icons.auto_awesome_outlined,
+            color: textColor.withOpacity(0.8)),
         title: Align(
           alignment: Alignment.centerLeft,
           child: _ThinkingTimer(
@@ -67,32 +68,44 @@ class ThinkingContentWidget extends StatelessWidget {
               endIndent: 0,
               indent: 0),
           const SizedBox(height: 8),
-          SelectionArea(
-            child: MarkdownBody(
-              data: message.thinkingContent!,
-              selectable: false,
-              styleSheet: markdownStyleSheet,
-              extensionSet: md.ExtensionSet(
-                md.ExtensionSet.gitHubWeb.blockSyntaxes,
-                [
-                  ...md.ExtensionSet.gitHubWeb.inlineSyntaxes,
-                  MathInlineSyntax(),
-                  MathDisplaySyntax(),
-                ],
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: isPlainText
+                  ? Colors.transparent
+                  : theme.colorScheme.surface.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(8),
+              border: isPlainText
+                  ? null
+                  : Border.all(color: theme.colorScheme.outlineVariant),
+            ),
+            child: SelectionArea(
+              child: MarkdownBody(
+                data: message.thinkingContent!,
+                selectable: false,
+                styleSheet: markdownStyleSheet,
+                extensionSet: md.ExtensionSet(
+                  md.ExtensionSet.gitHubWeb.blockSyntaxes,
+                  [
+                    ...md.ExtensionSet.gitHubWeb.inlineSyntaxes,
+                    MathInlineSyntax(),
+                    MathDisplaySyntax(),
+                  ],
+                ),
+                builders: {
+                  'code': MarkdownCodeBlockBuilder(
+                      context: context, isSelectable: false),
+                  'math_inline': MathBuilder(context: context, fontSize: 14),
+                  'math_display': MathBuilder(context: context, fontSize: 14),
+                  'hr': HrBuilder(context: context),
+                },
+                onTapLink: (text, href, title) {
+                  if (href != null) {
+                    HapticService.onButtonPress(context);
+                    launchUrl(Uri.parse(href));
+                  }
+                },
               ),
-              builders: {
-                'code': MarkdownCodeBlockBuilder(
-                    context: context, isSelectable: false),
-                'math_inline': MathBuilder(context: context, fontSize: 14),
-                'math_display': MathBuilder(context: context, fontSize: 14),
-                'hr': HrBuilder(context: context),
-              },
-              onTapLink: (text, href, title) {
-                if (href != null) {
-                  HapticService.onButtonPress(context);
-                  launchUrl(Uri.parse(href));
-                }
-              },
             ),
           ),
         ],
@@ -178,7 +191,6 @@ class _ThinkingTimerState extends State<_ThinkingTimer> {
       style: TextStyle(
         color: widget.textColor,
         fontSize: 14,
-        fontStyle: FontStyle.italic,
       ),
     );
   }

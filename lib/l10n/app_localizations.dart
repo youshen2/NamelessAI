@@ -2479,6 +2479,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Biometrics not available on this device.'**
   String get biometricsNotAvailable;
+
+  /// No description provided for @statistics.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics'**
+  String get statistics;
+
+  /// No description provided for @totalChats.
+  ///
+  /// In en, this message translates to:
+  /// **'Chats'**
+  String get totalChats;
+
+  /// No description provided for @totalMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get totalMessages;
+
+  /// No description provided for @modelUsage.
+  ///
+  /// In en, this message translates to:
+  /// **'Model Usage Distribution'**
+  String get modelUsage;
+
+  /// No description provided for @chatsLast7Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Chats (Last 7 Days)'**
+  String get chatsLast7Days;
+
+  /// No description provided for @noDataForChart.
+  ///
+  /// In en, this message translates to:
+  /// **'No data available for chart.'**
+  String get noDataForChart;
+
+  /// No description provided for @averageResponseTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg. Response Time'**
+  String get averageResponseTime;
+
+  /// No description provided for @totalTokensUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Tokens'**
+  String get totalTokensUsed;
+
+  /// No description provided for @promptTokens.
+  ///
+  /// In en, this message translates to:
+  /// **'Prompt Tokens'**
+  String get promptTokens;
+
+  /// No description provided for @completionTokens.
+  ///
+  /// In en, this message translates to:
+  /// **'Completion Tokens'**
+  String get completionTokens;
+
+  /// No description provided for @generalStats.
+  ///
+  /// In en, this message translates to:
+  /// **'General'**
+  String get generalStats;
+
+  /// No description provided for @usageTrends.
+  ///
+  /// In en, this message translates to:
+  /// **'Usage Trends'**
+  String get usageTrends;
+
+  /// No description provided for @secondsAbbr.
+  ///
+  /// In en, this message translates to:
+  /// **'s'**
+  String get secondsAbbr;
+
+  /// No description provided for @statisticsDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get statisticsDetails;
+
+  /// No description provided for @breakdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Breakdown'**
+  String get breakdown;
 }
 
 class _AppLocalizationsDelegate

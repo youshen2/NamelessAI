@@ -48,7 +48,8 @@ class _HomePageState extends State<HomePage> {
       if (defaultScreen != '/') {
         int targetIndex = 0;
         if (defaultScreen == '/history') targetIndex = 1;
-        if (defaultScreen == '/settings') targetIndex = 2;
+        if (defaultScreen == '/statistics') targetIndex = 2;
+        if (defaultScreen == '/settings') targetIndex = 3;
         widget.navigationShell.goBranch(targetIndex);
       }
     }
@@ -76,9 +77,16 @@ class _HomePageState extends State<HomePage> {
 
   void _onItemTapped(int index) {
     HapticService.onButtonPress(context);
+    final isDesktop = MediaQuery.of(context).size.width >= 600;
+    int targetIndex = index;
+    if (isDesktop) {
+      if (index >= 1) {
+        targetIndex = index + 1;
+      }
+    }
     widget.navigationShell.goBranch(
-      index,
-      initialLocation: index == widget.navigationShell.currentIndex,
+      targetIndex,
+      initialLocation: targetIndex == widget.navigationShell.currentIndex,
     );
   }
 
@@ -92,6 +100,7 @@ class _HomePageState extends State<HomePage> {
       elevation: 0,
       currentIndex: selectedIndex,
       onTap: _onItemTapped,
+      type: BottomNavigationBarType.fixed,
       items: [
         BottomNavigationBarItem(
           icon: const Icon(Icons.chat_bubble_outline),
@@ -102,7 +111,11 @@ class _HomePageState extends State<HomePage> {
           label: localizations.history,
         ),
         BottomNavigationBarItem(
-          icon: const Icon(Icons.settings),
+          icon: const Icon(Icons.bar_chart_outlined),
+          label: localizations.statistics,
+        ),
+        BottomNavigationBarItem(
+          icon: const Icon(Icons.settings_outlined),
           label: localizations.settings,
         ),
       ],
@@ -133,23 +146,33 @@ class _HomePageState extends State<HomePage> {
       desktopBody: Scaffold(
         body: Row(
           children: [
-            NavigationRail(
-              selectedIndex: widget.navigationShell.currentIndex == 2 ? 1 : 0,
-              onDestinationSelected: (index) {
-                _onItemTapped(index == 0 ? 0 : 2);
-              },
-              labelType: NavigationRailLabelType.all,
-              destinations: [
-                NavigationRailDestination(
-                  icon: const Icon(Icons.chat_bubble_outline),
-                  label: Text(localizations.chat),
-                ),
-                NavigationRailDestination(
-                  icon: const Icon(Icons.settings),
-                  label: Text(localizations.settings),
-                ),
-              ],
-            ),
+            Builder(builder: (context) {
+              int selectedIndex = widget.navigationShell.currentIndex;
+              if (selectedIndex >= 2) {
+                selectedIndex -= 1;
+              } else if (selectedIndex == 1) {
+                selectedIndex = -1;
+              }
+              return NavigationRail(
+                selectedIndex: selectedIndex,
+                onDestinationSelected: _onItemTapped,
+                labelType: NavigationRailLabelType.all,
+                destinations: [
+                  NavigationRailDestination(
+                    icon: const Icon(Icons.chat_bubble_outline),
+                    label: Text(localizations.chat),
+                  ),
+                  NavigationRailDestination(
+                    icon: const Icon(Icons.bar_chart_outlined),
+                    label: Text(localizations.statistics),
+                  ),
+                  NavigationRailDestination(
+                    icon: const Icon(Icons.settings_outlined),
+                    label: Text(localizations.settings),
+                  ),
+                ],
+              );
+            }),
             const VerticalDivider(thickness: 1, width: 1),
             Expanded(child: widget.navigationShell),
           ],

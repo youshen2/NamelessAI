@@ -1227,4 +1227,49 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get biometricsNotAvailable => '此设备不支持生物识别。';
+
+  @override
+  String get statistics => '统计';
+
+  @override
+  String get totalChats => '对话';
+
+  @override
+  String get totalMessages => '消息';
+
+  @override
+  String get modelUsage => '模型使用分布';
+
+  @override
+  String get chatsLast7Days => '近7日对话';
+
+  @override
+  String get noDataForChart => '暂无图表数据。';
+
+  @override
+  String get averageResponseTime => '平均响应时间';
+
+  @override
+  String get totalTokensUsed => 'Token 总量';
+
+  @override
+  String get promptTokens => '输入 Token';
+
+  @override
+  String get completionTokens => '输出 Token';
+
+  @override
+  String get generalStats => '概览';
+
+  @override
+  String get usageTrends => '使用趋势';
+
+  @override
+  String get secondsAbbr => '秒';
+
+  @override
+  String get statisticsDetails => '统计详情';
+
+  @override
+  String get breakdown => '数据明细';
 }
