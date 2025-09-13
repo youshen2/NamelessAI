@@ -39,8 +39,10 @@ void _showFreeCopyDialog(BuildContext context, String code) {
 class MarkdownCodeBlockBuilder extends MarkdownElementBuilder {
   final BuildContext context;
   final bool isSelectable;
+  final bool wrapCode;
 
-  MarkdownCodeBlockBuilder({required this.context, this.isSelectable = true});
+  MarkdownCodeBlockBuilder(
+      {required this.context, this.isSelectable = true, this.wrapCode = false});
 
   @override
   Widget? visitElementAfter(md.Element element, TextStyle? preferredStyle) {
@@ -55,6 +57,7 @@ class MarkdownCodeBlockBuilder extends MarkdownElementBuilder {
         code: code,
         theme: theme,
         isSelectable: isSelectable,
+        wrapCode: wrapCode,
       );
     }
     return null;
@@ -67,6 +70,7 @@ class CollapsibleCodeBlock extends StatefulWidget {
   final Map<String, TextStyle> theme;
   final bool isReadOnly;
   final bool isSelectable;
+  final bool wrapCode;
 
   const CollapsibleCodeBlock({
     super.key,
@@ -75,6 +79,7 @@ class CollapsibleCodeBlock extends StatefulWidget {
     required this.theme,
     this.isReadOnly = false,
     this.isSelectable = true,
+    this.wrapCode = false,
   });
 
   @override
@@ -98,6 +103,10 @@ class _CollapsibleCodeBlockState extends State<CollapsibleCodeBlock> {
         fontSize: 14,
       ),
     );
+
+    final codeContent = widget.isSelectable
+        ? SelectionArea(child: highlightView)
+        : highlightView;
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -206,12 +215,12 @@ class _CollapsibleCodeBlockState extends State<CollapsibleCodeBlock> {
                           .colorScheme
                           .outlineVariant
                           .withOpacity(0.5)),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: widget.isSelectable
-                        ? SelectionArea(child: highlightView)
-                        : highlightView,
-                  ),
+                  widget.wrapCode
+                      ? codeContent
+                      : SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: codeContent,
+                        ),
                 ],
               ),
             ),

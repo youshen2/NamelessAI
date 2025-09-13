@@ -1288,4 +1288,87 @@ class AppLocalizationsZh extends AppLocalizations {
   String deleteMultipleConfirmation(int count) {
     return '您确定要删除这 $count 个项目吗？此操作无法撤销。';
   }
+
+  @override
+  String get screenshot => '截图';
+
+  @override
+  String get screenshotOptions => '截图选项';
+
+  @override
+  String get generateScreenshot => '生成截图';
+
+  @override
+  String get screenshotTheme => '主题';
+
+  @override
+  String get watermark => '水印';
+
+  @override
+  String get enableWatermark => '启用水印';
+
+  @override
+  String get watermarkText => '水印文本';
+
+  @override
+  String get enterWatermarkText => '输入水印文本...';
+
+  @override
+  String get backgroundColor => '背景颜色';
+
+  @override
+  String get screenshotSaved => '截图已保存到相册。';
+
+  @override
+  String screenshotError(String error) {
+    return '保存截图失败: $error';
+  }
+
+  @override
+  String get userBubbleColor => '用户气泡颜色';
+
+  @override
+  String get aiBubbleColor => 'AI 气泡颜色';
+
+  @override
+  String get useMonetColors => '使用莫奈取色';
+
+  @override
+  String get bubbleWidth => '气泡宽度';
+
+  @override
+  String get watermarkPosition => '水印位置';
+
+  @override
+  String get watermarkFontSize => '水印字体大小';
+
+  @override
+  String get topLeft => '左上';
+
+  @override
+  String get topCenter => '中上';
+
+  @override
+  String get topRight => '右上';
+
+  @override
+  String get centerLeft => '左中';
+
+  @override
+  String get centerRight => '右中';
+
+  @override
+  String get bottomLeft => '左下';
+
+  @override
+  String get bottomCenter => '中下';
+
+  @override
+  String get bottomRight => '右下';
+
+  @override
+  String get watermarkColor => '水印颜色';
+
+  @override
+  String get watermarkPadding => '水印边距';
 }

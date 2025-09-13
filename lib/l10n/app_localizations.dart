@@ -2593,6 +2593,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Are you sure you want to delete these {count} items? This action cannot be undone.'**
   String deleteMultipleConfirmation(int count);
+
+  /// No description provided for @screenshot.
+  ///
+  /// In en, this message translates to:
+  /// **'Screenshot'**
+  String get screenshot;
+
+  /// No description provided for @screenshotOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Screenshot Options'**
+  String get screenshotOptions;
+
+  /// No description provided for @generateScreenshot.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate Screenshot'**
+  String get generateScreenshot;
+
+  /// No description provided for @screenshotTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme'**
+  String get screenshotTheme;
+
+  /// No description provided for @watermark.
+  ///
+  /// In en, this message translates to:
+  /// **'Watermark'**
+  String get watermark;
+
+  /// No description provided for @enableWatermark.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Watermark'**
+  String get enableWatermark;
+
+  /// No description provided for @watermarkText.
+  ///
+  /// In en, this message translates to:
+  /// **'Watermark Text'**
+  String get watermarkText;
+
+  /// No description provided for @enterWatermarkText.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter watermark text...'**
+  String get enterWatermarkText;
+
+  /// No description provided for @backgroundColor.
+  ///
+  /// In en, this message translates to:
+  /// **'Background Color'**
+  String get backgroundColor;
+
+  /// No description provided for @screenshotSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Screenshot saved to gallery.'**
+  String get screenshotSaved;
+
+  /// No description provided for @screenshotError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save screenshot: {error}'**
+  String screenshotError(String error);
+
+  /// No description provided for @userBubbleColor.
+  ///
+  /// In en, this message translates to:
+  /// **'User Bubble Color'**
+  String get userBubbleColor;
+
+  /// No description provided for @aiBubbleColor.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Bubble Color'**
+  String get aiBubbleColor;
+
+  /// No description provided for @useMonetColors.
+  ///
+  /// In en, this message translates to:
+  /// **'Use Monet Colors'**
+  String get useMonetColors;
+
+  /// No description provided for @bubbleWidth.
+  ///
+  /// In en, this message translates to:
+  /// **'Bubble Width'**
+  String get bubbleWidth;
+
+  /// No description provided for @watermarkPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Watermark Position'**
+  String get watermarkPosition;
+
+  /// No description provided for @watermarkFontSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Watermark Font Size'**
+  String get watermarkFontSize;
+
+  /// No description provided for @topLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Top Left'**
+  String get topLeft;
+
+  /// No description provided for @topCenter.
+  ///
+  /// In en, this message translates to:
+  /// **'Top Center'**
+  String get topCenter;
+
+  /// No description provided for @topRight.
+  ///
+  /// In en, this message translates to:
+  /// **'Top Right'**
+  String get topRight;
+
+  /// No description provided for @centerLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Center Left'**
+  String get centerLeft;
+
+  /// No description provided for @centerRight.
+  ///
+  /// In en, this message translates to:
+  /// **'Center Right'**
+  String get centerRight;
+
+  /// No description provided for @bottomLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Bottom Left'**
+  String get bottomLeft;
+
+  /// No description provided for @bottomCenter.
+  ///
+  /// In en, this message translates to:
+  /// **'Bottom Center'**
+  String get bottomCenter;
+
+  /// No description provided for @bottomRight.
+  ///
+  /// In en, this message translates to:
+  /// **'Bottom Right'**
+  String get bottomRight;
+
+  /// No description provided for @watermarkColor.
+  ///
+  /// In en, this message translates to:
+  /// **'Watermark Color'**
+  String get watermarkColor;
+
+  /// No description provided for @watermarkPadding.
+  ///
+  /// In en, this message translates to:
+  /// **'Watermark Padding'**
+  String get watermarkPadding;
 }
 
 class _AppLocalizationsDelegate

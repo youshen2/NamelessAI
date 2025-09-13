@@ -139,6 +139,16 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  Future<void> _showScreenshotOptions() async {
+    if (_selectedMessageIds.isEmpty) return;
+
+    final selectedMessages = _chatSessionManager.activeMessages
+        .where((m) => _selectedMessageIds.contains(m.id))
+        .toList();
+
+    context.push('/screenshot', extra: selectedMessages);
+  }
+
   void _chatUpdateListener() {
     if (!mounted) return;
 
@@ -860,6 +870,11 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
       title: Text(localizations.itemsSelected(_selectedMessageIds.length)),
       actions: [
+        IconButton(
+          icon: const Icon(Icons.photo_camera_outlined),
+          tooltip: localizations.screenshot,
+          onPressed: _showScreenshotOptions,
+        ),
         IconButton(
           icon: const Icon(Icons.select_all),
           tooltip: localizations.selectAll,

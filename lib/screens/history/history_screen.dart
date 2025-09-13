@@ -251,6 +251,58 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
   }
 
+  Widget _buildDesktopHeader(AppLocalizations localizations) {
+    if (_isMultiSelectMode) {
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          children: [
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                  localizations.itemsSelected(_selectedSessionIds.length),
+                  style: Theme.of(context).textTheme.titleLarge),
+            ),
+            IconButton(
+              icon: const Icon(Icons.select_all),
+              tooltip: localizations.selectAll,
+              onPressed: _selectAllSessions,
+            ),
+            IconButton(
+              icon: const Icon(Icons.delete_outline),
+              tooltip: localizations.deleteSelected,
+              onPressed: _deleteSelectedSessions,
+            ),
+            IconButton(
+              icon: const Icon(Icons.close),
+              onPressed: _exitMultiSelectMode,
+            ),
+            const SizedBox(width: 8),
+          ],
+        ),
+      );
+    } else {
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          children: [
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(localizations.history,
+                  style: Theme.of(context).textTheme.titleLarge),
+            ),
+            IconButton(
+              icon: const Icon(Icons.delete_sweep_outlined),
+              tooltip: localizations.clearHistory,
+              onPressed: _clearHistory,
+            ),
+            const SizedBox(width: 8),
+          ],
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
@@ -300,45 +352,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   width: 300,
                   child: Column(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          children: [
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: _isMultiSelectMode
-                                  ? Text(localizations.itemsSelected(
-                                      _selectedSessionIds.length))
-                                  : Text(localizations.history,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleLarge),
-                            ),
-                            if (_isMultiSelectMode) ...[
-                              IconButton(
-                                icon: const Icon(Icons.select_all),
-                                tooltip: localizations.selectAll,
-                                onPressed: _selectAllSessions,
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.delete_outline),
-                                tooltip: localizations.deleteSelected,
-                                onPressed: _deleteSelectedSessions,
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.close),
-                                onPressed: _exitMultiSelectMode,
-                              ),
-                            ] else
-                              IconButton(
-                                icon: const Icon(Icons.delete_sweep_outlined),
-                                tooltip: localizations.clearHistory,
-                                onPressed: _clearHistory,
-                              ),
-                            const SizedBox(width: 8),
-                          ],
-                        ),
-                      ),
+                      SizedBox(
+                          height: MediaQuery.of(context).padding.top + 8.0),
+                      _buildDesktopHeader(localizations),
                       _buildSearchBar(localizations),
                       Expanded(
                         child: _buildSessionList(
@@ -521,6 +537,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              SizedBox(height: MediaQuery.of(context).padding.top),
               Text(
                 _selectedSessionForPreview!.name,
                 style: Theme.of(context).textTheme.headlineSmall,

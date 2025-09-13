@@ -1327,4 +1327,87 @@ class AppLocalizationsEn extends AppLocalizations {
   String deleteMultipleConfirmation(int count) {
     return 'Are you sure you want to delete these $count items? This action cannot be undone.';
   }
+
+  @override
+  String get screenshot => 'Screenshot';
+
+  @override
+  String get screenshotOptions => 'Screenshot Options';
+
+  @override
+  String get generateScreenshot => 'Generate Screenshot';
+
+  @override
+  String get screenshotTheme => 'Theme';
+
+  @override
+  String get watermark => 'Watermark';
+
+  @override
+  String get enableWatermark => 'Enable Watermark';
+
+  @override
+  String get watermarkText => 'Watermark Text';
+
+  @override
+  String get enterWatermarkText => 'Enter watermark text...';
+
+  @override
+  String get backgroundColor => 'Background Color';
+
+  @override
+  String get screenshotSaved => 'Screenshot saved to gallery.';
+
+  @override
+  String screenshotError(String error) {
+    return 'Failed to save screenshot: $error';
+  }
+
+  @override
+  String get userBubbleColor => 'User Bubble Color';
+
+  @override
+  String get aiBubbleColor => 'AI Bubble Color';
+
+  @override
+  String get useMonetColors => 'Use Monet Colors';
+
+  @override
+  String get bubbleWidth => 'Bubble Width';
+
+  @override
+  String get watermarkPosition => 'Watermark Position';
+
+  @override
+  String get watermarkFontSize => 'Watermark Font Size';
+
+  @override
+  String get topLeft => 'Top Left';
+
+  @override
+  String get topCenter => 'Top Center';
+
+  @override
+  String get topRight => 'Top Right';
+
+  @override
+  String get centerLeft => 'Center Left';
+
+  @override
+  String get centerRight => 'Center Right';
+
+  @override
+  String get bottomLeft => 'Bottom Left';
+
+  @override
+  String get bottomCenter => 'Bottom Center';
+
+  @override
+  String get bottomRight => 'Bottom Right';
+
+  @override
+  String get watermarkColor => 'Watermark Color';
+
+  @override
+  String get watermarkPadding => 'Watermark Padding';
 }

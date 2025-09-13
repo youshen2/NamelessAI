@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nameless_ai/data/models/chat_message.dart';
 import 'package:nameless_ai/data/providers/app_config_provider.dart';
 import 'package:nameless_ai/screens/chat/chat_screen.dart';
+import 'package:nameless_ai/screens/chat/screenshot_options_screen.dart';
 import 'package:nameless_ai/screens/history/history_screen.dart';
 import 'package:nameless_ai/screens/home/home_page.dart';
 import 'package:nameless_ai/screens/onboarding/onboarding_screen.dart';
@@ -303,6 +305,19 @@ class AppRouter {
             return _buildPageWithTransition(
               state: state,
               child: const OnboardingScreen(),
+              transitionType: appConfig.pageTransitionType,
+            );
+          },
+        ),
+        GoRoute(
+          path: '/screenshot',
+          name: 'screenshot',
+          pageBuilder: (context, state) {
+            final messages = state.extra as List<ChatMessage>;
+            final appConfig = Provider.of<AppConfigProvider>(context);
+            return _buildPageWithTransition(
+              state: state,
+              child: ScreenshotOptionsScreen(messages: messages),
               transitionType: appConfig.pageTransitionType,
             );
           },

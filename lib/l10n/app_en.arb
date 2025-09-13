@@ -516,5 +516,39 @@
         "type": "int"
       }
     }
-  }
+  },
+  "screenshot": "Screenshot",
+  "screenshotOptions": "Screenshot Options",
+  "generateScreenshot": "Generate Screenshot",
+  "screenshotTheme": "Theme",
+  "watermark": "Watermark",
+  "enableWatermark": "Enable Watermark",
+  "watermarkText": "Watermark Text",
+  "enterWatermarkText": "Enter watermark text...",
+  "backgroundColor": "Background Color",
+  "screenshotSaved": "Screenshot saved to gallery.",
+  "screenshotError": "Failed to save screenshot: {error}",
+  "@screenshotError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "userBubbleColor": "User Bubble Color",
+  "aiBubbleColor": "AI Bubble Color",
+  "useMonetColors": "Use Monet Colors",
+  "bubbleWidth": "Bubble Width",
+  "watermarkPosition": "Watermark Position",
+  "watermarkFontSize": "Watermark Font Size",
+  "topLeft": "Top Left",
+  "topCenter": "Top Center",
+  "topRight": "Top Right",
+  "centerLeft": "Center Left",
+  "centerRight": "Center Right",
+  "bottomLeft": "Bottom Left",
+  "bottomCenter": "Bottom Center",
+  "bottomRight": "Bottom Right",
+  "watermarkColor": "Watermark Color",
+  "watermarkPadding": "Watermark Padding"
 }

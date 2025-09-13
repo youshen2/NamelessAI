@@ -516,5 +516,39 @@
         "type": "int"
       }
     }
-  }
+  },
+  "screenshot": "截图",
+  "screenshotOptions": "截图选项",
+  "generateScreenshot": "生成截图",
+  "screenshotTheme": "主题",
+  "watermark": "水印",
+  "enableWatermark": "启用水印",
+  "watermarkText": "水印文本",
+  "enterWatermarkText": "输入水印文本...",
+  "backgroundColor": "背景颜色",
+  "screenshotSaved": "截图已保存到相册。",
+  "screenshotError": "保存截图失败: {error}",
+  "@screenshotError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "userBubbleColor": "用户气泡颜色",
+  "aiBubbleColor": "AI 气泡颜色",
+  "useMonetColors": "使用莫奈取色",
+  "bubbleWidth": "气泡宽度",
+  "watermarkPosition": "水印位置",
+  "watermarkFontSize": "水印字体大小",
+  "topLeft": "左上",
+  "topCenter": "中上",
+  "topRight": "右上",
+  "centerLeft": "左中",
+  "centerRight": "右中",
+  "bottomLeft": "左下",
+  "bottomCenter": "中下",
+  "bottomRight": "右下",
+  "watermarkColor": "水印颜色",
+  "watermarkPadding": "水印边距"
 }

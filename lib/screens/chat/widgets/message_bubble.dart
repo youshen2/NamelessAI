@@ -34,6 +34,7 @@ class MessageBubble extends StatefulWidget {
   final int activeBranchIndex;
   final ValueChanged<int> onBranchChange;
   final bool isSelected;
+  final double? bubbleWidth;
 
   const MessageBubble({
     super.key,
@@ -50,6 +51,7 @@ class MessageBubble extends StatefulWidget {
     required this.onBranchChange,
     required this.activeBranchIndex,
     this.isSelected = false,
+    this.bubbleWidth,
   });
 
   @override
@@ -258,6 +260,8 @@ class _MessageBubbleState extends State<MessageBubble>
     final isError = widget.message.isError;
 
     final Widget content;
+    final effectiveBubbleWidth =
+        widget.bubbleWidth ?? appConfig.chatBubbleWidth;
 
     if (appConfig.plainTextMode) {
       final textColor = isError
@@ -265,36 +269,42 @@ class _MessageBubbleState extends State<MessageBubble>
           : isUser
               ? Theme.of(context).colorScheme.primary
               : Theme.of(context).colorScheme.onSurface;
-      content = Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (widget.message.thinkingContent != null &&
-                widget.message.thinkingContent!.isNotEmpty)
-              ThinkingContentWidget(
-                message: widget.message,
-                textColor: textColor,
-                isPlainText: true,
-              ),
-            if (_isEditing)
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: _buildEditModeContent(context, textColor),
-              )
-            else
-              _buildDisplayModeContent(context, textColor, appConfig),
-          ],
+      content = Container(
+        decoration: BoxDecoration(
+          color: widget.isSelected
+              ? Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(appConfig.cornerRadius),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (widget.message.thinkingContent != null &&
+                  widget.message.thinkingContent!.isNotEmpty)
+                ThinkingContentWidget(
+                  message: widget.message,
+                  textColor: textColor,
+                  isPlainText: true,
+                ),
+              if (_isEditing)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: _buildEditModeContent(context, textColor),
+                )
+              else
+                _buildDisplayModeContent(context, textColor, appConfig),
+            ],
+          ),
         ),
       );
     } else {
-      final bubbleColor = widget.isSelected
-          ? Theme.of(context).colorScheme.primary.withOpacity(0.3)
-          : isError
-              ? Theme.of(context).colorScheme.errorContainer
-              : isUser
-                  ? Theme.of(context).colorScheme.primaryContainer
-                  : Theme.of(context).colorScheme.surfaceContainer;
+      final bubbleColor = isError
+          ? Theme.of(context).colorScheme.errorContainer
+          : isUser
+              ? Theme.of(context).colorScheme.primaryContainer
+              : Theme.of(context).colorScheme.surfaceContainer;
 
       final textColor = isError
           ? Theme.of(context).colorScheme.onErrorContainer
@@ -307,14 +317,17 @@ class _MessageBubbleState extends State<MessageBubble>
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: !isUser && !isError && appConfig.distinguishAssistantBubble
+          side: widget.isSelected
               ? BorderSide(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .outlineVariant
-                      .withOpacity(0.5),
-                )
-              : BorderSide.none,
+                  color: Theme.of(context).colorScheme.primary, width: 2)
+              : !isUser && !isError && appConfig.distinguishAssistantBubble
+                  ? BorderSide(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .outlineVariant
+                          .withOpacity(0.5),
+                    )
+                  : BorderSide.none,
         ),
         clipBehavior: Clip.antiAlias,
         child: Column(
@@ -340,7 +353,7 @@ class _MessageBubbleState extends State<MessageBubble>
 
     return ConstrainedBox(
       constraints: BoxConstraints(
-        maxWidth: MediaQuery.of(context).size.width * appConfig.chatBubbleWidth,
+        maxWidth: MediaQuery.of(context).size.width * effectiveBubbleWidth,
       ),
       child: RepaintBoundary(
         child: content,
