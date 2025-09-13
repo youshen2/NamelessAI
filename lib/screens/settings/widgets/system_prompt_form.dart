@@ -70,6 +70,7 @@ class _SystemPromptTemplateFormState extends State<SystemPromptTemplateForm> {
         top: 8,
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           if (!widget.isDialog)
             Container(
@@ -87,8 +88,8 @@ class _SystemPromptTemplateFormState extends State<SystemPromptTemplateForm> {
                 : localizations.editTemplate,
             style: Theme.of(context).textTheme.headlineSmall,
           ),
-          const SizedBox(height: 16),
-          Expanded(
+          const SizedBox(height: 24),
+          Flexible(
             child: SingleChildScrollView(
               controller: widget.scrollController,
               child: Form(

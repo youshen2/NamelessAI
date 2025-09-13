@@ -499,6 +499,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get generalSettings => 'General';
 
   @override
+  String get clearFocusOnAction => 'Clear focus on action';
+
+  @override
+  String get clearFocusOnActionHint =>
+      'Automatically clear text input focus when opening sheets or switching pages.';
+
+  @override
   String itemDeleted(String itemName) {
     return '$itemName has been deleted.';
   }
@@ -1248,6 +1255,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get lockAfter => 'Lock After';
 
   @override
+  String get lockAfterHint =>
+      'Automatically lock the app after a period of inactivity.';
+
+  @override
   String get immediately => 'Immediately';
 
   @override
@@ -1341,6 +1352,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get screenshotOptions => 'Screenshot Options';
+
+  @override
+  String get showTimestampsInScreenshot => 'Show Timestamps';
+
+  @override
+  String get showModelNameInScreenshot => 'Show Model Name';
 
   @override
   String get generateScreenshot => 'Generate Screenshot';
@@ -1437,4 +1454,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get templateSaved => 'Template saved successfully!';
+
+  @override
+  String get showWatermarkIcon => 'Show App Icon';
 }

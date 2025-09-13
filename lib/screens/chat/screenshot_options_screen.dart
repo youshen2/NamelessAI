@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gal/gal.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:provider/provider.dart';
@@ -44,6 +45,9 @@ class _ScreenshotOptionsScreenState extends State<ScreenshotOptionsScreen> {
   double _watermarkPadding = 8.0;
   bool _isSaving = false;
   bool _didInit = false;
+  bool _showTimestamp = true;
+  bool _showModelName = true;
+  bool _showWatermarkIcon = true;
 
   @override
   void initState() {
@@ -65,6 +69,15 @@ class _ScreenshotOptionsScreenState extends State<ScreenshotOptionsScreen> {
           : appConfig.themeMode;
       _bubbleWidth = appConfig.chatBubbleWidth;
       _previousTheme = _screenshotTheme;
+
+      final isAndroid =
+          !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
+      if (isAndroid && appConfig.enableMonet) {
+        _useMonetColors = true;
+      } else {
+        _useMonetColors = false;
+      }
+
       _didInit = true;
     }
   }
@@ -160,16 +173,36 @@ class _ScreenshotOptionsScreenState extends State<ScreenshotOptionsScreen> {
               initialChildSize: 0.8,
               maxChildSize: 0.9,
               builder: (context, scrollController) {
-                return _buildSettings(
-                  context,
-                  previewTheme,
-                  lightDynamic,
-                  darkDynamic,
-                  (fn) {
-                    setState(fn);
-                    setSheetState(() {});
-                  },
-                  scrollController,
+                return Column(
+                  children: [
+                    const SizedBox(height: 8),
+                    Container(
+                      width: 40,
+                      height: 4,
+                      margin: const EdgeInsets.only(bottom: 8),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.4),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    Expanded(
+                      child: _buildSettings(
+                        context,
+                        previewTheme,
+                        lightDynamic,
+                        darkDynamic,
+                        (fn) {
+                          setState(fn);
+                          setSheetState(() {});
+                        },
+                        scrollController,
+                      ),
+                    ),
+                    SizedBox(height: MediaQuery.of(context).padding.bottom + 8),
+                  ],
                 );
               },
             );
@@ -188,27 +221,26 @@ class _ScreenshotOptionsScreenState extends State<ScreenshotOptionsScreen> {
     return DynamicColorBuilder(
       builder: (lightDynamic, darkDynamic) {
         final isDark = _screenshotTheme == ThemeMode.dark;
-        ColorScheme colorScheme;
-        if (_useMonetColors && lightDynamic != null && darkDynamic != null) {
-          colorScheme = isDark ? darkDynamic : lightDynamic;
-        } else {
-          colorScheme = ColorScheme.fromSeed(
-              seedColor: appConfig.seedColor,
-              brightness: isDark ? Brightness.dark : Brightness.light);
-        }
+        final bool monetAvailable = lightDynamic != null && darkDynamic != null;
+        final bool shouldUseMonet = _useMonetColors && monetAvailable;
 
-        if (_previousTheme != _screenshotTheme) {
+        ColorScheme colorScheme = shouldUseMonet
+            ? (isDark ? darkDynamic! : lightDynamic!)
+            : ColorScheme.fromSeed(
+                seedColor: appConfig.seedColor,
+                brightness: isDark ? Brightness.dark : Brightness.light);
+
+        if (_previousTheme != _screenshotTheme || _useMonetColors) {
           _backgroundColor = colorScheme.surface;
           _userBubbleColor = colorScheme.primaryContainer;
           _aiBubbleColor = colorScheme.surfaceContainer;
           _watermarkColor = colorScheme.onSurface.withOpacity(0.4);
-          _useMonetColors = false;
           _previousTheme = _screenshotTheme;
-        } else {
-          _backgroundColor ??= colorScheme.surface;
-          _userBubbleColor ??= colorScheme.primaryContainer;
-          _aiBubbleColor ??= colorScheme.surfaceContainer;
-          _watermarkColor ??= colorScheme.onSurface.withOpacity(0.4);
+        } else if (_backgroundColor == null) {
+          _backgroundColor = colorScheme.surface;
+          _userBubbleColor = colorScheme.primaryContainer;
+          _aiBubbleColor = colorScheme.surfaceContainer;
+          _watermarkColor = colorScheme.onSurface.withOpacity(0.4);
         }
 
         final previewDialogTheme = ThemeData.from(colorScheme: colorScheme);
@@ -293,6 +325,9 @@ class _ScreenshotOptionsScreenState extends State<ScreenshotOptionsScreen> {
                     watermarkPadding: _watermarkPadding,
                     appConfig: appConfig,
                     previewWidth: constraints.maxWidth,
+                    showTimestamp: _showTimestamp,
+                    showModelName: _showModelName,
+                    showWatermarkIcon: _showWatermarkIcon,
                   ),
                 ),
               ),
@@ -312,10 +347,8 @@ class _ScreenshotOptionsScreenState extends State<ScreenshotOptionsScreen> {
       [ScrollController? scrollController]) {
     final localizations = AppLocalizations.of(context)!;
     final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
-    final isDesktop = !kIsWeb &&
-        (defaultTargetPlatform == TargetPlatform.windows ||
-            defaultTargetPlatform == TargetPlatform.macOS ||
-            defaultTargetPlatform == TargetPlatform.linux);
+    final isAndroid =
+        !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
 
     return ListView(
       controller: scrollController,
@@ -368,7 +401,7 @@ class _ScreenshotOptionsScreenState extends State<ScreenshotOptionsScreen> {
                   });
                 }),
               ),
-              if (lightDynamic != null && darkDynamic != null && !isDesktop)
+              if (lightDynamic != null && darkDynamic != null && isAndroid)
                 SwitchListTile(
                   title: Text(localizations.useMonetColors),
                   value: _useMonetColors,
@@ -458,6 +491,23 @@ class _ScreenshotOptionsScreenState extends State<ScreenshotOptionsScreen> {
                   stateSetter(() => _bubbleWidth = value);
                 },
               ),
+              const Divider(height: 1),
+              SwitchListTile(
+                title: Text(localizations.showTimestampsInScreenshot),
+                value: _showTimestamp,
+                onChanged: (value) {
+                  HapticService.onSwitchToggle(context);
+                  stateSetter(() => _showTimestamp = value);
+                },
+              ),
+              SwitchListTile(
+                title: Text(localizations.showModelNameInScreenshot),
+                value: _showModelName,
+                onChanged: (value) {
+                  HapticService.onSwitchToggle(context);
+                  stateSetter(() => _showModelName = value);
+                },
+              ),
             ],
           ),
         ),
@@ -477,6 +527,14 @@ class _ScreenshotOptionsScreenState extends State<ScreenshotOptionsScreen> {
                 },
               ),
               if (_enableWatermark) ...[
+                SwitchListTile(
+                  title: Text(localizations.showWatermarkIcon),
+                  value: _showWatermarkIcon,
+                  onChanged: (value) {
+                    HapticService.onSwitchToggle(context);
+                    stateSetter(() => _showWatermarkIcon = value);
+                  },
+                ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                   child: TextField(
@@ -602,6 +660,9 @@ class _ScreenshotContent extends StatelessWidget {
   final double watermarkPadding;
   final AppConfigProvider appConfig;
   final double previewWidth;
+  final bool showTimestamp;
+  final bool showModelName;
+  final bool showWatermarkIcon;
 
   const _ScreenshotContent({
     required this.messages,
@@ -617,6 +678,9 @@ class _ScreenshotContent extends StatelessWidget {
     required this.watermarkPadding,
     required this.appConfig,
     required this.previewWidth,
+    required this.showTimestamp,
+    required this.showModelName,
+    required this.showWatermarkIcon,
   });
 
   @override
@@ -649,6 +713,8 @@ class _ScreenshotContent extends StatelessWidget {
               previewWidth: previewWidth,
               appConfig: appConfig,
               isPlainText: true,
+              showTimestamp: showTimestamp,
+              showModelName: showModelName,
             ),
           );
         },
@@ -679,6 +745,8 @@ class _ScreenshotContent extends StatelessWidget {
             previewWidth: previewWidth,
             appConfig: appConfig,
             isPlainText: false,
+            showTimestamp: showTimestamp,
+            showModelName: showModelName,
           );
         },
       );
@@ -696,12 +764,35 @@ class _ScreenshotContent extends StatelessWidget {
                 alignment: watermarkPosition,
                 child: Padding(
                   padding: EdgeInsets.all(watermarkPadding),
-                  child: Text(
-                    watermarkText,
-                    style: TextStyle(
-                      fontSize: watermarkFontSize,
-                      color: watermarkColor,
-                    ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (showWatermarkIcon && (watermarkPosition.x <= 0)) ...[
+                        SvgPicture.asset(
+                          'assets/icon/icon.svg',
+                          colorFilter:
+                              ColorFilter.mode(watermarkColor, BlendMode.srcIn),
+                          height: watermarkFontSize * 1.2,
+                        ),
+                        SizedBox(width: watermarkFontSize * 0.5),
+                      ],
+                      Text(
+                        watermarkText,
+                        style: TextStyle(
+                          fontSize: watermarkFontSize,
+                          color: watermarkColor,
+                        ),
+                      ),
+                      if (showWatermarkIcon && (watermarkPosition.x > 0)) ...[
+                        SizedBox(width: watermarkFontSize * 0.5),
+                        SvgPicture.asset(
+                          'assets/icon/icon.svg',
+                          colorFilter:
+                              ColorFilter.mode(watermarkColor, BlendMode.srcIn),
+                          height: watermarkFontSize * 1.2,
+                        ),
+                      ],
+                    ],
                   ),
                 ),
               ),
@@ -721,6 +812,8 @@ class _ScreenshotMessageBubble extends StatelessWidget {
   final double previewWidth;
   final AppConfigProvider appConfig;
   final bool isPlainText;
+  final bool showTimestamp;
+  final bool showModelName;
 
   const _ScreenshotMessageBubble({
     required this.message,
@@ -731,6 +824,8 @@ class _ScreenshotMessageBubble extends StatelessWidget {
     required this.previewWidth,
     required this.appConfig,
     required this.isPlainText,
+    required this.showTimestamp,
+    required this.showModelName,
   });
 
   @override
@@ -788,16 +883,80 @@ class _ScreenshotMessageBubble extends StatelessWidget {
       extensionSet: md.ExtensionSet.gitHubWeb,
       builders: {
         'code': MarkdownCodeBlockBuilder(
-            context: context, isSelectable: false, wrapCode: true),
+            context: context,
+            isSelectable: false,
+            wrapCode: true,
+            isForScreenshot: true),
       },
     );
+
+    final localizations = AppLocalizations.of(context)!;
+    final meta = <Widget>[];
+    if (showModelName && message.modelName != null && !isUser) {
+      meta.add(Text(
+        '${localizations.modelLabel}: ${message.modelName!}',
+        style: Theme.of(context)
+            .textTheme
+            .bodySmall
+            ?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+      ));
+    }
+    if (showTimestamp) {
+      meta.add(Text(
+        '${message.timestamp.hour.toString().padLeft(2, '0')}:${message.timestamp.minute.toString().padLeft(2, '0')}',
+        style: Theme.of(context)
+            .textTheme
+            .bodySmall
+            ?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+      ));
+    }
 
     if (isPlainText) {
       return Column(
         crossAxisAlignment: alignment,
-        children: [content],
+        children: [
+          content,
+          if (meta.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 4.0, right: 8.0, left: 8.0),
+              child: Wrap(
+                spacing: 12.0,
+                runSpacing: 4.0,
+                alignment: alignment == CrossAxisAlignment.start
+                    ? WrapAlignment.start
+                    : WrapAlignment.end,
+                children: meta,
+              ),
+            ),
+        ],
       );
     }
+
+    final bubbleContent = ConstrainedBox(
+      constraints: BoxConstraints(
+        maxWidth: previewWidth * bubbleWidth,
+      ),
+      child: Card(
+        color: bubbleColor,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(appConfig.cornerRadius),
+          side: !isUser && appConfig.distinguishAssistantBubble
+              ? BorderSide(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .outlineVariant
+                      .withOpacity(0.5),
+                )
+              : BorderSide.none,
+        ),
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+              horizontal: 12, vertical: appConfig.compactMode ? 6 : 10),
+          child: content,
+        ),
+      ),
+    );
 
     return Padding(
       padding:
@@ -805,31 +964,19 @@ class _ScreenshotMessageBubble extends StatelessWidget {
       child: Column(
         crossAxisAlignment: alignment,
         children: [
-          ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: previewWidth * bubbleWidth,
-            ),
-            child: Card(
-              color: bubbleColor,
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(appConfig.cornerRadius),
-                side: !isUser && appConfig.distinguishAssistantBubble
-                    ? BorderSide(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .outlineVariant
-                            .withOpacity(0.5),
-                      )
-                    : BorderSide.none,
-              ),
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                    horizontal: 12, vertical: appConfig.compactMode ? 6 : 10),
-                child: content,
+          bubbleContent,
+          if (meta.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 4.0, right: 8.0, left: 8.0),
+              child: Wrap(
+                spacing: 12.0,
+                runSpacing: 4.0,
+                alignment: alignment == CrossAxisAlignment.start
+                    ? WrapAlignment.start
+                    : WrapAlignment.end,
+                children: meta,
               ),
             ),
-          ),
         ],
       ),
     );

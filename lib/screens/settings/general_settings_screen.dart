@@ -68,6 +68,16 @@ class GeneralSettingsScreen extends StatelessWidget {
                     },
                     activeColor: Theme.of(context).colorScheme.primary,
                   ),
+                  SwitchListTile(
+                    title: Text(localizations.clearFocusOnAction),
+                    subtitle: Text(localizations.clearFocusOnActionHint),
+                    value: appConfig.clearFocusOnAction,
+                    onChanged: (value) {
+                      HapticService.onSwitchToggle(context);
+                      appConfig.setClearFocusOnAction(value);
+                    },
+                    activeColor: Theme.of(context).colorScheme.primary,
+                  ),
                 ],
               ),
             ),

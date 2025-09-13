@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'package:nameless_ai/data/providers/app_config_provider.dart';
 import 'package:nameless_ai/data/providers/authentication_provider.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
 import 'package:nameless_ai/services/authentication_service.dart';
@@ -37,51 +38,66 @@ class _LockScreenState extends State<LockScreen> {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final appConfig = Provider.of<AppConfigProvider>(context);
+
     return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: 80,
-              height: 80,
-              child: SvgPicture.asset(
-                'assets/icon/icon.svg',
-                colorFilter: ColorFilter.mode(
-                  theme.colorScheme.primary,
-                  BlendMode.srcIn,
+      backgroundColor: Colors.transparent,
+      body: Stack(
+        children: [
+          if (appConfig.enableBlurEffect)
+            Positioned.fill(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: Container(
+                  color: theme.colorScheme.surface.withOpacity(0.1),
                 ),
               ),
             ),
-            const SizedBox(height: 24),
-            Text(
-              localizations.unlockNamelessAI,
-              style: theme.textTheme.headlineSmall,
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 80,
+                  height: 80,
+                  child: SvgPicture.asset(
+                    'assets/icon/icon.svg',
+                    colorFilter: ColorFilter.mode(
+                      theme.colorScheme.primary,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  localizations.unlockNamelessAI,
+                  style: theme.textTheme.headlineSmall,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  localizations.authenticateToContinue,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 48),
+                FilledButton.icon(
+                  onPressed: () {
+                    HapticService.onButtonPress(context);
+                    _authenticate();
+                  },
+                  icon: const Icon(Icons.fingerprint),
+                  label: Text(localizations.unlock),
+                  style: FilledButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32, vertical: 12),
+                    textStyle: theme.textTheme.titleMedium,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
-            Text(
-              localizations.authenticateToContinue,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 48),
-            FilledButton.icon(
-              onPressed: () {
-                HapticService.onButtonPress(context);
-                _authenticate();
-              },
-              icon: const Icon(Icons.fingerprint),
-              label: Text(localizations.unlock),
-              style: FilledButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                textStyle: theme.textTheme.titleMedium,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

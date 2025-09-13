@@ -1040,6 +1040,18 @@ abstract class AppLocalizations {
   /// **'General'**
   String get generalSettings;
 
+  /// No description provided for @clearFocusOnAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear focus on action'**
+  String get clearFocusOnAction;
+
+  /// No description provided for @clearFocusOnActionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatically clear text input focus when opening sheets or switching pages.'**
+  String get clearFocusOnActionHint;
+
   /// No description provided for @itemDeleted.
   ///
   /// In en, this message translates to:
@@ -2438,6 +2450,12 @@ abstract class AppLocalizations {
   /// **'Lock After'**
   String get lockAfter;
 
+  /// No description provided for @lockAfterHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatically lock the app after a period of inactivity.'**
+  String get lockAfterHint;
+
   /// No description provided for @immediately.
   ///
   /// In en, this message translates to:
@@ -2617,6 +2635,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Screenshot Options'**
   String get screenshotOptions;
+
+  /// No description provided for @showTimestampsInScreenshot.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Timestamps'**
+  String get showTimestampsInScreenshot;
+
+  /// No description provided for @showModelNameInScreenshot.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Model Name'**
+  String get showModelNameInScreenshot;
 
   /// No description provided for @generateScreenshot.
   ///
@@ -2803,6 +2833,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Template saved successfully!'**
   String get templateSaved;
+
+  /// No description provided for @showWatermarkIcon.
+  ///
+  /// In en, this message translates to:
+  /// **'Show App Icon'**
+  String get showWatermarkIcon;
 }
 
 class _AppLocalizationsDelegate

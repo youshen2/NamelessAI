@@ -77,6 +77,10 @@ class _HomePageState extends State<HomePage> {
 
   void _onItemTapped(int index) {
     HapticService.onButtonPress(context);
+    final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
+    if (appConfig.clearFocusOnAction) {
+      FocusScope.of(context).unfocus();
+    }
     final isDesktop = MediaQuery.of(context).size.width >= 600;
     int targetIndex = index;
     if (isDesktop) {

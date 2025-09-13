@@ -24,10 +24,10 @@ class AppConfigProvider extends ChangeNotifier {
   bool _useSendKeyInEditMode = false;
   Color _seedColor = Colors.blue;
 
-  bool _showTotalTime = false;
-  bool _showFirstChunkTime = false;
-  bool _showTokenUsage = false;
-  bool _showOutputCharacters = false;
+  bool _showTotalTime = true;
+  bool _showFirstChunkTime = true;
+  bool _showTokenUsage = true;
+  bool _showOutputCharacters = true;
 
   bool _disableAutoScrollOnUp = true;
   bool _resumeAutoScrollOnBottom = true;
@@ -44,6 +44,7 @@ class AppConfigProvider extends ChangeNotifier {
   bool _plainTextMode = false;
 
   bool _useFirstSentenceAsTitle = true;
+  bool _clearFocusOnAction = true;
   String _codeTheme = 'github';
   bool _showDebugButton = false;
   bool _checkForUpdatesOnStartup = true;
@@ -112,6 +113,7 @@ class AppConfigProvider extends ChangeNotifier {
   bool get plainTextMode => _plainTextMode;
 
   bool get useFirstSentenceAsTitle => _useFirstSentenceAsTitle;
+  bool get clearFocusOnAction => _clearFocusOnAction;
   String get codeTheme => _codeTheme;
   bool get showDebugButton => _showDebugButton;
   bool get checkForUpdatesOnStartup => _checkForUpdatesOnStartup;
@@ -172,11 +174,10 @@ class AppConfigProvider extends ChangeNotifier {
         box.get('useSendKeyInEditMode', defaultValue: false);
     _seedColor = Color(box.get('seedColor', defaultValue: Colors.blue.value));
 
-    _showTotalTime = box.get('showTotalTime', defaultValue: false);
-    _showFirstChunkTime = box.get('showFirstChunkTime', defaultValue: false);
-    _showTokenUsage = box.get('showTokenUsage', defaultValue: false);
-    _showOutputCharacters =
-        box.get('showOutputCharacters', defaultValue: false);
+    _showTotalTime = box.get('showTotalTime', defaultValue: true);
+    _showFirstChunkTime = box.get('showFirstChunkTime', defaultValue: true);
+    _showTokenUsage = box.get('showTokenUsage', defaultValue: true);
+    _showOutputCharacters = box.get('showOutputCharacters', defaultValue: true);
     _disableAutoScrollOnUp =
         box.get('disableAutoScrollOnUp', defaultValue: true);
     _resumeAutoScrollOnBottom =
@@ -208,6 +209,7 @@ class AppConfigProvider extends ChangeNotifier {
     _plainTextMode = box.get('plainTextMode', defaultValue: false);
     _useFirstSentenceAsTitle =
         box.get('useFirstSentenceAsTitle', defaultValue: true);
+    _clearFocusOnAction = box.get('clearFocusOnAction', defaultValue: true);
     _codeTheme = box.get('codeTheme', defaultValue: 'github');
     _showDebugButton = box.get('showDebugButton', defaultValue: false);
     _checkForUpdatesOnStartup =
@@ -426,6 +428,13 @@ class AppConfigProvider extends ChangeNotifier {
     if (_useFirstSentenceAsTitle != value) {
       _useFirstSentenceAsTitle = value;
       _updateValue('useFirstSentenceAsTitle', value);
+    }
+  }
+
+  void setClearFocusOnAction(bool value) {
+    if (_clearFocusOnAction != value) {
+      _clearFocusOnAction = value;
+      _updateValue('clearFocusOnAction', value);
     }
   }
 

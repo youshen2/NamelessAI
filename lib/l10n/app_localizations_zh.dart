@@ -489,6 +489,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get generalSettings => '通用设置';
 
   @override
+  String get clearFocusOnAction => '操作时清除焦点';
+
+  @override
+  String get clearFocusOnActionHint => '打开面板或切换页面时，自动清除输入框的焦点。';
+
+  @override
   String itemDeleted(String itemName) {
     return '$itemName 已被删除。';
   }
@@ -1208,6 +1214,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get lockAfter => '锁定时间';
 
   @override
+  String get lockAfterHint => '在一段时间不活动后自动锁定应用。';
+
+  @override
   String get immediately => '立即';
 
   @override
@@ -1300,6 +1309,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get screenshotOptions => '截图选项';
+
+  @override
+  String get showTimestampsInScreenshot => '显示时间戳';
+
+  @override
+  String get showModelNameInScreenshot => '显示模型名称';
 
   @override
   String get generateScreenshot => '生成截图';
@@ -1395,4 +1410,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get templateSaved => '模板已保存！';
+
+  @override
+  String get showWatermarkIcon => '显示应用图标';
 }

@@ -116,6 +116,7 @@ class _AppLockSettingsScreenState extends State<AppLockSettingsScreen> {
                     : 0.5,
                 child: ListTile(
                   title: Text(localizations.lockAfter),
+                  subtitle: Text(localizations.lockAfterHint),
                   trailing: DropdownButton<AppLockTimeout>(
                     value: appConfig.appLockTimeout,
                     items: [

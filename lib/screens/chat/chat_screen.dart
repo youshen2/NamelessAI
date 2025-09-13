@@ -596,6 +596,11 @@ class _ChatScreenState extends State<ChatScreen> {
     HapticService.onButtonPress(context);
     final manager = Provider.of<ChatSessionManager>(context, listen: false);
     final isDesktop = MediaQuery.of(context).size.width >= 600;
+    final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
+
+    if (appConfig.clearFocusOnAction) {
+      FocusScope.of(context).unfocus();
+    }
 
     if (manager.currentSession != null) {
       if (isDesktop) {

@@ -178,6 +178,8 @@
   "reinitializeDatabaseWarning": "This is a destructive action for debugging. It will re-register database adapters. The app may need to be restarted. Continue?",
   "databaseReinitialized": "Database re-initialized. Please restart the app.",
   "generalSettings": "General",
+  "clearFocusOnAction": "Clear focus on action",
+  "clearFocusOnActionHint": "Automatically clear text input focus when opening sheets or switching pages.",
   "itemDeleted": "{itemName} has been deleted.",
   "@itemDeleted": {
     "placeholders": {
@@ -477,6 +479,7 @@
   "enableAppLock": "Enable App Lock",
   "enableAppLockHint": "Require authentication to unlock.",
   "lockAfter": "Lock After",
+  "lockAfterHint": "Automatically lock the app after a period of inactivity.",
   "immediately": "Immediately",
   "after1Minute": "After 1 Minute",
   "after5Minutes": "After 5 Minutes",
@@ -521,6 +524,8 @@
   },
   "screenshot": "Screenshot",
   "screenshotOptions": "Screenshot Options",
+  "showTimestampsInScreenshot": "Show Timestamps",
+  "showModelNameInScreenshot": "Show Model Name",
   "generateScreenshot": "Generate Screenshot",
   "screenshotTheme": "Theme",
   "watermark": "Watermark",
@@ -558,5 +563,6 @@
   "selectAModel": "Select a Model",
   "searchModels": "Search models...",
   "noModelsFound": "No models found.",
-  "templateSaved": "Template saved successfully!"
+  "templateSaved": "Template saved successfully!",
+  "showWatermarkIcon": "Show App Icon"
 }

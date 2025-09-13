@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -31,6 +32,8 @@ class _AboutScreenState extends State<AboutScreen>
 
   late AnimationController _animationController;
   late Animation<double> _rotationAnimation;
+  final Random _random = Random();
+  double _currentRotation = 0.0;
 
   @override
   void initState() {
@@ -38,15 +41,12 @@ class _AboutScreenState extends State<AboutScreen>
     _initPackageInfo();
 
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 1500),
       vsync: this,
     );
-    _rotationAnimation = Tween<double>(begin: 0, end: 2 * 3.14159).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.elasticOut,
-      ),
-    );
+
+    _rotationAnimation =
+        Tween<double>(begin: 0, end: 0).animate(_animationController);
   }
 
   @override
@@ -79,7 +79,35 @@ class _AboutScreenState extends State<AboutScreen>
 
   void _handleLongPress() {
     HapticService.onLongPress(context);
-    _animationController.forward(from: 0.0);
+    final rotations = 1.5 + _random.nextDouble() * 3.5;
+    final newTargetRotation = _currentRotation + (rotations * 2 * pi);
+
+    final curves = [
+      Curves.elasticOut,
+      Curves.bounceOut,
+      Curves.easeOutBack,
+      Curves.fastLinearToSlowEaseIn,
+      Curves.easeOutQuint,
+      Curves.fastOutSlowIn,
+      Curves.decelerate,
+    ];
+    final curve = curves[_random.nextInt(curves.length)];
+
+    _rotationAnimation =
+        Tween<double>(begin: _currentRotation, end: newTargetRotation).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: curve,
+      ),
+    );
+
+    _animationController.forward(from: 0.0).whenCompleteOrCancel(() {
+      if (mounted) {
+        setState(() {
+          _currentRotation = newTargetRotation;
+        });
+      }
+    });
     showSnackBar(context, AppLocalizations.of(context)!.easterEgg);
   }
 
@@ -138,8 +166,14 @@ class _AboutScreenState extends State<AboutScreen>
             children: [
               GestureDetector(
                 onLongPress: _handleLongPress,
-                child: RotationTransition(
-                  turns: _rotationAnimation,
+                child: AnimatedBuilder(
+                  animation: _rotationAnimation,
+                  builder: (context, child) {
+                    return Transform.rotate(
+                      angle: _rotationAnimation.value,
+                      child: child,
+                    );
+                  },
                   child: SizedBox(
                     width: 120,
                     height: 120,

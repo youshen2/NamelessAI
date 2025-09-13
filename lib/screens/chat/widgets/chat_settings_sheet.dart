@@ -317,9 +317,20 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
             ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Text(
-              localizations.chatSettings,
-              style: Theme.of(context).textTheme.headlineSmall,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  localizations.chatSettings,
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+                if (widget.isDialog)
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.of(context).pop(),
+                    tooltip: localizations.close,
+                  ),
+              ],
             ),
           ),
           const SizedBox(height: 16),
@@ -328,130 +339,44 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
               controller: widget.scrollController,
               padding: EdgeInsets.fromLTRB(
                   16, 0, 16, MediaQuery.of(context).padding.bottom + 16),
-              children: [
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        DropdownButtonFormField<String>(
-                          value: _selectedProviderId,
-                          hint: Text(localizations.apiProviderSettings),
-                          isExpanded: true,
-                          items: apiManager.providers
-                              .map((provider) => DropdownMenuItem(
-                                    value: provider.id,
-                                    child: Text(provider.name,
-                                        overflow: TextOverflow.ellipsis),
-                                  ))
-                              .toList(),
-                          onChanged: (value) {
-                            HapticService.onSwitchToggle(context);
-                            setState(() {
-                              _selectedProviderId = value;
-                              _selectedModelId = null;
-                            });
-                            if (value != null) {
-                              final provider = apiManager.providers
-                                  .firstWhere((p) => p.id == value);
-                              apiManager.setSelectedProvider(provider);
-                              Provider.of<ChatSessionManager>(context,
-                                      listen: false)
-                                  .updateCurrentSessionDetails(
-                                providerId: value,
-                                modelId: apiManager.selectedModel?.id,
-                              );
-                            }
-                          },
-                          decoration: InputDecoration(
-                              labelText: localizations.apiProviderSettings),
+              children: widget.isDialog
+                  ? [
+                      _buildProviderAndModelSection(localizations, apiManager,
+                          selectedProvider, selectedModel),
+                      const SizedBox(height: 24),
+                      if (selectedModel?.modelType == ModelType.image)
+                        _buildImageSettings(localizations, selectedModel)
+                      else
+                        _buildLanguageSettings(localizations),
+                      const SizedBox(height: 24),
+                      _buildMaxContextSection(localizations),
+                    ]
+                  : [
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: _buildProviderAndModelSection(localizations,
+                              apiManager, selectedProvider, selectedModel),
                         ),
-                        const SizedBox(height: 16),
-                        if (selectedProvider != null)
-                          InkWell(
-                            onTap: selectedProvider.models.isEmpty
-                                ? null
-                                : () => _showModelSelection(selectedProvider!),
-                            borderRadius: BorderRadius.circular(12),
-                            child: InputDecorator(
-                              decoration: InputDecoration(
-                                labelText: localizations.modelName,
-                                contentPadding:
-                                    const EdgeInsets.fromLTRB(12, 12, 8, 12),
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      selectedModel?.name ??
-                                          localizations.selectAModel,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  const Icon(Icons.arrow_drop_down),
-                                ],
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                if (selectedModel?.modelType == ModelType.image)
-                  _buildImageSettings(localizations, selectedModel)
-                else
-                  _buildLanguageSettings(localizations),
-                const SizedBox(height: 16),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                            '${localizations.maxContextMessages}: ${_maxContextMessages == 0 ? localizations.unlimited : _maxContextMessages}',
-                            style: Theme.of(context).textTheme.titleMedium),
-                        const SizedBox(height: 4),
-                        Text(localizations.maxContextMessagesHint,
-                            style: Theme.of(context).textTheme.bodySmall),
-                        SliderTheme(
-                          data: SliderTheme.of(context).copyWith(
-                            inactiveTrackColor: Theme.of(context)
-                                .colorScheme
-                                .surfaceContainerHighest,
-                            activeTickMarkColor:
-                                Theme.of(context).colorScheme.onPrimary,
-                            inactiveTickMarkColor:
-                                Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
-                          child: Slider(
-                            value: _maxContextMessages.toDouble(),
-                            min: 0,
-                            max: 50,
-                            divisions: 50,
-                            label: _maxContextMessages == 0
-                                ? localizations.unlimited
-                                : _maxContextMessages.toString(),
-                            onChanged: (value) {
-                              HapticService.onSliderChange(context);
-                              setState(() {
-                                _maxContextMessages = value.round();
-                              });
-                              Provider.of<ChatSessionManager>(context,
-                                      listen: false)
-                                  .updateCurrentSessionDetails(
-                                      maxContextMessages: value.round());
-                            },
+                      ),
+                      const SizedBox(height: 16),
+                      if (selectedModel?.modelType == ModelType.image)
+                        _buildImageSettings(localizations, selectedModel)
+                      else
+                        Card(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 16.0),
+                            child: _buildLanguageSettings(localizations),
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+                      const SizedBox(height: 16),
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: _buildMaxContextSection(localizations),
+                        ),
+                      ),
+                    ],
             ),
           ),
         ],
@@ -459,172 +384,273 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
     );
   }
 
-  Widget _buildLanguageSettings(AppLocalizations localizations) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 8, 0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Text(localizations.systemPrompt,
-                        style: Theme.of(context).textTheme.titleMedium),
-                  ),
-                  Row(
-                    children: [
-                      TextButton.icon(
-                        onPressed: _showTemplateSelection,
-                        icon:
-                            const Icon(Icons.library_books_outlined, size: 18),
-                        label: Text(localizations.selectTemplate),
-                      ),
-                      TextButton.icon(
-                        onPressed: _saveAsTemplate,
-                        icon:
-                            const Icon(Icons.add_to_photos_outlined, size: 18),
-                        label: Text(localizations.saveAsTemplate),
-                      ),
-                    ],
-                  )
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: TextField(
-                controller: _systemPromptController,
-                decoration:
-                    InputDecoration(hintText: localizations.enterSystemPrompt),
-                maxLines: 4,
-                minLines: 2,
-              ),
-            ),
-            if (_systemPromptController.text.trim().isEmpty)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+  Widget _buildProviderAndModelSection(
+      AppLocalizations localizations,
+      APIProviderManager apiManager,
+      APIProvider? selectedProvider,
+      Model? selectedModel) {
+    return Padding(
+      padding: EdgeInsetsGeometry.fromLTRB(0, 4, 0, 0),
+      child: Column(
+        children: [
+          DropdownButtonFormField<String>(
+            value: _selectedProviderId,
+            hint: Text(localizations.apiProviderSettings),
+            isExpanded: true,
+            items: apiManager.providers
+                .map((provider) => DropdownMenuItem(
+                      value: provider.id,
+                      child:
+                          Text(provider.name, overflow: TextOverflow.ellipsis),
+                    ))
+                .toList(),
+            onChanged: (value) {
+              HapticService.onSwitchToggle(context);
+              setState(() {
+                _selectedProviderId = value;
+                _selectedModelId = null;
+              });
+              if (value != null) {
+                final provider =
+                    apiManager.providers.firstWhere((p) => p.id == value);
+                apiManager.setSelectedProvider(provider);
+                Provider.of<ChatSessionManager>(context, listen: false)
+                    .updateCurrentSessionDetails(
+                  providerId: value,
+                  modelId: apiManager.selectedModel?.id,
+                );
+              }
+            },
+            decoration:
+                InputDecoration(labelText: localizations.apiProviderSettings),
+          ),
+          const SizedBox(height: 16),
+          if (selectedProvider != null)
+            InkWell(
+              onTap: selectedProvider.models.isEmpty
+                  ? null
+                  : () => _showModelSelection(selectedProvider!),
+              borderRadius: BorderRadius.circular(12),
+              child: InputDecorator(
+                decoration: InputDecoration(
+                  labelText: localizations.modelName,
+                  contentPadding: const EdgeInsets.fromLTRB(12, 12, 8, 12),
+                ),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Icon(Icons.info_outline,
-                        size: 14,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant),
-                    const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        localizations.blankSystemPromptWarning,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color:
-                                Theme.of(context).colorScheme.onSurfaceVariant),
+                        selectedModel?.name ?? localizations.selectAModel,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
+                    const Icon(Icons.arrow_drop_down),
                   ],
                 ),
               ),
-            const SizedBox(height: 24),
-            _buildSliderWithTextField(
-              label: localizations.temperature,
-              tooltip: localizations.temperatureTooltip,
-              value: _temperature,
-              min: 0.0,
-              max: 2.0,
-              divisions: 20,
-              controller: _temperatureController,
-              onSliderChanged: (value) {
-                HapticService.onSliderChange(context);
-                setState(() {
-                  _temperature = value;
-                  _temperatureController.text = value.toStringAsFixed(2);
-                });
-                Provider.of<ChatSessionManager>(context, listen: false)
-                    .updateCurrentSessionDetails(temperature: value);
-              },
-              onTextFieldSubmitted: (text) {
-                final value = double.tryParse(text);
-                if (value != null) {
-                  final clampedValue = value.clamp(0.0, 2.0);
-                  setState(() {
-                    _temperature = clampedValue;
-                    _temperatureController.text =
-                        clampedValue.toStringAsFixed(2);
-                  });
-                  Provider.of<ChatSessionManager>(context, listen: false)
-                      .updateCurrentSessionDetails(temperature: clampedValue);
-                }
-              },
             ),
-            const SizedBox(height: 16),
-            _buildSliderWithTextField(
-              label: localizations.topP,
-              tooltip: localizations.topPTooltip,
-              value: _topP,
-              min: 0.0,
-              max: 1.0,
-              divisions: 20,
-              controller: _topPController,
-              onSliderChanged: (value) {
-                HapticService.onSliderChange(context);
-                setState(() {
-                  _topP = value;
-                  _topPController.text = value.toStringAsFixed(2);
-                });
-                Provider.of<ChatSessionManager>(context, listen: false)
-                    .updateCurrentSessionDetails(topP: value);
-              },
-              onTextFieldSubmitted: (text) {
-                final value = double.tryParse(text);
-                if (value != null) {
-                  final clampedValue = value.clamp(0.0, 1.0);
-                  setState(() {
-                    _topP = clampedValue;
-                    _topPController.text = clampedValue.toStringAsFixed(2);
-                  });
-                  Provider.of<ChatSessionManager>(context, listen: false)
-                      .updateCurrentSessionDetails(topP: clampedValue);
-                }
-              },
-            ),
-            const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMaxContextSection(AppLocalizations localizations) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+            '${localizations.maxContextMessages}: ${_maxContextMessages == 0 ? localizations.unlimited : _maxContextMessages}',
+            style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: 4),
+        Text(localizations.maxContextMessagesHint,
+            style: Theme.of(context).textTheme.bodySmall),
+        SliderTheme(
+          data: SliderTheme.of(context).copyWith(
+            inactiveTrackColor:
+                Theme.of(context).colorScheme.surfaceContainerHighest,
+            activeTickMarkColor: Theme.of(context).colorScheme.onPrimary,
+            inactiveTickMarkColor:
+                Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+          child: Slider(
+            value: _maxContextMessages.toDouble(),
+            min: 0,
+            max: 50,
+            divisions: 50,
+            label: _maxContextMessages == 0
+                ? localizations.unlimited
+                : _maxContextMessages.toString(),
+            onChanged: (value) {
+              HapticService.onSliderChange(context);
+              setState(() {
+                _maxContextMessages = value.round();
+              });
+              Provider.of<ChatSessionManager>(context, listen: false)
+                  .updateCurrentSessionDetails(
+                      maxContextMessages: value.round());
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLanguageSettings(AppLocalizations localizations) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 8, 0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Text(localizations.systemPrompt,
+                    style: Theme.of(context).textTheme.titleMedium),
+              ),
+              Row(
                 children: [
-                  Text(localizations.useStreaming,
-                      style: Theme.of(context).textTheme.titleMedium),
-                  const SizedBox(height: 8),
-                  SegmentedButton<bool?>(
-                    segments: [
-                      ButtonSegment(
-                          value: null,
-                          label: Text(localizations.streamingDefault)),
-                      ButtonSegment(
-                          value: true, label: Text(localizations.streamingOn)),
-                      ButtonSegment(
-                          value: false,
-                          label: Text(localizations.streamingOff)),
-                    ],
-                    selected: {_useStreaming},
-                    onSelectionChanged: (selection) {
-                      HapticService.onSwitchToggle(context);
-                      setState(() {
-                        _useStreaming = selection.first;
-                      });
-                      Provider.of<ChatSessionManager>(context, listen: false)
-                          .updateCurrentSessionDetails(
-                              useStreaming: selection.first);
-                    },
+                  TextButton.icon(
+                    onPressed: _showTemplateSelection,
+                    icon: const Icon(Icons.library_books_outlined, size: 18),
+                    label: Text(localizations.selectTemplate),
+                  ),
+                  TextButton.icon(
+                    onPressed: _saveAsTemplate,
+                    icon: const Icon(Icons.add_to_photos_outlined, size: 18),
+                    label: Text(localizations.saveAsTemplate),
                   ),
                 ],
-              ),
-            ),
-          ],
+              )
+            ],
+          ),
         ),
-      ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: TextField(
+            controller: _systemPromptController,
+            decoration:
+                InputDecoration(hintText: localizations.enterSystemPrompt),
+            maxLines: 4,
+            minLines: 2,
+          ),
+        ),
+        if (_systemPromptController.text.trim().isEmpty)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+            child: Row(
+              children: [
+                Icon(Icons.info_outline,
+                    size: 14,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    localizations.blankSystemPromptWarning,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        const SizedBox(height: 24),
+        _buildSliderWithTextField(
+          label: localizations.temperature,
+          tooltip: localizations.temperatureTooltip,
+          value: _temperature,
+          min: 0.0,
+          max: 2.0,
+          divisions: 20,
+          controller: _temperatureController,
+          onSliderChanged: (value) {
+            HapticService.onSliderChange(context);
+            setState(() {
+              _temperature = value;
+              _temperatureController.text = value.toStringAsFixed(2);
+            });
+            Provider.of<ChatSessionManager>(context, listen: false)
+                .updateCurrentSessionDetails(temperature: value);
+          },
+          onTextFieldSubmitted: (text) {
+            final value = double.tryParse(text);
+            if (value != null) {
+              final clampedValue = value.clamp(0.0, 2.0);
+              setState(() {
+                _temperature = clampedValue;
+                _temperatureController.text = clampedValue.toStringAsFixed(2);
+              });
+              Provider.of<ChatSessionManager>(context, listen: false)
+                  .updateCurrentSessionDetails(temperature: clampedValue);
+            }
+          },
+        ),
+        const SizedBox(height: 16),
+        _buildSliderWithTextField(
+          label: localizations.topP,
+          tooltip: localizations.topPTooltip,
+          value: _topP,
+          min: 0.0,
+          max: 1.0,
+          divisions: 20,
+          controller: _topPController,
+          onSliderChanged: (value) {
+            HapticService.onSliderChange(context);
+            setState(() {
+              _topP = value;
+              _topPController.text = value.toStringAsFixed(2);
+            });
+            Provider.of<ChatSessionManager>(context, listen: false)
+                .updateCurrentSessionDetails(topP: value);
+          },
+          onTextFieldSubmitted: (text) {
+            final value = double.tryParse(text);
+            if (value != null) {
+              final clampedValue = value.clamp(0.0, 1.0);
+              setState(() {
+                _topP = clampedValue;
+                _topPController.text = clampedValue.toStringAsFixed(2);
+              });
+              Provider.of<ChatSessionManager>(context, listen: false)
+                  .updateCurrentSessionDetails(topP: clampedValue);
+            }
+          },
+        ),
+        const SizedBox(height: 16),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(localizations.useStreaming,
+                  style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 8),
+              SegmentedButton<bool?>(
+                segments: [
+                  ButtonSegment(
+                      value: null, label: Text(localizations.streamingDefault)),
+                  ButtonSegment(
+                      value: true, label: Text(localizations.streamingOn)),
+                  ButtonSegment(
+                      value: false, label: Text(localizations.streamingOff)),
+                ],
+                selected: {_useStreaming},
+                onSelectionChanged: (selection) {
+                  HapticService.onSwitchToggle(context);
+                  setState(() {
+                    _useStreaming = selection.first;
+                  });
+                  Provider.of<ChatSessionManager>(context, listen: false)
+                      .updateCurrentSessionDetails(
+                          useStreaming: selection.first);
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 

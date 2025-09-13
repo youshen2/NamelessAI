@@ -178,6 +178,8 @@
   "reinitializeDatabaseWarning": "这是一个用于调试的破坏性操作。它将重新注册数据库适配器。应用可能需要重启。要继续吗？",
   "databaseReinitialized": "数据库已重新初始化。请重启应用。",
   "generalSettings": "通用设置",
+  "clearFocusOnAction": "操作时清除焦点",
+  "clearFocusOnActionHint": "打开面板或切换页面时，自动清除输入框的焦点。",
   "itemDeleted": "{itemName} 已被删除。",
   "@itemDeleted": {
     "placeholders": {
@@ -477,6 +479,7 @@
   "enableAppLock": "启用应用锁",
   "enableAppLockHint": "需要身份验证才能解锁。",
   "lockAfter": "锁定时间",
+  "lockAfterHint": "在一段时间不活动后自动锁定应用。",
   "immediately": "立即",
   "after1Minute": "1 分钟后",
   "after5Minutes": "5 分钟后",
@@ -521,6 +524,8 @@
   },
   "screenshot": "截图",
   "screenshotOptions": "截图选项",
+  "showTimestampsInScreenshot": "显示时间戳",
+  "showModelNameInScreenshot": "显示模型名称",
   "generateScreenshot": "生成截图",
   "screenshotTheme": "主题",
   "watermark": "水印",
@@ -558,5 +563,6 @@
   "selectAModel": "选择模型",
   "searchModels": "搜索模型...",
   "noModelsFound": "未找到模型。",
-  "templateSaved": "模板已保存！"
+  "templateSaved": "模板已保存！",
+  "showWatermarkIcon": "显示应用图标"
 }
