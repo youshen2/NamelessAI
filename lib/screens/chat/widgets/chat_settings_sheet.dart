@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:nameless_ai/data/models/api_provider.dart';
 import 'package:nameless_ai/data/models/model.dart';
+import 'package:nameless_ai/data/models/system_prompt_template.dart';
 import 'package:nameless_ai/data/providers/chat_session_manager.dart';
+import 'package:nameless_ai/data/providers/system_prompt_template_manager.dart';
+import 'package:nameless_ai/screens/chat/widgets/model_selection_sheet.dart';
 import 'package:nameless_ai/services/haptic_service.dart';
 import 'package:provider/provider.dart';
 import 'package:nameless_ai/data/models/chat_session.dart';
@@ -52,6 +55,7 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
       Provider.of<ChatSessionManager>(context, listen: false)
           .updateCurrentSessionDetails(
               systemPrompt: _systemPromptController.text);
+      setState(() {});
     });
 
     _maxContextMessages = widget.session.maxContextMessages ?? 0;
@@ -108,6 +112,64 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
     }
   }
 
+  void _saveAsTemplate() async {
+    final localizations = AppLocalizations.of(context)!;
+    final promptText = _systemPromptController.text.trim();
+    if (promptText.isEmpty) {
+      showSnackBar(context, localizations.templatePromptRequired,
+          isError: true);
+      return;
+    }
+
+    final templateName = await showTextInputDialog(
+      context,
+      localizations.saveAsTemplate,
+      localizations.templateName,
+    );
+
+    if (templateName != null && templateName.isNotEmpty) {
+      final newTemplate =
+          SystemPromptTemplate(name: templateName, prompt: promptText);
+      await Provider.of<SystemPromptTemplateManager>(context, listen: false)
+          .addTemplate(newTemplate);
+      if (mounted) {
+        showSnackBar(context, localizations.templateSaved);
+      }
+    }
+  }
+
+  void _showModelSelection(APIProvider provider) async {
+    final isDesktop = MediaQuery.of(context).size.width >= 600;
+    final selectedModelResult = isDesktop
+        ? await showDialog<Model>(
+            context: context,
+            builder: (context) => Dialog(
+              child: SizedBox(
+                width: 500,
+                height: MediaQuery.of(context).size.height * 0.7,
+                child: ModelSelectionSheet(provider: provider),
+              ),
+            ),
+          )
+        : await showBlurredModalBottomSheet<Model>(
+            context: context,
+            isScrollControlled: true,
+            builder: (context) => ModelSelectionSheet(provider: provider),
+          );
+
+    if (selectedModelResult != null) {
+      final apiManager =
+          Provider.of<APIProviderManager>(context, listen: false);
+      final chatManager =
+          Provider.of<ChatSessionManager>(context, listen: false);
+      setState(() {
+        _selectedModelId = selectedModelResult.id;
+      });
+      apiManager.setSelectedModel(selectedModelResult);
+      chatManager.updateCurrentSessionDetails(modelId: selectedModelResult.id);
+    }
+  }
+
   Widget _buildSliderWithTextField({
     required String label,
     required String tooltip,
@@ -147,12 +209,9 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
                 data: SliderTheme.of(context).copyWith(
                   inactiveTrackColor:
                       Theme.of(context).colorScheme.surfaceContainerHighest,
-                  activeTickMarkColor:
-                      Theme.of(context).colorScheme.onPrimary.withOpacity(0.54),
-                  inactiveTickMarkColor: Theme.of(context)
-                      .colorScheme
-                      .onSurfaceVariant
-                      .withOpacity(0.54),
+                  activeTickMarkColor: Theme.of(context).colorScheme.onPrimary,
+                  inactiveTickMarkColor:
+                      Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
                 child: Slider(
                   value: value,
@@ -309,34 +368,32 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
                         ),
                         const SizedBox(height: 16),
                         if (selectedProvider != null)
-                          DropdownButtonFormField<String>(
-                            value: _selectedModelId,
-                            hint: Text(localizations.modelName),
-                            isExpanded: true,
-                            items: selectedProvider.models
-                                .map((model) => DropdownMenuItem(
-                                      value: model.id,
-                                      child: Text(model.name,
-                                          overflow: TextOverflow.ellipsis),
-                                    ))
-                                .toList(),
-                            onChanged: (value) {
-                              HapticService.onSwitchToggle(context);
-                              setState(() {
-                                _selectedModelId = value;
-                              });
-                              if (value != null) {
-                                final model = selectedProvider!.models
-                                    .firstWhere((m) => m.id == value);
-                                apiManager.setSelectedModel(model);
-                                Provider.of<ChatSessionManager>(context,
-                                        listen: false)
-                                    .updateCurrentSessionDetails(
-                                        modelId: value);
-                              }
-                            },
-                            decoration: InputDecoration(
-                                labelText: localizations.modelName),
+                          InkWell(
+                            onTap: selectedProvider.models.isEmpty
+                                ? null
+                                : () => _showModelSelection(selectedProvider!),
+                            borderRadius: BorderRadius.circular(12),
+                            child: InputDecorator(
+                              decoration: InputDecoration(
+                                labelText: localizations.modelName,
+                                contentPadding:
+                                    const EdgeInsets.fromLTRB(12, 12, 8, 12),
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      selectedModel?.name ??
+                                          localizations.selectAModel,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  const Icon(Icons.arrow_drop_down),
+                                ],
+                              ),
+                            ),
                           ),
                       ],
                     ),
@@ -365,14 +422,10 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
                             inactiveTrackColor: Theme.of(context)
                                 .colorScheme
                                 .surfaceContainerHighest,
-                            activeTickMarkColor: Theme.of(context)
-                                .colorScheme
-                                .onPrimary
-                                .withOpacity(0.54),
-                            inactiveTickMarkColor: Theme.of(context)
-                                .colorScheme
-                                .onSurfaceVariant
-                                .withOpacity(0.54),
+                            activeTickMarkColor:
+                                Theme.of(context).colorScheme.onPrimary,
+                            inactiveTickMarkColor:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                           child: Slider(
                             value: _maxContextMessages.toDouble(),
@@ -423,11 +476,22 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
                     child: Text(localizations.systemPrompt,
                         style: Theme.of(context).textTheme.titleMedium),
                   ),
-                  TextButton.icon(
-                    onPressed: _showTemplateSelection,
-                    icon: const Icon(Icons.library_books_outlined, size: 18),
-                    label: Text(localizations.selectTemplate),
-                  ),
+                  Row(
+                    children: [
+                      TextButton.icon(
+                        onPressed: _showTemplateSelection,
+                        icon:
+                            const Icon(Icons.library_books_outlined, size: 18),
+                        label: Text(localizations.selectTemplate),
+                      ),
+                      TextButton.icon(
+                        onPressed: _saveAsTemplate,
+                        icon:
+                            const Icon(Icons.add_to_photos_outlined, size: 18),
+                        label: Text(localizations.saveAsTemplate),
+                      ),
+                    ],
+                  )
                 ],
               ),
             ),
@@ -441,6 +505,26 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
                 minLines: 2,
               ),
             ),
+            if (_systemPromptController.text.trim().isEmpty)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                child: Row(
+                  children: [
+                    Icon(Icons.info_outline,
+                        size: 14,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        localizations.blankSystemPromptWarning,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             const SizedBox(height: 24),
             _buildSliderWithTextField(
               label: localizations.temperature,
@@ -448,7 +532,7 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
               value: _temperature,
               min: 0.0,
               max: 2.0,
-              divisions: 200,
+              divisions: 20,
               controller: _temperatureController,
               onSliderChanged: (value) {
                 HapticService.onSliderChange(context);
@@ -480,7 +564,7 @@ class _ChatSettingsSheetState extends State<ChatSettingsSheet> {
               value: _topP,
               min: 0.0,
               max: 1.0,
-              divisions: 100,
+              divisions: 20,
               controller: _topPController,
               onSliderChanged: (value) {
                 HapticService.onSliderChange(context);

@@ -1418,4 +1418,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get watermarkPadding => 'Watermark Padding';
+
+  @override
+  String get saveAsTemplate => 'Save as Template';
+
+  @override
+  String get blankSystemPromptWarning =>
+      'A blank system prompt will use the model\'s default behavior.';
+
+  @override
+  String get selectAModel => 'Select a Model';
+
+  @override
+  String get searchModels => 'Search models...';
+
+  @override
+  String get noModelsFound => 'No models found.';
+
+  @override
+  String get templateSaved => 'Template saved successfully!';
 }

@@ -552,5 +552,11 @@
   "bottomCenter": "中下",
   "bottomRight": "右下",
   "watermarkColor": "水印颜色",
-  "watermarkPadding": "水印边距"
+  "watermarkPadding": "水印边距",
+  "saveAsTemplate": "存为模板",
+  "blankSystemPromptWarning": "空白提示词将使用模型的默认行为。",
+  "selectAModel": "选择模型",
+  "searchModels": "搜索模型...",
+  "noModelsFound": "未找到模型。",
+  "templateSaved": "模板已保存！"
 }

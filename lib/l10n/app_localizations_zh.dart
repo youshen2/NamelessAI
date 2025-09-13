@@ -1377,4 +1377,22 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get watermarkPadding => '水印边距';
+
+  @override
+  String get saveAsTemplate => '存为模板';
+
+  @override
+  String get blankSystemPromptWarning => '空白提示词将使用模型的默认行为。';
+
+  @override
+  String get selectAModel => '选择模型';
+
+  @override
+  String get searchModels => '搜索模型...';
+
+  @override
+  String get noModelsFound => '未找到模型。';
+
+  @override
+  String get templateSaved => '模板已保存！';
 }

@@ -552,5 +552,11 @@
   "bottomCenter": "Bottom Center",
   "bottomRight": "Bottom Right",
   "watermarkColor": "Watermark Color",
-  "watermarkPadding": "Watermark Padding"
+  "watermarkPadding": "Watermark Padding",
+  "saveAsTemplate": "Save as Template",
+  "blankSystemPromptWarning": "A blank system prompt will use the model's default behavior.",
+  "selectAModel": "Select a Model",
+  "searchModels": "Search models...",
+  "noModelsFound": "No models found.",
+  "templateSaved": "Template saved successfully!"
 }

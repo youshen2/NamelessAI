@@ -2767,6 +2767,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Watermark Padding'**
   String get watermarkPadding;
+
+  /// No description provided for @saveAsTemplate.
+  ///
+  /// In en, this message translates to:
+  /// **'Save as Template'**
+  String get saveAsTemplate;
+
+  /// No description provided for @blankSystemPromptWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'A blank system prompt will use the model\'s default behavior.'**
+  String get blankSystemPromptWarning;
+
+  /// No description provided for @selectAModel.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a Model'**
+  String get selectAModel;
+
+  /// No description provided for @searchModels.
+  ///
+  /// In en, this message translates to:
+  /// **'Search models...'**
+  String get searchModels;
+
+  /// No description provided for @noModelsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No models found.'**
+  String get noModelsFound;
+
+  /// No description provided for @templateSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Template saved successfully!'**
+  String get templateSaved;
 }
 
 class _AppLocalizationsDelegate
