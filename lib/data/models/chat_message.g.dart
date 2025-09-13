@@ -21,7 +21,6 @@ class ChatMessageAdapter extends TypeAdapter<ChatMessage> {
       role: fields[1] as String,
       content: fields[2] as String,
       timestamp: fields[3] as DateTime?,
-      isEditing: fields[4] == null ? false : fields[4] as bool,
       isLoading: fields[5] == null ? false : fields[5] as bool,
       promptTokens: fields[6] as int?,
       completionTokens: fields[7] as int?,
@@ -51,7 +50,7 @@ class ChatMessageAdapter extends TypeAdapter<ChatMessage> {
   @override
   void write(BinaryWriter writer, ChatMessage obj) {
     writer
-      ..writeByte(25)
+      ..writeByte(24)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -60,8 +59,6 @@ class ChatMessageAdapter extends TypeAdapter<ChatMessage> {
       ..write(obj.content)
       ..writeByte(3)
       ..write(obj.timestamp)
-      ..writeByte(4)
-      ..write(obj.isEditing)
       ..writeByte(5)
       ..write(obj.isLoading)
       ..writeByte(6)

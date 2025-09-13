@@ -72,7 +72,6 @@ class ChatSessionManager extends ChangeNotifier {
         final session = AppDatabase.chatSessionsBox.get(lastSessionId);
         if (session != null) {
           _currentSession = session;
-          _clearAllEditingStates(_currentSession!);
           _isNewSession = false;
           shouldScrollToBottomOnLoad = false;
           notifyListeners();
@@ -80,7 +79,6 @@ class ChatSessionManager extends ChangeNotifier {
         }
       }
       _currentSession = _sessions.first;
-      _clearAllEditingStates(_currentSession!);
       _isNewSession = false;
       shouldScrollToBottomOnLoad = false;
       notifyListeners();
@@ -154,31 +152,11 @@ class ChatSessionManager extends ChangeNotifier {
     final session = AppDatabase.chatSessionsBox.get(sessionId);
     if (session != null) {
       _currentSession = session;
-      _clearAllEditingStates(_currentSession!);
       _isNewSession = false;
       _saveCurrentSessionId();
       shouldScrollToBottomOnLoad = true;
       notifyListeners();
     }
-  }
-
-  void _clearAllEditingStates(ChatSession session, {String? exceptMessageId}) {
-    void recursiveClear(List<ChatMessage> messages, Set<int> visited) {
-      if (messages.isEmpty || !visited.add(identityHashCode(messages))) return;
-      for (var msg in messages) {
-        if (msg.isEditing && msg.id != exceptMessageId) {
-          msg.isEditing = false;
-        }
-
-        if (msg.role == 'user' && session.branches.containsKey(msg.id)) {
-          for (var branch in session.branches[msg.id]!) {
-            recursiveClear(branch, visited);
-          }
-        }
-      }
-    }
-
-    recursiveClear(session.messages, {});
   }
 
   Future<void> saveCurrentSession(String name) async {
@@ -268,25 +246,11 @@ class ChatSessionManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  void toggleMessageEditing(String messageId, bool isEditing) {
-    if (_currentSession == null) return;
-
-    _clearAllEditingStates(_currentSession!,
-        exceptMessageId: isEditing ? messageId : null);
-
-    final message = _findMessageInSession(_currentSession!, messageId);
-    if (message != null) {
-      message.isEditing = isEditing;
-      notifyListeners();
-    }
-  }
-
   void updateMessageInCurrentSession(String messageId, String newContent) {
     if (_currentSession == null) return;
     final message = _findMessageInSession(_currentSession!, messageId);
     if (message != null) {
       message.content = newContent;
-      message.isEditing = false;
       updateCurrentSession(_currentSession!);
     }
   }
@@ -434,8 +398,8 @@ class ChatSessionManager extends ChangeNotifier {
     final userMessageIndex = findResult.$2;
     final userMessageToEdit = parentList[userMessageIndex];
 
-    parentList[userMessageIndex] = userMessageToEdit.copyWith(
-        content: newContent, isEditing: false, modelName: model.name);
+    parentList[userMessageIndex] =
+        userMessageToEdit.copyWith(content: newContent, modelName: model.name);
 
     final ChatMessage newAssistantMessage;
     if (model.modelType != ModelType.language &&
@@ -576,6 +540,10 @@ class ChatSessionManager extends ChangeNotifier {
       _generatingSessions.remove(sessionId);
       notifyListeners();
       return;
+    }
+
+    if (_currentSession?.id == sessionId) {
+      _currentSession = session;
     }
 
     final cancelToken = CancelToken();

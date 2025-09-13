@@ -23,7 +23,6 @@ import 'package:nameless_ai/services/haptic_service.dart';
 class MessageBubble extends StatefulWidget {
   final ChatMessage message;
   final Set<String> animatedMessageIds;
-  final Function(ChatMessage, bool) onEdit;
   final Function(ChatMessage, String) onSave;
   final Function(ChatMessage) onDelete;
   final Function(ChatMessage, String) onResubmit;
@@ -39,7 +38,6 @@ class MessageBubble extends StatefulWidget {
     super.key,
     required this.message,
     required this.animatedMessageIds,
-    required this.onEdit,
     required this.onSave,
     required this.onDelete,
     required this.onResubmit,
@@ -61,6 +59,7 @@ class _MessageBubbleState extends State<MessageBubble>
   late TextEditingController _editController;
   final FocusNode _editFocusNode = FocusNode();
   bool _isHovering = false;
+  bool _isEditing = false;
 
   late final AnimationController _animationController;
   late final Animation<Offset> _slideAnimation;
@@ -108,19 +107,6 @@ class _MessageBubbleState extends State<MessageBubble>
     if (widget.message.thinkingContent != oldWidget.message.thinkingContent) {
       if (widget.message.isLoading && !widget.isReadOnly) {
         HapticService.onThinking(context);
-      }
-    }
-
-    if (oldWidget.message.isEditing != widget.message.isEditing) {
-      if (widget.message.isEditing) {
-        _editController.text = widget.message.content;
-        SchedulerBinding.instance.addPostFrameCallback((_) {
-          if (mounted) {
-            _editFocusNode.requestFocus();
-            _editController.selection = TextSelection.fromPosition(
-                TextPosition(offset: _editController.text.length));
-          }
-        });
       }
     }
   }
@@ -214,7 +200,7 @@ class _MessageBubbleState extends State<MessageBubble>
                     return FadeTransition(opacity: animation, child: child);
                   },
                   child: (!widget.isReadOnly &&
-                          !widget.message.isEditing &&
+                          !_isEditing &&
                           !widget.message.isLoading &&
                           (_isHovering || isTouchDevice))
                       ? MessageActionBar(
@@ -224,7 +210,24 @@ class _MessageBubbleState extends State<MessageBubble>
                               widget.message.content),
                           onRegenerate: () =>
                               widget.onRegenerate(widget.message),
-                          onEdit: () => widget.onEdit(widget.message, true),
+                          onEdit: () {
+                            setState(() {
+                              _isEditing = true;
+                              _editController.text = widget.message.content;
+                              SchedulerBinding.instance.addPostFrameCallback(
+                                (_) {
+                                  if (mounted) {
+                                    _editFocusNode.requestFocus();
+                                    _editController.selection =
+                                        TextSelection.fromPosition(
+                                      TextPosition(
+                                          offset: _editController.text.length),
+                                    );
+                                  }
+                                },
+                              );
+                            });
+                          },
                           onDelete: () => widget.onDelete(widget.message),
                           onRefresh: () => widget.onRefresh(widget.message),
                         )
@@ -272,7 +275,7 @@ class _MessageBubbleState extends State<MessageBubble>
                 textColor: textColor,
                 isPlainText: true,
               ),
-            if (widget.message.isEditing)
+            if (_isEditing)
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: _buildEditModeContent(context, textColor),
@@ -318,7 +321,7 @@ class _MessageBubbleState extends State<MessageBubble>
                 message: widget.message,
                 textColor: textColor,
               ),
-            if (widget.message.isEditing)
+            if (_isEditing)
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: _buildEditModeContent(context, textColor),
@@ -784,7 +787,7 @@ class _MessageBubbleState extends State<MessageBubble>
                 tooltip: localizations.cancel,
                 onPressed: () {
                   HapticService.onButtonPress(context);
-                  widget.onEdit(widget.message, false);
+                  setState(() => _isEditing = false);
                 },
               ),
               IconButton(
@@ -793,6 +796,7 @@ class _MessageBubbleState extends State<MessageBubble>
                 onPressed: () {
                   HapticService.onButtonPress(context);
                   widget.onSave(widget.message, _editController.text);
+                  setState(() => _isEditing = false);
                 },
               ),
               if (isUser)
@@ -803,6 +807,7 @@ class _MessageBubbleState extends State<MessageBubble>
                   onPressed: () {
                     HapticService.onButtonPress(context);
                     widget.onResubmit(widget.message, _editController.text);
+                    setState(() => _isEditing = false);
                   },
                 ),
             ],

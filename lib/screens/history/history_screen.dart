@@ -430,7 +430,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   return MessageBubble(
                     message: message,
                     isReadOnly: true,
-                    onEdit: (_, __) {},
                     onSave: (_, __) {},
                     onDelete: (_) {},
                     onResubmit: (_, __) {},

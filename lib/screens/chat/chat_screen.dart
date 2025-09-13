@@ -323,11 +323,6 @@ class _ChatScreenState extends State<ChatScreen> {
     _messageController.clear();
   }
 
-  void _toggleEditing(String messageId, bool isEditing) {
-    Provider.of<ChatSessionManager>(context, listen: false)
-        .toggleMessageEditing(messageId, isEditing);
-  }
-
   void _saveEditedMessage(ChatMessage message, String newContent) {
     Provider.of<ChatSessionManager>(context, listen: false)
         .updateMessageInCurrentSession(message.id, newContent);
@@ -802,7 +797,6 @@ class _ChatScreenState extends State<ChatScreen> {
               key: ValueKey(message.id),
               message: message,
               animatedMessageIds: _animatedMessageIds,
-              onEdit: (msg, isEditing) => _toggleEditing(msg.id, isEditing),
               onSave: _saveEditedMessage,
               onDelete: _deleteMessage,
               onResubmit: _resubmitMessage,

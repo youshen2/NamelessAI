@@ -41,9 +41,6 @@ class ChatMessage extends HiveObject {
   @HiveField(3)
   DateTime timestamp;
 
-  @HiveField(4, defaultValue: false)
-  bool isEditing;
-
   @HiveField(5, defaultValue: false)
   bool isLoading;
 
@@ -111,7 +108,6 @@ class ChatMessage extends HiveObject {
     required this.role,
     required this.content,
     DateTime? timestamp,
-    this.isEditing = false,
     this.isLoading = false,
     this.promptTokens,
     this.completionTokens,
@@ -141,7 +137,6 @@ class ChatMessage extends HiveObject {
     String? role,
     String? content,
     DateTime? timestamp,
-    bool? isEditing,
     bool? isLoading,
     int? promptTokens,
     int? completionTokens,
@@ -169,7 +164,6 @@ class ChatMessage extends HiveObject {
       role: role ?? this.role,
       content: content ?? this.content,
       timestamp: timestamp ?? this.timestamp,
-      isEditing: isEditing ?? this.isEditing,
       isLoading: isLoading ?? this.isLoading,
       promptTokens: promptTokens ?? this.promptTokens,
       completionTokens: completionTokens ?? this.completionTokens,
@@ -201,7 +195,6 @@ class ChatMessage extends HiveObject {
         'role': role,
         'content': content,
         'timestamp': timestamp.toIso8601String(),
-        'isEditing': isEditing,
         'isLoading': isLoading,
         'promptTokens': promptTokens,
         'completionTokens': completionTokens,
@@ -229,7 +222,6 @@ class ChatMessage extends HiveObject {
         role: json['role'],
         content: json['content'],
         timestamp: DateTime.parse(json['timestamp']),
-        isEditing: json['isEditing'] ?? false,
         isLoading: json['isLoading'] ?? false,
         promptTokens: json['promptTokens'],
         completionTokens: json['completionTokens'],
