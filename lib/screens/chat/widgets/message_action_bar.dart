@@ -92,7 +92,7 @@ class MessageActionBar extends StatelessWidget {
         message.asyncTaskStatus == AsyncTaskStatus.failure;
 
     return Padding(
-      padding: const EdgeInsets.only(top: 4.0, right: 4.0),
+      padding: const EdgeInsets.only(top: 2.0, right: 4.0),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

@@ -42,7 +42,7 @@ class APIProviderManager extends ChangeNotifier {
 
   Future<void> addProvider(APIProvider provider) async {
     await AppDatabase.apiProvidersBox.put(provider.id, provider);
-    _providers = AppDatabase.apiProvidersBox.values.toList();
+    _providers.add(provider);
     if (_selectedProvider == null) {
       setSelectedProvider(provider);
     }
@@ -51,7 +51,10 @@ class APIProviderManager extends ChangeNotifier {
 
   Future<void> updateProvider(APIProvider provider) async {
     await AppDatabase.apiProvidersBox.put(provider.id, provider);
-    _providers = AppDatabase.apiProvidersBox.values.toList();
+    final index = _providers.indexWhere((p) => p.id == provider.id);
+    if (index != -1) {
+      _providers[index] = provider;
+    }
     if (_selectedProvider?.id == provider.id) {
       _selectedProvider = provider;
       if (_selectedModel != null &&
@@ -65,7 +68,7 @@ class APIProviderManager extends ChangeNotifier {
 
   Future<void> deleteProvider(String id) async {
     await AppDatabase.apiProvidersBox.delete(id);
-    _providers = AppDatabase.apiProvidersBox.values.toList();
+    _providers.removeWhere((p) => p.id == id);
     if (_selectedProvider?.id == id) {
       _selectedProvider = _providers.isNotEmpty ? _providers.first : null;
       _selectedModel = _selectedProvider?.models.isNotEmpty == true

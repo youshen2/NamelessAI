@@ -666,9 +666,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           title: Text(session.name,
                               maxLines: 1, overflow: TextOverflow.ellipsis),
                           subtitle: Text(
-                            session.messages.isNotEmpty
-                                ? session.messages.last.content
-                                : localizations.noChatHistory,
+                            '${localizations.timeLabel}: ${session.updatedAt.toLocal().toString().substring(0, 16)}',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: Theme.of(context).textTheme.bodySmall,

@@ -245,8 +245,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
           return isDesktop
               ? content
               : Padding(
-                  padding: EdgeInsets.only(
-                      top: kToolbarHeight + MediaQuery.of(context).padding.top),
+                  padding:
+                      EdgeInsets.only(top: MediaQuery.of(context).padding.top),
                   child: content,
                 );
         },
@@ -256,7 +256,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   Widget _buildSearchBar(AppLocalizations localizations) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
       child: TextField(
         controller: _searchController,
         decoration: InputDecoration(
@@ -300,9 +300,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
             title: Text(session.name,
                 style: Theme.of(context).textTheme.titleMedium),
             subtitle: Text(
-              session.messages.isNotEmpty
-                  ? session.messages.last.content
-                  : localizations.noChatHistory,
+              '${localizations.timeLabel}: ${session.updatedAt.toLocal().toString().substring(0, 16)}',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.bodySmall,

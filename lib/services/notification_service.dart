@@ -14,7 +14,7 @@ class NotificationService {
   static const _thinkingChannelName = 'Thinking Notifications';
   static const _thinkingChannelDescription =
       'Persistent notification shown while generating a response.';
-  static const _thinkingNotificationId = 0;
+  static const _thinkingNotificationId = 2;
 
   static const _resultChannelId = 'nameless_ai_result_channel';
   static const _resultChannelName = 'Result Notifications';
@@ -116,6 +116,7 @@ class NotificationService {
   }
 
   Future<void> showThinkingNotification(AppLocalizations localizations) async {
+    if (!isSupported()) return;
     final AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
       _thinkingChannelId,
@@ -129,15 +130,30 @@ class NotificationService {
       maxProgress: 0,
       indeterminate: true,
     );
-    final NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics);
 
-    await _flutterLocalNotificationsPlugin.show(
-      _thinkingNotificationId,
-      localizations.notificationTitleThinking,
-      null,
-      platformChannelSpecifics,
-    );
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      await _flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>()
+          ?.startForegroundService(
+        _thinkingNotificationId,
+        localizations.notificationTitleThinking,
+        null,
+        notificationDetails: androidPlatformChannelSpecifics,
+        foregroundServiceTypes: {
+          AndroidServiceForegroundType.foregroundServiceTypeDataSync,
+        },
+      );
+    } else {
+      final NotificationDetails platformChannelSpecifics =
+          NotificationDetails(android: androidPlatformChannelSpecifics);
+      await _flutterLocalNotificationsPlugin.show(
+        _thinkingNotificationId,
+        localizations.notificationTitleThinking,
+        null,
+        platformChannelSpecifics,
+      );
+    }
   }
 
   Future<void> showCompletionNotification(
@@ -182,6 +198,14 @@ class NotificationService {
   }
 
   Future<void> cancelThinkingNotification() async {
-    await _flutterLocalNotificationsPlugin.cancel(_thinkingNotificationId);
+    if (!isSupported()) return;
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      await _flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>()
+          ?.stopForegroundService();
+    } else {
+      await _flutterLocalNotificationsPlugin.cancel(_thinkingNotificationId);
+    }
   }
 }

@@ -101,34 +101,9 @@ Future<T?> showBlurredModalBottomSheet<T>({
   required WidgetBuilder builder,
   bool isScrollControlled = false,
 }) {
-  final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
-  final cornerRadius = appConfig.cornerRadius;
-
   return showModalBottomSheet<T>(
     context: context,
     isScrollControlled: isScrollControlled,
-    backgroundColor: appConfig.enableBlurEffect ? Colors.transparent : null,
-    builder: (context) {
-      Widget content = builder(context);
-
-      if (appConfig.enableBlurEffect) {
-        return ClipRRect(
-          borderRadius:
-              BorderRadius.vertical(top: Radius.circular(cornerRadius)),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-            child: Container(
-              color: Theme.of(context)
-                  .bottomSheetTheme
-                  .backgroundColor
-                  ?.withOpacity(0.88),
-              child: content,
-            ),
-          ),
-        );
-      } else {
-        return content;
-      }
-    },
+    builder: builder,
   );
 }

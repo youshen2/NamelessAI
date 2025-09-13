@@ -86,10 +86,7 @@ class _APIProviderSettingsScreenState extends State<APIProviderSettingsScreen> {
           }
           return ListView.builder(
             padding: EdgeInsets.fromLTRB(
-                8,
-                kToolbarHeight + MediaQuery.of(context).padding.top + 8,
-                8,
-                isDesktop ? 16 : 96),
+                8, MediaQuery.of(context).padding.top, 8, isDesktop ? 16 : 96),
             itemCount: manager.providers.length,
             itemBuilder: (context, index) {
               final provider = manager.providers[index];

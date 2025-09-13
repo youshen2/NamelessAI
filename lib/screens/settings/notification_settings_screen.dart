@@ -111,38 +111,41 @@ class _NotificationSettingsScreenState
               child: Opacity(
                 opacity:
                     appConfig.notificationsEnabled && isSupported ? 1.0 : 0.5,
-                child: Column(
-                  children: [
-                    SwitchListTile(
-                      title: Text(localizations.showThinkingNotification),
-                      subtitle:
-                          Text(localizations.showThinkingNotificationHint),
-                      value: appConfig.showThinkingNotification,
-                      onChanged: (value) {
-                        HapticService.onSwitchToggle(context);
-                        appConfig.setShowThinkingNotification(value);
-                      },
-                    ),
-                    SwitchListTile(
-                      title: Text(localizations.showCompletionNotification),
-                      subtitle:
-                          Text(localizations.showCompletionNotificationHint),
-                      value: appConfig.showCompletionNotification,
-                      onChanged: (value) {
-                        HapticService.onSwitchToggle(context);
-                        appConfig.setShowCompletionNotification(value);
-                      },
-                    ),
-                    SwitchListTile(
-                      title: Text(localizations.showErrorNotification),
-                      subtitle: Text(localizations.showErrorNotificationHint),
-                      value: appConfig.showErrorNotification,
-                      onChanged: (value) {
-                        HapticService.onSwitchToggle(context);
-                        appConfig.setShowErrorNotification(value);
-                      },
-                    ),
-                  ],
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+                  child: Column(
+                    children: [
+                      SwitchListTile(
+                        title: Text(localizations.showThinkingNotification),
+                        subtitle:
+                            Text(localizations.showThinkingNotificationHint),
+                        value: appConfig.showThinkingNotification,
+                        onChanged: (value) {
+                          HapticService.onSwitchToggle(context);
+                          appConfig.setShowThinkingNotification(value);
+                        },
+                      ),
+                      SwitchListTile(
+                        title: Text(localizations.showCompletionNotification),
+                        subtitle:
+                            Text(localizations.showCompletionNotificationHint),
+                        value: appConfig.showCompletionNotification,
+                        onChanged: (value) {
+                          HapticService.onSwitchToggle(context);
+                          appConfig.setShowCompletionNotification(value);
+                        },
+                      ),
+                      SwitchListTile(
+                        title: Text(localizations.showErrorNotification),
+                        subtitle: Text(localizations.showErrorNotificationHint),
+                        value: appConfig.showErrorNotification,
+                        onChanged: (value) {
+                          HapticService.onSwitchToggle(context);
+                          appConfig.setShowErrorNotification(value);
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

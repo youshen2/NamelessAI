@@ -65,10 +65,7 @@ class _SystemPromptSettingsScreenState
           }
           return ListView.builder(
             padding: EdgeInsets.fromLTRB(
-                8,
-                kToolbarHeight + MediaQuery.of(context).padding.top + 8,
-                8,
-                isDesktop ? 16 : 96),
+                8, MediaQuery.of(context).padding.top, 8, isDesktop ? 16 : 96),
             itemCount: manager.templates.length,
             itemBuilder: (context, index) {
               final template = manager.templates[index];

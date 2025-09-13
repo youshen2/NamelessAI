@@ -67,7 +67,6 @@ class ChatSessionManager extends ChangeNotifier {
   }
 
   Future<void> loadLastSession() async {
-    _loadSessions();
     if (_sessions.isNotEmpty) {
       final lastSessionId = AppDatabase.appConfigBox.get('lastActiveSessionId');
       if (lastSessionId != null) {
@@ -171,7 +170,13 @@ class ChatSessionManager extends ChangeNotifier {
 
     await AppDatabase.chatSessionsBox
         .put(_currentSession!.id, _currentSession!);
-    _loadSessions();
+    final index = _sessions.indexWhere((s) => s.id == _currentSession!.id);
+    if (index != -1) {
+      _sessions[index] = _currentSession!;
+    } else {
+      _sessions.insert(0, _currentSession!);
+    }
+    _sessions.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
     _isNewSession = false;
     _saveCurrentSessionId();
     notifyListeners();
@@ -183,7 +188,12 @@ class ChatSessionManager extends ChangeNotifier {
       session.name = newName;
       session.updatedAt = DateTime.now();
       await session.save();
-      _loadSessions();
+      final index = _sessions.indexWhere((s) => s.id == sessionId);
+      if (index != -1) {
+        _sessions[index] = session;
+        _sessions.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+        notifyListeners();
+      }
     }
   }
 
@@ -191,7 +201,13 @@ class ChatSessionManager extends ChangeNotifier {
     _currentSession = session.copyWith(updatedAt: DateTime.now());
     if (!_isNewSession || session.messages.isNotEmpty) {
       await AppDatabase.chatSessionsBox.put(session.id, _currentSession!);
-      _loadSessions();
+      final index = _sessions.indexWhere((s) => s.id == session.id);
+      if (index != -1) {
+        _sessions[index] = _currentSession!;
+      } else if (!_isNewSession) {
+        _sessions.add(_currentSession!);
+      }
+      _sessions.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
     }
     notifyListeners();
   }
@@ -234,13 +250,13 @@ class ChatSessionManager extends ChangeNotifier {
       _currentSession = null;
       _isNewSession = true;
     }
-    _loadSessions();
+    _sessions.removeWhere((s) => s.id == sessionId);
     notifyListeners();
   }
 
   Future<void> clearAllHistory() async {
     await AppDatabase.chatSessionsBox.clear();
-    _loadSessions();
+    _sessions.clear();
     startNewSession(
       providerId: _apiProviderManager?.selectedProvider?.id,
       modelId: _apiProviderManager?.selectedModel?.id,
@@ -599,7 +615,13 @@ class ChatSessionManager extends ChangeNotifier {
 
     _generatingSessions.remove(sessionId);
     _cancelTokens.remove(sessionId);
-    _loadSessions();
+
+    final index = _sessions.indexWhere((s) => s.id == session.id);
+    if (index != -1) {
+      _sessions[index] = session;
+      _sessions.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+    }
+
     if (_currentSession?.id == session.id) {
       _currentSession = session;
     }

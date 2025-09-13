@@ -18,16 +18,22 @@ class SystemPromptTemplateManager extends ChangeNotifier {
 
   Future<void> addTemplate(SystemPromptTemplate template) async {
     await AppDatabase.systemPromptTemplatesBox.put(template.id, template);
-    _loadTemplates();
+    _templates.add(template);
+    notifyListeners();
   }
 
   Future<void> updateTemplate(SystemPromptTemplate template) async {
     await template.save();
-    _loadTemplates();
+    final index = _templates.indexWhere((t) => t.id == template.id);
+    if (index != -1) {
+      _templates[index] = template;
+    }
+    notifyListeners();
   }
 
   Future<void> deleteTemplate(String id) async {
     await AppDatabase.systemPromptTemplatesBox.delete(id);
-    _loadTemplates();
+    _templates.removeWhere((t) => t.id == id);
+    notifyListeners();
   }
 }

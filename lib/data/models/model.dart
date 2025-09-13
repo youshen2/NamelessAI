@@ -20,7 +20,6 @@ enum CompatibilityMode {
   gemini,
 }
 
-// Helper function for parsing nullable CompatibilityMode
 CompatibilityMode? _compatibilityModeFromJson(String? name) {
   if (name == null) {
     return null;
@@ -30,8 +29,6 @@ CompatibilityMode? _compatibilityModeFromJson(String? name) {
       return mode;
     }
   }
-  // Optionally, you can add a debugPrint here if you want to log unknown enum names
-  // debugPrint('Warning: Unknown CompatibilityMode name "$name" found in JSON. Returning null.');
   return null;
 }
 
@@ -144,8 +141,8 @@ class Model extends HiveObject {
         imageGenerationMode: ImageGenerationMode.values.firstWhere(
             (e) => e.name == json['imageGenerationMode'],
             orElse: () => ImageGenerationMode.instant),
-        compatibilityMode: _compatibilityModeFromJson(
-            json['compatibilityMode']), // Use the helper function here
+        compatibilityMode:
+            _compatibilityModeFromJson(json['compatibilityMode']),
         imaginePath: json['imaginePath'],
         fetchPath: json['fetchPath'],
         chatPath: json['chatPath'],

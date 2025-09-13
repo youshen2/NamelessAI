@@ -239,13 +239,14 @@ class AppConfigProvider extends ChangeNotifier {
     _scrollButtonRightOffset =
         box.get('scrollButtonRightOffset', defaultValue: 16.0);
 
-    _notificationsEnabled = box.get('notificationsEnabled', defaultValue: true);
+    _notificationsEnabled =
+        box.get('notificationsEnabled', defaultValue: !isDesktop);
     _showThinkingNotification =
-        box.get('showThinkingNotification', defaultValue: true);
+        box.get('showThinkingNotification', defaultValue: !isDesktop);
     _showCompletionNotification =
-        box.get('showCompletionNotification', defaultValue: true);
+        box.get('showCompletionNotification', defaultValue: !isDesktop);
     _showErrorNotification =
-        box.get('showErrorNotification', defaultValue: true);
+        box.get('showErrorNotification', defaultValue: !isDesktop);
 
     notifyListeners();
   }
