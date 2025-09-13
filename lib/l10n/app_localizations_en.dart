@@ -1226,4 +1226,44 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notificationBodyError => 'An error occurred. Tap to see details.';
+
+  @override
+  String get appLock => 'App Lock';
+
+  @override
+  String get enableAppLock => 'Enable App Lock';
+
+  @override
+  String get enableAppLockHint => 'Require authentication to unlock.';
+
+  @override
+  String get lockAfter => 'Lock After';
+
+  @override
+  String get immediately => 'Immediately';
+
+  @override
+  String get after1Minute => 'After 1 Minute';
+
+  @override
+  String get after5Minutes => 'After 5 Minutes';
+
+  @override
+  String get after15Minutes => 'After 15 Minutes';
+
+  @override
+  String get unlockNamelessAI => 'Unlock Nameless AI';
+
+  @override
+  String get authenticateToContinue => 'Authenticate to continue';
+
+  @override
+  String get unlock => 'Unlock';
+
+  @override
+  String get authenticationFailed => 'Authentication failed. Please try again.';
+
+  @override
+  String get biometricsNotAvailable =>
+      'Biometrics not available on this device.';
 }

@@ -470,5 +470,18 @@
   "notificationTitleComplete": "Response Complete",
   "notificationTitleError": "Generation Failed",
   "notificationBodyComplete": "Tap to view the response.",
-  "notificationBodyError": "An error occurred. Tap to see details."
+  "notificationBodyError": "An error occurred. Tap to see details.",
+  "appLock": "App Lock",
+  "enableAppLock": "Enable App Lock",
+  "enableAppLockHint": "Require authentication to unlock.",
+  "lockAfter": "Lock After",
+  "immediately": "Immediately",
+  "after1Minute": "After 1 Minute",
+  "after5Minutes": "After 5 Minutes",
+  "after15Minutes": "After 15 Minutes",
+  "unlockNamelessAI": "Unlock Nameless AI",
+  "authenticateToContinue": "Authenticate to continue",
+  "unlock": "Unlock",
+  "authenticationFailed": "Authentication failed. Please try again.",
+  "biometricsNotAvailable": "Biometrics not available on this device."
 }

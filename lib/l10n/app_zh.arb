@@ -470,5 +470,18 @@
   "notificationTitleComplete": "响应已生成",
   "notificationTitleError": "生成失败",
   "notificationBodyComplete": "点击以查看响应。",
-  "notificationBodyError": "发生了一个错误。点击以查看详情。"
+  "notificationBodyError": "发生了一个错误。点击以查看详情。",
+  "appLock": "应用锁",
+  "enableAppLock": "启用应用锁",
+  "enableAppLockHint": "需要身份验证才能解锁。",
+  "lockAfter": "锁定时间",
+  "immediately": "立即",
+  "after1Minute": "1 分钟后",
+  "after5Minutes": "5 分钟后",
+  "after15Minutes": "15 分钟后",
+  "unlockNamelessAI": "解锁 Nameless AI",
+  "authenticateToContinue": "请验证身份以继续",
+  "unlock": "解锁",
+  "authenticationFailed": "身份验证失败，请重试。",
+  "biometricsNotAvailable": "此设备不支持生物识别。"
 }

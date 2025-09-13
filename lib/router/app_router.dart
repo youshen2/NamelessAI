@@ -7,6 +7,7 @@ import 'package:nameless_ai/screens/home/home_page.dart';
 import 'package:nameless_ai/screens/onboarding/onboarding_screen.dart';
 import 'package:nameless_ai/screens/settings/about_screen.dart';
 import 'package:nameless_ai/screens/settings/api_provider_settings_screen.dart';
+import 'package:nameless_ai/screens/settings/app_lock_settings_screen.dart';
 import 'package:nameless_ai/screens/settings/app_settings_screen.dart';
 import 'package:nameless_ai/screens/settings/appearance_settings_screen.dart';
 import 'package:nameless_ai/screens/settings/developer_options_screen.dart';
@@ -240,6 +241,19 @@ class AppRouter {
                         return _buildPageWithTransition(
                           state: state,
                           child: const HapticSettingsScreen(),
+                          transitionType: appConfig.pageTransitionType,
+                        );
+                      },
+                    ),
+                    GoRoute(
+                      path: 'app_lock',
+                      name: 'app_lock_settings',
+                      pageBuilder: (context, state) {
+                        final appConfig =
+                            Provider.of<AppConfigProvider>(context);
+                        return _buildPageWithTransition(
+                          state: state,
+                          child: const AppLockSettingsScreen(),
                           transitionType: appConfig.pageTransitionType,
                         );
                       },

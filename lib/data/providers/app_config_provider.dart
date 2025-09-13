@@ -14,6 +14,8 @@ enum HapticIntensity { none, light, medium, heavy, selection }
 
 enum PageTransitionType { system, slide, fade, scale }
 
+enum AppLockTimeout { immediately, after1Minute, after5Minutes, after15Minutes }
+
 class AppConfigProvider extends ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.system;
   Locale? _locale;
@@ -75,6 +77,9 @@ class AppConfigProvider extends ChangeNotifier {
   bool _showThinkingNotification = true;
   bool _showCompletionNotification = true;
   bool _showErrorNotification = true;
+
+  bool _appLockEnabled = false;
+  AppLockTimeout _appLockTimeout = AppLockTimeout.immediately;
 
   AppConfigProvider() {
     _loadConfig();
@@ -140,6 +145,9 @@ class AppConfigProvider extends ChangeNotifier {
   bool get showThinkingNotification => _showThinkingNotification;
   bool get showCompletionNotification => _showCompletionNotification;
   bool get showErrorNotification => _showErrorNotification;
+
+  bool get appLockEnabled => _appLockEnabled;
+  AppLockTimeout get appLockTimeout => _appLockTimeout;
 
   void _loadConfig() {
     final box = AppDatabase.appConfigBox;
@@ -247,6 +255,10 @@ class AppConfigProvider extends ChangeNotifier {
         box.get('showCompletionNotification', defaultValue: !isDesktop);
     _showErrorNotification =
         box.get('showErrorNotification', defaultValue: !isDesktop);
+
+    _appLockEnabled = box.get('appLockEnabled', defaultValue: false);
+    _appLockTimeout = AppLockTimeout.values[box.get('appLockTimeout',
+        defaultValue: AppLockTimeout.immediately.index)];
 
     notifyListeners();
   }
@@ -568,6 +580,20 @@ class AppConfigProvider extends ChangeNotifier {
     if (_showErrorNotification != show) {
       _showErrorNotification = show;
       _updateValue('showErrorNotification', show);
+    }
+  }
+
+  void setAppLockEnabled(bool enabled) {
+    if (_appLockEnabled != enabled) {
+      _appLockEnabled = enabled;
+      _updateValue('appLockEnabled', enabled);
+    }
+  }
+
+  void setAppLockTimeout(AppLockTimeout timeout) {
+    if (_appLockTimeout != timeout) {
+      _appLockTimeout = timeout;
+      _updateValue('appLockTimeout', timeout.index);
     }
   }
 

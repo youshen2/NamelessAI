@@ -2401,6 +2401,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'An error occurred. Tap to see details.'**
   String get notificationBodyError;
+
+  /// No description provided for @appLock.
+  ///
+  /// In en, this message translates to:
+  /// **'App Lock'**
+  String get appLock;
+
+  /// No description provided for @enableAppLock.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable App Lock'**
+  String get enableAppLock;
+
+  /// No description provided for @enableAppLockHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Require authentication to unlock.'**
+  String get enableAppLockHint;
+
+  /// No description provided for @lockAfter.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock After'**
+  String get lockAfter;
+
+  /// No description provided for @immediately.
+  ///
+  /// In en, this message translates to:
+  /// **'Immediately'**
+  String get immediately;
+
+  /// No description provided for @after1Minute.
+  ///
+  /// In en, this message translates to:
+  /// **'After 1 Minute'**
+  String get after1Minute;
+
+  /// No description provided for @after5Minutes.
+  ///
+  /// In en, this message translates to:
+  /// **'After 5 Minutes'**
+  String get after5Minutes;
+
+  /// No description provided for @after15Minutes.
+  ///
+  /// In en, this message translates to:
+  /// **'After 15 Minutes'**
+  String get after15Minutes;
+
+  /// No description provided for @unlockNamelessAI.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock Nameless AI'**
+  String get unlockNamelessAI;
+
+  /// No description provided for @authenticateToContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Authenticate to continue'**
+  String get authenticateToContinue;
+
+  /// No description provided for @unlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock'**
+  String get unlock;
+
+  /// No description provided for @authenticationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Authentication failed. Please try again.'**
+  String get authenticationFailed;
+
+  /// No description provided for @biometricsNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometrics not available on this device.'**
+  String get biometricsNotAvailable;
 }
 
 class _AppLocalizationsDelegate

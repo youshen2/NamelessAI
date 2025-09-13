@@ -1188,4 +1188,43 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get notificationBodyError => '发生了一个错误。点击以查看详情。';
+
+  @override
+  String get appLock => '应用锁';
+
+  @override
+  String get enableAppLock => '启用应用锁';
+
+  @override
+  String get enableAppLockHint => '需要身份验证才能解锁。';
+
+  @override
+  String get lockAfter => '锁定时间';
+
+  @override
+  String get immediately => '立即';
+
+  @override
+  String get after1Minute => '1 分钟后';
+
+  @override
+  String get after5Minutes => '5 分钟后';
+
+  @override
+  String get after15Minutes => '15 分钟后';
+
+  @override
+  String get unlockNamelessAI => '解锁 Nameless AI';
+
+  @override
+  String get authenticateToContinue => '请验证身份以继续';
+
+  @override
+  String get unlock => '解锁';
+
+  @override
+  String get authenticationFailed => '身份验证失败，请重试。';
+
+  @override
+  String get biometricsNotAvailable => '此设备不支持生物识别。';
 }

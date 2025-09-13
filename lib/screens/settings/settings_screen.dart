@@ -261,6 +261,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       },
                     ),
                     ListTile(
+                      leading: const Icon(Icons.lock_outline),
+                      title: Text(localizations.appLock),
+                      onTap: () {
+                        HapticService.onButtonPress(context);
+                        context.go('/settings/app_lock');
+                      },
+                    ),
+                    ListTile(
                       leading: const Icon(Icons.notifications_outlined),
                       title: Text(localizations.notificationSettings),
                       onTap: () {
