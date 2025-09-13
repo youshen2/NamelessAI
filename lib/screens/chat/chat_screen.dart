@@ -736,7 +736,22 @@ class _ChatScreenState extends State<ChatScreen> {
         },
       ),
       actions: [
-        if (!isDesktop) _buildMobileAppBarModelSelector(localizations),
+        if (!isDesktop)
+          Consumer<APIProviderManager>(builder: (context, apiManager, _) {
+            final providers = apiManager.providers;
+            if (providers.isEmpty) {
+              return TextButton.icon(
+                onPressed: () {
+                  HapticService.onButtonPress(context);
+                  context.go('/settings/api_providers');
+                },
+                icon: const Icon(Icons.warning_amber_rounded),
+                label: Text(localizations.addProvider),
+              );
+            }
+            return _buildModelSelectorMenu(localizations, apiManager, providers,
+                isDesktop: false);
+          }),
         if (!isDesktop)
           IconButton(
             icon: const Icon(Icons.add_circle_outline),
@@ -1049,7 +1064,22 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 Row(
                   children: [
-                    _buildDesktopModelSelector(localizations),
+                    Consumer<APIProviderManager>(
+                        builder: (context, apiManager, _) {
+                      final providers = apiManager.providers;
+                      if (providers.isEmpty) {
+                        return TextButton(
+                          onPressed: () {
+                            HapticService.onButtonPress(context);
+                            context.go('/settings/api_providers');
+                          },
+                          child: Text(localizations.addProvider),
+                        );
+                      }
+                      return _buildModelSelectorMenu(
+                          localizations, apiManager, providers,
+                          isDesktop: true);
+                    }),
                     const SizedBox(width: 8),
                     AnimatedSwitcher(
                       duration: const Duration(milliseconds: 200),
@@ -1127,44 +1157,6 @@ class _ChatScreenState extends State<ChatScreen> {
         child: const Icon(Icons.send),
       ),
     );
-  }
-
-  Widget _buildMobileAppBarModelSelector(AppLocalizations localizations) {
-    return Consumer<APIProviderManager>(builder: (context, apiManager, _) {
-      final providers = apiManager.providers;
-
-      if (providers.isEmpty) {
-        return TextButton.icon(
-          onPressed: () {
-            HapticService.onButtonPress(context);
-            context.go('/settings/api_providers');
-          },
-          icon: const Icon(Icons.warning_amber_rounded),
-          label: Text(localizations.addProvider),
-        );
-      }
-
-      return _buildModelSelectorMenu(localizations, apiManager, providers);
-    });
-  }
-
-  Widget _buildDesktopModelSelector(AppLocalizations localizations) {
-    return Consumer<APIProviderManager>(builder: (context, apiManager, _) {
-      final providers = apiManager.providers;
-
-      if (providers.isEmpty) {
-        return TextButton(
-          onPressed: () {
-            HapticService.onButtonPress(context);
-            context.go('/settings/api_providers');
-          },
-          child: Text(localizations.addProvider),
-        );
-      }
-
-      return _buildModelSelectorMenu(localizations, apiManager, providers,
-          isDesktop: true);
-    });
   }
 
   Widget _buildModelSelectorMenu(AppLocalizations localizations,

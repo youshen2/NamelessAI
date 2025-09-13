@@ -96,70 +96,71 @@ class _APIProviderFormState extends State<APIProviderForm> {
 
   Future<void> _saveProvider() async {
     HapticService.onButtonPress(context);
-    if (_formKey.currentState!.validate()) {
-      final localizations = AppLocalizations.of(context)!;
-      String baseUrl = _baseUrlController.text.trim();
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
 
-      if (baseUrl.endsWith('/v1')) {
-        final confirmed = await showDialog<bool>(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text(localizations.baseUrlEndsWithV1WarningTitle),
-            content: Text(localizations.baseUrlEndsWithV1WarningContent),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  HapticService.onButtonPress(context);
-                  Navigator.of(context).pop(false);
-                },
-                child: Text(localizations.cancel),
-              ),
-              FilledButton(
-                onPressed: () {
-                  HapticService.onButtonPress(context);
-                  Navigator.of(context).pop(true);
-                },
-                child: Text(localizations.removeAndSave),
-              ),
-            ],
-          ),
-        );
+    final localizations = AppLocalizations.of(context)!;
+    String baseUrl = _baseUrlController.text.trim();
 
-        if (confirmed != true) {
-          return;
-        }
-      }
+    if (baseUrl.endsWith('/v1')) {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(localizations.baseUrlEndsWithV1WarningTitle),
+          content: Text(localizations.baseUrlEndsWithV1WarningContent),
+          actions: [
+            TextButton(
+              onPressed: () {
+                HapticService.onButtonPress(context);
+                Navigator.of(context).pop(false);
+              },
+              child: Text(localizations.cancel),
+            ),
+            FilledButton(
+              onPressed: () {
+                HapticService.onButtonPress(context);
+                Navigator.of(context).pop(true);
+              },
+              child: Text(localizations.removeAndSave),
+            ),
+          ],
+        ),
+      );
 
-      final manager = Provider.of<APIProviderManager>(context, listen: false);
-
-      if (baseUrl.endsWith('/v1')) {
+      if (confirmed == true) {
         baseUrl = baseUrl.substring(0, baseUrl.length - 3);
-      }
-      while (baseUrl.endsWith('/')) {
-        baseUrl = baseUrl.substring(0, baseUrl.length - 1);
-      }
-
-      if (widget.isEditing) {
-        final updatedProvider = widget.provider!.copyWith(
-          name: _nameController.text.trim(),
-          baseUrl: baseUrl,
-          apiKey: _apiKeyController.text.trim(),
-          models: _models,
-        );
-        await manager.updateProvider(updatedProvider);
       } else {
-        final newProvider = APIProvider(
-          name: _nameController.text.trim(),
-          baseUrl: baseUrl,
-          apiKey: _apiKeyController.text.trim(),
-          models: _models,
-        );
-        await manager.addProvider(newProvider);
+        return;
       }
+    }
 
-      if (mounted) {
-        Navigator.pop(context);
-      }
+    while (baseUrl.endsWith('/')) {
+      baseUrl = baseUrl.substring(0, baseUrl.length - 1);
+    }
+
+    final manager = Provider.of<APIProviderManager>(context, listen: false);
+
+    if (widget.isEditing) {
+      final updatedProvider = widget.provider!.copyWith(
+        name: _nameController.text.trim(),
+        baseUrl: baseUrl,
+        apiKey: _apiKeyController.text.trim(),
+        models: _models,
+      );
+      await manager.updateProvider(updatedProvider);
+    } else {
+      final newProvider = APIProvider(
+        name: _nameController.text.trim(),
+        baseUrl: baseUrl,
+        apiKey: _apiKeyController.text.trim(),
+        models: _models,
+      );
+      await manager.addProvider(newProvider);
+    }
+
+    if (mounted) {
+      Navigator.pop(context);
     }
   }
 
