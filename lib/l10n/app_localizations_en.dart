@@ -1180,4 +1180,50 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get bubbleAlignmentAllRight => 'All Right';
+
+  @override
+  String get notificationSettings => 'Notification Settings';
+
+  @override
+  String get enableNotifications => 'Enable Notifications';
+
+  @override
+  String get showThinkingNotification => 'Show \'Thinking\' Notification';
+
+  @override
+  String get showThinkingNotificationHint =>
+      'Show a persistent notification while the AI is generating a response.';
+
+  @override
+  String get showCompletionNotification => 'Show \'Completion\' Notification';
+
+  @override
+  String get showCompletionNotificationHint =>
+      'Show a notification when the AI has finished generating a response.';
+
+  @override
+  String get showErrorNotification => 'Show \'Error\' Notification';
+
+  @override
+  String get showErrorNotificationHint =>
+      'Show a notification if an error occurs during generation.';
+
+  @override
+  String get notificationsNotSupported =>
+      'Notifications are not supported on this platform.';
+
+  @override
+  String get notificationTitleThinking => 'Generating Response...';
+
+  @override
+  String get notificationTitleComplete => 'Response Complete';
+
+  @override
+  String get notificationTitleError => 'Generation Failed';
+
+  @override
+  String get notificationBodyComplete => 'Tap to view the response.';
+
+  @override
+  String get notificationBodyError => 'An error occurred. Tap to see details.';
 }

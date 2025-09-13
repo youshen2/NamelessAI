@@ -12,6 +12,7 @@ import 'package:nameless_ai/screens/settings/appearance_settings_screen.dart';
 import 'package:nameless_ai/screens/settings/developer_options_screen.dart';
 import 'package:nameless_ai/screens/settings/general_settings_screen.dart';
 import 'package:nameless_ai/screens/settings/haptic_settings_screen.dart';
+import 'package:nameless_ai/screens/settings/notification_settings_screen.dart';
 import 'package:nameless_ai/screens/settings/settings_screen.dart';
 import 'package:nameless_ai/screens/settings/system_prompt_settings_screen.dart';
 import 'package:provider/provider.dart';
@@ -213,6 +214,19 @@ class AppRouter {
                         return _buildPageWithTransition(
                           state: state,
                           child: const AppSettingsScreen(),
+                          transitionType: appConfig.pageTransitionType,
+                        );
+                      },
+                    ),
+                    GoRoute(
+                      path: 'notifications',
+                      name: 'notification_settings',
+                      pageBuilder: (context, state) {
+                        final appConfig =
+                            Provider.of<AppConfigProvider>(context);
+                        return _buildPageWithTransition(
+                          state: state,
+                          child: const NotificationSettingsScreen(),
                           transitionType: appConfig.pageTransitionType,
                         );
                       },

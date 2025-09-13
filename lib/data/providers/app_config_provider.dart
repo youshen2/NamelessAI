@@ -71,6 +71,11 @@ class AppConfigProvider extends ChangeNotifier {
   double _scrollButtonBottomOffset = 110.0;
   double _scrollButtonRightOffset = 16.0;
 
+  bool _notificationsEnabled = true;
+  bool _showThinkingNotification = true;
+  bool _showCompletionNotification = true;
+  bool _showErrorNotification = true;
+
   AppConfigProvider() {
     _loadConfig();
   }
@@ -130,6 +135,11 @@ class AppConfigProvider extends ChangeNotifier {
 
   double get scrollButtonBottomOffset => _scrollButtonBottomOffset;
   double get scrollButtonRightOffset => _scrollButtonRightOffset;
+
+  bool get notificationsEnabled => _notificationsEnabled;
+  bool get showThinkingNotification => _showThinkingNotification;
+  bool get showCompletionNotification => _showCompletionNotification;
+  bool get showErrorNotification => _showErrorNotification;
 
   void _loadConfig() {
     final box = AppDatabase.appConfigBox;
@@ -228,6 +238,14 @@ class AppConfigProvider extends ChangeNotifier {
         box.get('scrollButtonBottomOffset', defaultValue: 110.0);
     _scrollButtonRightOffset =
         box.get('scrollButtonRightOffset', defaultValue: 16.0);
+
+    _notificationsEnabled = box.get('notificationsEnabled', defaultValue: true);
+    _showThinkingNotification =
+        box.get('showThinkingNotification', defaultValue: true);
+    _showCompletionNotification =
+        box.get('showCompletionNotification', defaultValue: true);
+    _showErrorNotification =
+        box.get('showErrorNotification', defaultValue: true);
 
     notifyListeners();
   }
@@ -521,6 +539,34 @@ class AppConfigProvider extends ChangeNotifier {
     if (_scrollButtonRightOffset != offset) {
       _scrollButtonRightOffset = offset;
       _updateValue('scrollButtonRightOffset', offset);
+    }
+  }
+
+  void setNotificationsEnabled(bool enabled) {
+    if (_notificationsEnabled != enabled) {
+      _notificationsEnabled = enabled;
+      _updateValue('notificationsEnabled', enabled);
+    }
+  }
+
+  void setShowThinkingNotification(bool show) {
+    if (_showThinkingNotification != show) {
+      _showThinkingNotification = show;
+      _updateValue('showThinkingNotification', show);
+    }
+  }
+
+  void setShowCompletionNotification(bool show) {
+    if (_showCompletionNotification != show) {
+      _showCompletionNotification = show;
+      _updateValue('showCompletionNotification', show);
+    }
+  }
+
+  void setShowErrorNotification(bool show) {
+    if (_showErrorNotification != show) {
+      _showErrorNotification = show;
+      _updateValue('showErrorNotification', show);
     }
   }
 

@@ -456,5 +456,19 @@
   "bubbleAlignmentStandard": "Standard (User right, AI left)",
   "bubbleAlignmentReversed": "Reversed (User left, AI right)",
   "bubbleAlignmentAllLeft": "All Left",
-  "bubbleAlignmentAllRight": "All Right"
+  "bubbleAlignmentAllRight": "All Right",
+  "notificationSettings": "Notification Settings",
+  "enableNotifications": "Enable Notifications",
+  "showThinkingNotification": "Show 'Thinking' Notification",
+  "showThinkingNotificationHint": "Show a persistent notification while the AI is generating a response.",
+  "showCompletionNotification": "Show 'Completion' Notification",
+  "showCompletionNotificationHint": "Show a notification when the AI has finished generating a response.",
+  "showErrorNotification": "Show 'Error' Notification",
+  "showErrorNotificationHint": "Show a notification if an error occurs during generation.",
+  "notificationsNotSupported": "Notifications are not supported on this platform.",
+  "notificationTitleThinking": "Generating Response...",
+  "notificationTitleComplete": "Response Complete",
+  "notificationTitleError": "Generation Failed",
+  "notificationBodyComplete": "Tap to view the response.",
+  "notificationBodyError": "An error occurred. Tap to see details."
 }

@@ -456,5 +456,19 @@
   "bubbleAlignmentStandard": "标准 (用户在右，AI在左)",
   "bubbleAlignmentReversed": "反转 (用户在左，AI在右)",
   "bubbleAlignmentAllLeft": "全部居左",
-  "bubbleAlignmentAllRight": "全部居右"
+  "bubbleAlignmentAllRight": "全部居右",
+  "notificationSettings": "通知设置",
+  "enableNotifications": "启用通知",
+  "showThinkingNotification": "显示“思考中”通知",
+  "showThinkingNotificationHint": "当 AI 正在生成响应时，显示一个常驻通知。",
+  "showCompletionNotification": "显示“完成”通知",
+  "showCompletionNotificationHint": "当 AI 完成响应生成时，显示一个通知。",
+  "showErrorNotification": "显示“错误”通知",
+  "showErrorNotificationHint": "当生成过程中发生错误时，显示一个通知。",
+  "notificationsNotSupported": "此平台不支持通知功能。",
+  "notificationTitleThinking": "正在生成响应...",
+  "notificationTitleComplete": "响应已生成",
+  "notificationTitleError": "生成失败",
+  "notificationBodyComplete": "点击以查看响应。",
+  "notificationBodyError": "发生了一个错误。点击以查看详情。"
 }

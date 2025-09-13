@@ -1146,4 +1146,46 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get bubbleAlignmentAllRight => '全部居右';
+
+  @override
+  String get notificationSettings => '通知设置';
+
+  @override
+  String get enableNotifications => '启用通知';
+
+  @override
+  String get showThinkingNotification => '显示“思考中”通知';
+
+  @override
+  String get showThinkingNotificationHint => '当 AI 正在生成响应时，显示一个常驻通知。';
+
+  @override
+  String get showCompletionNotification => '显示“完成”通知';
+
+  @override
+  String get showCompletionNotificationHint => '当 AI 完成响应生成时，显示一个通知。';
+
+  @override
+  String get showErrorNotification => '显示“错误”通知';
+
+  @override
+  String get showErrorNotificationHint => '当生成过程中发生错误时，显示一个通知。';
+
+  @override
+  String get notificationsNotSupported => '此平台不支持通知功能。';
+
+  @override
+  String get notificationTitleThinking => '正在生成响应...';
+
+  @override
+  String get notificationTitleComplete => '响应已生成';
+
+  @override
+  String get notificationTitleError => '生成失败';
+
+  @override
+  String get notificationBodyComplete => '点击以查看响应。';
+
+  @override
+  String get notificationBodyError => '发生了一个错误。点击以查看详情。';
 }

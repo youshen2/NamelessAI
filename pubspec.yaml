@@ -47,6 +47,7 @@ dependencies:
   introduction_screen: ^4.0.0
 
   tiktoken: ^1.0.1
+  flutter_local_notifications: ^19.4.1
 
 dev_dependencies:
   flutter_test:

@@ -10,8 +10,10 @@ import 'package:nameless_ai/data/models/chat_session.dart';
 import 'package:nameless_ai/data/models/model.dart';
 import 'package:nameless_ai/data/models/model_type.dart';
 import 'package:nameless_ai/data/providers/api_provider_manager.dart';
+import 'package:nameless_ai/data/providers/app_config_provider.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
 import 'package:nameless_ai/services/generation_service.dart';
+import 'package:nameless_ai/services/notification_service.dart';
 
 class ChatSessionManager extends ChangeNotifier {
   static const String _defaultSystemPrompt = "You are a helpful assistant.";
@@ -529,6 +531,7 @@ class ChatSessionManager extends ChangeNotifier {
   void cancelGeneration(String sessionId) {
     if (_generatingSessions.contains(sessionId)) {
       _cancelTokens[sessionId]?.cancel("Operation cancelled by user.");
+      NotificationService().cancelThinkingNotification();
       debugPrint("NamelessAI - Cancellation requested for session $sessionId");
     }
   }
@@ -567,6 +570,8 @@ class ChatSessionManager extends ChangeNotifier {
       return;
     }
 
+    final appConfigProvider = AppConfigProvider();
+
     final generationService = GenerationService(
       provider: provider,
       model: model,
@@ -579,6 +584,8 @@ class ChatSessionManager extends ChangeNotifier {
         notifyListeners();
       },
       localizations: localizations,
+      appConfig: appConfigProvider,
+      notificationService: NotificationService(),
     );
 
     await generationService.execute();

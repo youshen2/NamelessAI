@@ -10,7 +10,9 @@ import 'package:nameless_ai/data/models/chat_message.dart';
 import 'package:nameless_ai/data/models/chat_session.dart';
 import 'package:nameless_ai/data/models/model.dart';
 import 'package:nameless_ai/data/models/model_type.dart';
+import 'package:nameless_ai/data/providers/app_config_provider.dart';
 import 'package:nameless_ai/l10n/app_localizations.dart';
+import 'package:nameless_ai/services/notification_service.dart';
 import 'package:tiktoken/tiktoken.dart';
 
 class GenerationService {
@@ -23,6 +25,8 @@ class GenerationService {
   final VoidCallback onUpdate;
   final ChatMessage messageToUpdate;
   final AppLocalizations localizations;
+  final AppConfigProvider appConfig;
+  final NotificationService notificationService;
 
   GenerationService({
     required this.provider,
@@ -34,6 +38,8 @@ class GenerationService {
     required this.onUpdate,
     required this.messageToUpdate,
     required this.localizations,
+    required this.appConfig,
+    required this.notificationService,
   });
 
   int _calculatePromptTokens(
@@ -56,6 +62,11 @@ class GenerationService {
     int? estimatedPromptTokens;
 
     try {
+      if (appConfig.notificationsEnabled &&
+          appConfig.showThinkingNotification) {
+        await notificationService.showThinkingNotification(localizations);
+      }
+
       if (model.modelType == ModelType.image) {
         await _generateImage();
       } else if (model.modelType == ModelType.video) {
@@ -169,6 +180,16 @@ class GenerationService {
             .inMilliseconds;
       }
       messageToUpdate.thinkingStartTime = null;
+
+      await notificationService.cancelThinkingNotification();
+      if (appConfig.notificationsEnabled) {
+        if (messageToUpdate.isError && appConfig.showErrorNotification) {
+          await notificationService.showErrorNotification(localizations);
+        } else if (!messageToUpdate.isError &&
+            appConfig.showCompletionNotification) {
+          await notificationService.showCompletionNotification(localizations);
+        }
+      }
 
       onUpdate();
     }

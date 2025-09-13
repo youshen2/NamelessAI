@@ -2317,6 +2317,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All Right'**
   String get bubbleAlignmentAllRight;
+
+  /// No description provided for @notificationSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification Settings'**
+  String get notificationSettings;
+
+  /// No description provided for @enableNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Notifications'**
+  String get enableNotifications;
+
+  /// No description provided for @showThinkingNotification.
+  ///
+  /// In en, this message translates to:
+  /// **'Show \'Thinking\' Notification'**
+  String get showThinkingNotification;
+
+  /// No description provided for @showThinkingNotificationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Show a persistent notification while the AI is generating a response.'**
+  String get showThinkingNotificationHint;
+
+  /// No description provided for @showCompletionNotification.
+  ///
+  /// In en, this message translates to:
+  /// **'Show \'Completion\' Notification'**
+  String get showCompletionNotification;
+
+  /// No description provided for @showCompletionNotificationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Show a notification when the AI has finished generating a response.'**
+  String get showCompletionNotificationHint;
+
+  /// No description provided for @showErrorNotification.
+  ///
+  /// In en, this message translates to:
+  /// **'Show \'Error\' Notification'**
+  String get showErrorNotification;
+
+  /// No description provided for @showErrorNotificationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Show a notification if an error occurs during generation.'**
+  String get showErrorNotificationHint;
+
+  /// No description provided for @notificationsNotSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are not supported on this platform.'**
+  String get notificationsNotSupported;
+
+  /// No description provided for @notificationTitleThinking.
+  ///
+  /// In en, this message translates to:
+  /// **'Generating Response...'**
+  String get notificationTitleThinking;
+
+  /// No description provided for @notificationTitleComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Response Complete'**
+  String get notificationTitleComplete;
+
+  /// No description provided for @notificationTitleError.
+  ///
+  /// In en, this message translates to:
+  /// **'Generation Failed'**
+  String get notificationTitleError;
+
+  /// No description provided for @notificationBodyComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to view the response.'**
+  String get notificationBodyComplete;
+
+  /// No description provided for @notificationBodyError.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred. Tap to see details.'**
+  String get notificationBodyError;
 }
 
 class _AppLocalizationsDelegate
