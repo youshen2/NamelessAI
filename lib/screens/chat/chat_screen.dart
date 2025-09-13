@@ -42,6 +42,8 @@ class _ChatScreenState extends State<ChatScreen> {
   bool _showScrollPageUpButton = false;
   bool _showScrollDownButton = false;
   final Set<String> _animatedMessageIds = {};
+  bool _isMultiSelectMode = false;
+  final Set<String> _selectedMessageIds = {};
 
   @override
   void initState() {
@@ -63,6 +65,80 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
+  void _enterMultiSelectMode(String messageId) {
+    HapticService.onLongPress(context);
+    setState(() {
+      _isMultiSelectMode = true;
+      _selectedMessageIds.add(messageId);
+    });
+  }
+
+  void _exitMultiSelectMode() {
+    setState(() {
+      _isMultiSelectMode = false;
+      _selectedMessageIds.clear();
+    });
+  }
+
+  void _toggleSelection(String messageId) {
+    HapticService.onButtonPress(context);
+    setState(() {
+      if (_selectedMessageIds.contains(messageId)) {
+        _selectedMessageIds.remove(messageId);
+        if (_selectedMessageIds.isEmpty) {
+          _isMultiSelectMode = false;
+        }
+      } else {
+        _selectedMessageIds.add(messageId);
+      }
+    });
+  }
+
+  void _selectAllMessages() {
+    HapticService.onButtonPress(context);
+    setState(() {
+      final allMessageIds =
+          _chatSessionManager.activeMessages.map((m) => m.id).toSet();
+      if (_selectedMessageIds.length == allMessageIds.length) {
+        _selectedMessageIds.clear();
+        _isMultiSelectMode = false;
+      } else {
+        _selectedMessageIds.addAll(allMessageIds);
+      }
+    });
+  }
+
+  Future<void> _deleteSelectedMessages() async {
+    HapticService.onButtonPress(context);
+    final localizations = AppLocalizations.of(context)!;
+    final count = _selectedMessageIds.length;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(localizations.deleteSelected),
+        content: Text(localizations.deleteMultipleConfirmation(count)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(localizations.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: FilledButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.error),
+            child: Text(localizations.delete),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      _chatSessionManager.deleteMultipleMessagesFromCurrentSession(
+          _selectedMessageIds.toList());
+      _exitMultiSelectMode();
+    }
+  }
+
   void _chatUpdateListener() {
     if (!mounted) return;
 
@@ -72,6 +148,7 @@ class _ChatScreenState extends State<ChatScreen> {
       _animatedMessageIds.clear();
       _currentSessionId = manager.currentSession?.id;
       _userScrolledUp = false;
+      _exitMultiSelectMode();
       setState(() {
         _showScrollUpButton = false;
         _showScrollPageUpButton = false;
@@ -504,7 +581,9 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       extendBody: true,
       extendBodyBehindAppBar: true,
-      appBar: _buildAppBar(context, localizations),
+      appBar: _isMultiSelectMode
+          ? _buildMultiSelectAppBar(context, localizations)
+          : _buildAppBar(context, localizations),
       body: Stack(
         children: [
           _buildChatList(localizations, false),
@@ -546,7 +625,10 @@ class _ChatScreenState extends State<ChatScreen> {
           Expanded(
             child: Column(
               children: [
-                _buildAppBar(context, localizations, isDesktop: true),
+                _isMultiSelectMode
+                    ? _buildMultiSelectAppBar(context, localizations,
+                        isDesktop: true)
+                    : _buildAppBar(context, localizations, isDesktop: true),
                 Expanded(
                   child: Stack(
                     children: [
@@ -763,6 +845,36 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  PreferredSizeWidget _buildMultiSelectAppBar(
+      BuildContext context, AppLocalizations localizations,
+      {bool isDesktop = false}) {
+    final appConfig = context.watch<AppConfigProvider>();
+    return AppBar(
+      backgroundColor: appConfig.enableBlurEffect ? Colors.transparent : null,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      flexibleSpace: _buildBlurBackground(context),
+      leading: IconButton(
+        icon: const Icon(Icons.close),
+        onPressed: _exitMultiSelectMode,
+      ),
+      title: Text(localizations.itemsSelected(_selectedMessageIds.length)),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.select_all),
+          tooltip: localizations.selectAll,
+          onPressed: _selectAllMessages,
+        ),
+        IconButton(
+          icon: const Icon(Icons.delete_outline),
+          tooltip: localizations.deleteSelected,
+          onPressed: _deleteSelectedMessages,
+        ),
+        const SizedBox(width: 8),
+      ],
+    );
+  }
+
   Widget _buildChatList(AppLocalizations localizations, bool isDesktop) {
     final isAndroid = Theme.of(context).platform == TargetPlatform.android;
     return Selector<ChatSessionManager, (List<ChatMessage>, bool)>(
@@ -788,6 +900,7 @@ class _ChatScreenState extends State<ChatScreen> {
               bottom: isDesktop ? 8.0 : 140.0),
           itemBuilder: (context, index) {
             final message = messages[index];
+            final isSelected = _selectedMessageIds.contains(message.id);
             final manager =
                 Provider.of<ChatSessionManager>(context, listen: false);
             final session = manager.currentSession;
@@ -806,23 +919,30 @@ class _ChatScreenState extends State<ChatScreen> {
                   session.activeBranchSelections[aiMessageIdForBranching] ?? 0;
             }
 
-            return MessageBubble(
-              key: ValueKey(message.id),
-              message: message,
-              animatedMessageIds: _animatedMessageIds,
-              onSave: _saveEditedMessage,
-              onDelete: _deleteMessage,
-              onResubmit: _resubmitMessage,
-              onRegenerate: _regenerateResponse,
-              onRefresh: _refreshAsyncTask,
-              onCopy: (text) => copyToClipboard(context, text),
-              branchCount: branchCount,
-              activeBranchIndex: activeBranchIndex,
-              onBranchChange: (newIndex) {
-                if (aiMessageIdForBranching != null) {
-                  _onBranchChange(aiMessageIdForBranching, newIndex);
-                }
-              },
+            return GestureDetector(
+              onLongPress: () => _enterMultiSelectMode(message.id),
+              onTap: _isMultiSelectMode
+                  ? () => _toggleSelection(message.id)
+                  : null,
+              child: MessageBubble(
+                key: ValueKey(message.id),
+                message: message,
+                animatedMessageIds: _animatedMessageIds,
+                onSave: _saveEditedMessage,
+                onDelete: _deleteMessage,
+                onResubmit: _resubmitMessage,
+                onRegenerate: _regenerateResponse,
+                onRefresh: _refreshAsyncTask,
+                onCopy: (text) => copyToClipboard(context, text),
+                branchCount: branchCount,
+                activeBranchIndex: activeBranchIndex,
+                onBranchChange: (newIndex) {
+                  if (aiMessageIdForBranching != null) {
+                    _onBranchChange(aiMessageIdForBranching, newIndex);
+                  }
+                },
+                isSelected: isSelected,
+              ),
             );
           },
         );

@@ -254,6 +254,16 @@ class ChatSessionManager extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> deleteMultipleSessions(List<String> sessionIds) async {
+    await AppDatabase.chatSessionsBox.deleteAll(sessionIds);
+    if (_currentSession != null && sessionIds.contains(_currentSession!.id)) {
+      _currentSession = null;
+      _isNewSession = true;
+    }
+    _sessions.removeWhere((s) => sessionIds.contains(s.id));
+    notifyListeners();
+  }
+
   Future<void> clearAllHistory() async {
     await AppDatabase.chatSessionsBox.clear();
     _sessions.clear();
@@ -299,6 +309,41 @@ class ChatSessionManager extends ChangeNotifier {
         session.activeBranchSelections.remove(key);
       }
 
+      updateCurrentSession(session);
+    }
+  }
+
+  void deleteMultipleMessagesFromCurrentSession(List<String> messageIds) {
+    if (_currentSession == null) return;
+    bool removed = false;
+    for (final messageId in messageIds) {
+      if (_removeMessageInSession(_currentSession!, messageId)) {
+        removed = true;
+      }
+    }
+
+    if (removed) {
+      final session = _currentSession!;
+      final branches = session.branches;
+      final keysToRemove = <String>[];
+
+      branches.forEach((key, branchList) {
+        branchList.removeWhere((branch) => branch.isEmpty);
+
+        if (branchList.isEmpty) {
+          keysToRemove.add(key);
+        } else {
+          final activeSelection = session.activeBranchSelections[key] ?? 0;
+          if (activeSelection >= branchList.length) {
+            session.activeBranchSelections[key] = branchList.length - 1;
+          }
+        }
+      });
+
+      for (final key in keysToRemove) {
+        branches.remove(key);
+        session.activeBranchSelections.remove(key);
+      }
       updateCurrentSession(session);
     }
   }

@@ -1311,4 +1311,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get breakdown => 'Breakdown';
+
+  @override
+  String get selectAll => 'Select All';
+
+  @override
+  String get deleteSelected => 'Delete';
+
+  @override
+  String itemsSelected(int count) {
+    return '$count selected';
+  }
+
+  @override
+  String deleteMultipleConfirmation(int count) {
+    return 'Are you sure you want to delete these $count items? This action cannot be undone.';
+  }
 }

@@ -498,5 +498,23 @@
   "usageTrends": "使用趋势",
   "secondsAbbr": "秒",
   "statisticsDetails": "统计详情",
-  "breakdown": "数据明细"
+  "breakdown": "数据明细",
+  "selectAll": "全选",
+  "deleteSelected": "删除",
+  "itemsSelected": "已选择 {count} 项",
+  "@itemsSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteMultipleConfirmation": "您确定要删除这 {count} 个项目吗？此操作无法撤销。",
+  "@deleteMultipleConfirmation": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

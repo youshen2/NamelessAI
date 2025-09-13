@@ -498,5 +498,23 @@
   "usageTrends": "Usage Trends",
   "secondsAbbr": "s",
   "statisticsDetails": "Details",
-  "breakdown": "Breakdown"
+  "breakdown": "Breakdown",
+  "selectAll": "Select All",
+  "deleteSelected": "Delete",
+  "itemsSelected": "{count} selected",
+  "@itemsSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteMultipleConfirmation": "Are you sure you want to delete these {count} items? This action cannot be undone.",
+  "@deleteMultipleConfirmation": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

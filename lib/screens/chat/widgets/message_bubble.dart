@@ -33,6 +33,7 @@ class MessageBubble extends StatefulWidget {
   final int branchCount;
   final int activeBranchIndex;
   final ValueChanged<int> onBranchChange;
+  final bool isSelected;
 
   const MessageBubble({
     super.key,
@@ -48,6 +49,7 @@ class MessageBubble extends StatefulWidget {
     this.branchCount = 0,
     required this.onBranchChange,
     required this.activeBranchIndex,
+    this.isSelected = false,
   });
 
   @override
@@ -286,11 +288,14 @@ class _MessageBubbleState extends State<MessageBubble>
         ),
       );
     } else {
-      final bubbleColor = isError
-          ? Theme.of(context).colorScheme.errorContainer
-          : isUser
-              ? Theme.of(context).colorScheme.primaryContainer
-              : Theme.of(context).colorScheme.surfaceContainer;
+      final bubbleColor = widget.isSelected
+          ? Theme.of(context).colorScheme.primary.withOpacity(0.3)
+          : isError
+              ? Theme.of(context).colorScheme.errorContainer
+              : isUser
+                  ? Theme.of(context).colorScheme.primaryContainer
+                  : Theme.of(context).colorScheme.surfaceContainer;
+
       final textColor = isError
           ? Theme.of(context).colorScheme.onErrorContainer
           : isUser

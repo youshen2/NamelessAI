@@ -2569,6 +2569,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Breakdown'**
   String get breakdown;
+
+  /// No description provided for @selectAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Select All'**
+  String get selectAll;
+
+  /// No description provided for @deleteSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get deleteSelected;
+
+  /// No description provided for @itemsSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} selected'**
+  String itemsSelected(int count);
+
+  /// No description provided for @deleteMultipleConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete these {count} items? This action cannot be undone.'**
+  String deleteMultipleConfirmation(int count);
 }
 
 class _AppLocalizationsDelegate

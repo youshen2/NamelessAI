@@ -24,6 +24,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   Future<List<ChatMessage>>? _previewMessagesFuture;
+  bool _isMultiSelectMode = false;
+  final Set<String> _selectedSessionIds = {};
 
   @override
   void initState() {
@@ -62,6 +64,83 @@ class _HistoryScreenState extends State<HistoryScreen> {
       _previewMessagesFuture =
           Future.delayed(Duration.zero, () => session.activeMessages);
     });
+  }
+
+  void _enterMultiSelectMode(String sessionId) {
+    HapticService.onLongPress(context);
+    setState(() {
+      _isMultiSelectMode = true;
+      _selectedSessionIds.add(sessionId);
+    });
+  }
+
+  void _exitMultiSelectMode() {
+    setState(() {
+      _isMultiSelectMode = false;
+      _selectedSessionIds.clear();
+    });
+  }
+
+  void _toggleSelection(String sessionId) {
+    HapticService.onButtonPress(context);
+    setState(() {
+      if (_selectedSessionIds.contains(sessionId)) {
+        _selectedSessionIds.remove(sessionId);
+        if (_selectedSessionIds.isEmpty) {
+          _isMultiSelectMode = false;
+        }
+      } else {
+        _selectedSessionIds.add(sessionId);
+      }
+    });
+  }
+
+  void _selectAllSessions() {
+    HapticService.onButtonPress(context);
+    final allSessionIds =
+        Provider.of<ChatSessionManager>(context, listen: false)
+            .sessions
+            .map((s) => s.id)
+            .toSet();
+    setState(() {
+      if (_selectedSessionIds.length == allSessionIds.length) {
+        _selectedSessionIds.clear();
+        _isMultiSelectMode = false;
+      } else {
+        _selectedSessionIds.addAll(allSessionIds);
+      }
+    });
+  }
+
+  Future<void> _deleteSelectedSessions() async {
+    HapticService.onButtonPress(context);
+    final localizations = AppLocalizations.of(context)!;
+    final count = _selectedSessionIds.length;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(localizations.deleteSelected),
+        content: Text(localizations.deleteMultipleConfirmation(count)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(localizations.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: FilledButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.error),
+            child: Text(localizations.delete),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      await Provider.of<ChatSessionManager>(context, listen: false)
+          .deleteMultipleSessions(_selectedSessionIds.toList());
+      _exitMultiSelectMode();
+    }
   }
 
   Future<void> _editSessionName(
@@ -146,6 +225,32 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
   }
 
+  PreferredSizeWidget _buildMultiSelectAppBar(
+      BuildContext context, AppLocalizations localizations) {
+    final appConfig = Provider.of<AppConfigProvider>(context);
+    return AppBar(
+      backgroundColor: appConfig.enableBlurEffect ? Colors.transparent : null,
+      flexibleSpace: _buildBlurBackground(context),
+      leading: IconButton(
+        icon: const Icon(Icons.close),
+        onPressed: _exitMultiSelectMode,
+      ),
+      title: Text(localizations.itemsSelected(_selectedSessionIds.length)),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.select_all),
+          tooltip: localizations.selectAll,
+          onPressed: _selectAllSessions,
+        ),
+        IconButton(
+          icon: const Icon(Icons.delete_outline),
+          tooltip: localizations.deleteSelected,
+          onPressed: _deleteSelectedSessions,
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
@@ -156,19 +261,21 @@ class _HistoryScreenState extends State<HistoryScreen> {
       extendBodyBehindAppBar: true,
       appBar: isDesktop
           ? null
-          : AppBar(
-              backgroundColor:
-                  appConfig.enableBlurEffect ? Colors.transparent : null,
-              flexibleSpace: _buildBlurBackground(context),
-              title: Text(localizations.history),
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.delete_sweep_outlined),
-                  tooltip: localizations.clearHistory,
-                  onPressed: _clearHistory,
+          : _isMultiSelectMode
+              ? _buildMultiSelectAppBar(context, localizations)
+              : AppBar(
+                  backgroundColor:
+                      appConfig.enableBlurEffect ? Colors.transparent : null,
+                  flexibleSpace: _buildBlurBackground(context),
+                  title: Text(localizations.history),
+                  actions: [
+                    IconButton(
+                      icon: const Icon(Icons.delete_sweep_outlined),
+                      tooltip: localizations.clearHistory,
+                      onPressed: _clearHistory,
+                    ),
+                  ],
                 ),
-              ],
-            ),
       body: Consumer<ChatSessionManager>(
         builder: (context, manager, child) {
           if (manager.sessions.isEmpty) {
@@ -199,15 +306,35 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           children: [
                             const SizedBox(width: 8),
                             Expanded(
-                              child: Text(localizations.history,
-                                  style:
-                                      Theme.of(context).textTheme.titleLarge),
+                              child: _isMultiSelectMode
+                                  ? Text(localizations.itemsSelected(
+                                      _selectedSessionIds.length))
+                                  : Text(localizations.history,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge),
                             ),
-                            IconButton(
-                              icon: const Icon(Icons.delete_sweep_outlined),
-                              tooltip: localizations.clearHistory,
-                              onPressed: _clearHistory,
-                            ),
+                            if (_isMultiSelectMode) ...[
+                              IconButton(
+                                icon: const Icon(Icons.select_all),
+                                tooltip: localizations.selectAll,
+                                onPressed: _selectAllSessions,
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete_outline),
+                                tooltip: localizations.deleteSelected,
+                                onPressed: _deleteSelectedSessions,
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.close),
+                                onPressed: _exitMultiSelectMode,
+                              ),
+                            ] else
+                              IconButton(
+                                icon: const Icon(Icons.delete_sweep_outlined),
+                                tooltip: localizations.clearHistory,
+                                onPressed: _clearHistory,
+                              ),
                             const SizedBox(width: 8),
                           ],
                         ),
@@ -290,13 +417,25 @@ class _HistoryScreenState extends State<HistoryScreen> {
       itemCount: sessions.length,
       itemBuilder: (context, index) {
         final session = sessions[index];
-        final isSelected = _selectedSessionForPreview?.id == session.id;
+        final isSelectedForPreview =
+            _selectedSessionForPreview?.id == session.id;
+        final isSelectedForMulti = _selectedSessionIds.contains(session.id);
         return Card(
           margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          color: isSelected
-              ? Theme.of(context).colorScheme.secondaryContainer
-              : Theme.of(context).colorScheme.surfaceContainerLow,
+          color: isSelectedForMulti
+              ? Theme.of(context).colorScheme.primaryContainer
+              : isSelectedForPreview
+                  ? Theme.of(context).colorScheme.secondaryContainer
+                  : Theme.of(context).colorScheme.surfaceContainerLow,
           child: ListTile(
+            leading: _isMultiSelectMode
+                ? Icon(
+                    isSelectedForMulti
+                        ? Icons.check_circle
+                        : Icons.radio_button_unchecked,
+                    color: Theme.of(context).colorScheme.primary,
+                  )
+                : null,
             title: Text(session.name,
                 style: Theme.of(context).textTheme.titleMedium),
             subtitle: Text(
@@ -305,53 +444,63 @@ class _HistoryScreenState extends State<HistoryScreen> {
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.bodySmall,
             ),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.edit_outlined),
-                  tooltip: localizations.editChatName,
-                  onPressed: () => _editSessionName(session, localizations),
-                ),
-                IconButton(
-                  icon: Icon(Icons.delete_outline,
-                      color: Theme.of(context).colorScheme.error),
-                  tooltip: localizations.delete,
-                  onPressed: () async {
-                    HapticService.onButtonPress(context);
-                    final confirmed =
-                        await showConfirmDialog(context, localizations.chat);
-                    if (confirmed == true) {
-                      final manager = Provider.of<ChatSessionManager>(context,
-                          listen: false);
-                      await manager.deleteSession(session.id);
-                      if (mounted) {
-                        showSnackBar(
-                            context, localizations.itemDeleted(session.name));
-                      }
-                      if (_selectedSessionForPreview?.id == session.id) {
-                        setState(() {
-                          _selectedSessionForPreview = null;
-                          _previewMessagesFuture = null;
-                        });
-                      }
-                    }
-                  },
-                ),
-              ],
-            ),
+            trailing: _isMultiSelectMode
+                ? null
+                : Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.edit_outlined),
+                        tooltip: localizations.editChatName,
+                        onPressed: () =>
+                            _editSessionName(session, localizations),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.delete_outline,
+                            color: Theme.of(context).colorScheme.error),
+                        tooltip: localizations.delete,
+                        onPressed: () async {
+                          HapticService.onButtonPress(context);
+                          final confirmed = await showConfirmDialog(
+                              context, localizations.chat);
+                          if (confirmed == true) {
+                            final manager = Provider.of<ChatSessionManager>(
+                                context,
+                                listen: false);
+                            await manager.deleteSession(session.id);
+                            if (mounted) {
+                              showSnackBar(context,
+                                  localizations.itemDeleted(session.name));
+                            }
+                            if (_selectedSessionForPreview?.id == session.id) {
+                              setState(() {
+                                _selectedSessionForPreview = null;
+                                _previewMessagesFuture = null;
+                              });
+                            }
+                          }
+                        },
+                      ),
+                    ],
+                  ),
             onTap: () {
-              HapticService.onButtonPress(context);
-              final freshSession = AppDatabase.chatSessionsBox.get(session.id);
-              if (freshSession != null) {
-                _selectSessionForPreview(freshSession);
-              }
-              if (MediaQuery.of(context).size.width < 600) {
-                Provider.of<ChatSessionManager>(context, listen: false)
-                    .loadSession(session.id);
-                context.go('/');
+              if (_isMultiSelectMode) {
+                _toggleSelection(session.id);
+              } else {
+                HapticService.onButtonPress(context);
+                final freshSession =
+                    AppDatabase.chatSessionsBox.get(session.id);
+                if (freshSession != null) {
+                  _selectSessionForPreview(freshSession);
+                }
+                if (MediaQuery.of(context).size.width < 600) {
+                  Provider.of<ChatSessionManager>(context, listen: false)
+                      .loadSession(session.id);
+                  context.go('/');
+                }
               }
             },
+            onLongPress: () => _enterMultiSelectMode(session.id),
           ),
         );
       },

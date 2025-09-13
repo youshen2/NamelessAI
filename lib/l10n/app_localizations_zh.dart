@@ -1272,4 +1272,20 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get breakdown => '数据明细';
+
+  @override
+  String get selectAll => '全选';
+
+  @override
+  String get deleteSelected => '删除';
+
+  @override
+  String itemsSelected(int count) {
+    return '已选择 $count 项';
+  }
+
+  @override
+  String deleteMultipleConfirmation(int count) {
+    return '您确定要删除这 $count 个项目吗？此操作无法撤销。';
+  }
 }
