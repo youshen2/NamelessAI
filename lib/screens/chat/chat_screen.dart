@@ -45,6 +45,9 @@ class _ChatScreenState extends State<ChatScreen> {
   bool _isMultiSelectMode = false;
   final Set<String> _selectedMessageIds = {};
 
+  bool _isHistoryMultiSelectMode = false;
+  final Set<String> _selectedHistorySessionIds = {};
+
   @override
   void initState() {
     super.initState();
@@ -63,6 +66,38 @@ class _ChatScreenState extends State<ChatScreen> {
         }
       });
     });
+  }
+
+  void _syncApiManagerWithSession(ChatSession? session) {
+    if (session == null) return;
+    final apiManager = Provider.of<APIProviderManager>(context, listen: false);
+
+    APIProvider? targetProvider;
+    try {
+      targetProvider =
+          apiManager.providers.firstWhere((p) => p.id == session.providerId);
+    } catch (e) {
+      targetProvider = null;
+    }
+
+    if (targetProvider != null) {
+      apiManager.setSelectedProvider(targetProvider);
+      Model? targetModel;
+      try {
+        targetModel =
+            targetProvider.models.firstWhere((m) => m.id == session.modelId);
+      } catch (e) {
+        targetModel = null;
+      }
+
+      if (targetModel != null) {
+        apiManager.setSelectedModel(targetModel);
+      } else if (targetProvider.models.isNotEmpty) {
+        apiManager.setSelectedModel(targetProvider.models.first);
+      } else {
+        apiManager.setSelectedModel(null);
+      }
+    }
   }
 
   void _enterMultiSelectMode(String messageId) {
@@ -149,6 +184,83 @@ class _ChatScreenState extends State<ChatScreen> {
     context.push('/screenshot', extra: selectedMessages);
   }
 
+  void _enterHistoryMultiSelectMode(String sessionId) {
+    HapticService.onLongPress(context);
+    setState(() {
+      _isHistoryMultiSelectMode = true;
+      _selectedHistorySessionIds.add(sessionId);
+    });
+  }
+
+  void _exitHistoryMultiSelectMode() {
+    setState(() {
+      _isHistoryMultiSelectMode = false;
+      _selectedHistorySessionIds.clear();
+    });
+  }
+
+  void _toggleHistorySelection(String sessionId) {
+    HapticService.onButtonPress(context);
+    setState(() {
+      if (_selectedHistorySessionIds.contains(sessionId)) {
+        _selectedHistorySessionIds.remove(sessionId);
+        if (_selectedHistorySessionIds.isEmpty) {
+          _isHistoryMultiSelectMode = false;
+        }
+      } else {
+        _selectedHistorySessionIds.add(sessionId);
+      }
+    });
+  }
+
+  void _selectAllHistorySessions() {
+    HapticService.onButtonPress(context);
+    final allSessionIds =
+        Provider.of<ChatSessionManager>(context, listen: false)
+            .sessions
+            .map((s) => s.id)
+            .toSet();
+    setState(() {
+      if (_selectedHistorySessionIds.length == allSessionIds.length) {
+        _selectedHistorySessionIds.clear();
+        _isHistoryMultiSelectMode = false;
+      } else {
+        _selectedHistorySessionIds.addAll(allSessionIds);
+      }
+    });
+  }
+
+  Future<void> _deleteSelectedHistorySessions() async {
+    HapticService.onButtonPress(context);
+    final localizations = AppLocalizations.of(context)!;
+    final count = _selectedHistorySessionIds.length;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(localizations.deleteSelected),
+        content: Text(localizations.deleteMultipleConfirmation(count)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(localizations.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: FilledButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.error),
+            child: Text(localizations.delete),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      await Provider.of<ChatSessionManager>(context, listen: false)
+          .deleteMultipleSessions(_selectedHistorySessionIds.toList());
+      _exitHistoryMultiSelectMode();
+    }
+  }
+
   void _chatUpdateListener() {
     if (!mounted) return;
 
@@ -159,6 +271,8 @@ class _ChatScreenState extends State<ChatScreen> {
       _currentSessionId = manager.currentSession?.id;
       _userScrolledUp = false;
       _exitMultiSelectMode();
+      _exitHistoryMultiSelectMode();
+      _syncApiManagerWithSession(manager.currentSession);
       setState(() {
         _showScrollUpButton = false;
         _showScrollPageUpButton = false;
@@ -234,22 +348,7 @@ class _ChatScreenState extends State<ChatScreen> {
         modelId: apiProviderManager.selectedModel?.id,
       );
     } else {
-      final currentSession = _chatSessionManager.currentSession!;
-      if (currentSession.providerId != null) {
-        final provider = apiProviderManager.providers.firstWhere(
-          (p) => p.id == currentSession.providerId,
-          orElse: () => apiProviderManager.selectedProvider!,
-        );
-        apiProviderManager.setSelectedProvider(provider);
-      }
-      if (currentSession.modelId != null &&
-          apiProviderManager.availableModels.isNotEmpty) {
-        final model = apiProviderManager.availableModels.firstWhere(
-          (m) => m.id == currentSession.modelId,
-          orElse: () => apiProviderManager.selectedModel!,
-        );
-        apiProviderManager.setSelectedModel(model);
-      }
+      _syncApiManagerWithSession(_chatSessionManager.currentSession);
     }
     if (mounted) {
       setState(() {});
@@ -499,33 +598,6 @@ class _ChatScreenState extends State<ChatScreen> {
     final isDesktop = MediaQuery.of(context).size.width >= 600;
 
     if (manager.currentSession != null) {
-      void onSave(Map<String, dynamic> settings) {
-        manager.updateCurrentSessionDetails(
-          providerId: settings['providerId'],
-          modelId: settings['modelId'],
-          systemPrompt: settings['systemPrompt'],
-          temperature: settings['temperature'],
-          topP: settings['topP'],
-          useStreaming: settings['useStreaming'],
-          maxContextMessages: settings['maxContextMessages'],
-          imageSize: settings['imageSize'],
-          imageQuality: settings['imageQuality'],
-          imageStyle: settings['imageStyle'],
-        );
-        final apiManager =
-            Provider.of<APIProviderManager>(context, listen: false);
-        if (settings['providerId'] != null) {
-          final provider = apiManager.providers
-              .firstWhere((p) => p.id == settings['providerId']);
-          apiManager.setSelectedProvider(provider);
-        }
-        if (settings['modelId'] != null) {
-          final model = apiManager.availableModels
-              .firstWhere((m) => m.id == settings['modelId']);
-          apiManager.setSelectedModel(model);
-        }
-      }
-
       if (isDesktop) {
         showDialog(
           context: context,
@@ -538,7 +610,6 @@ class _ChatScreenState extends State<ChatScreen> {
               child: ChatSettingsSheet(
                 isDialog: true,
                 session: manager.currentSession!,
-                onSave: onSave,
                 scrollController: ScrollController(),
               ),
             ),
@@ -555,7 +626,6 @@ class _ChatScreenState extends State<ChatScreen> {
             maxChildSize: 0.9,
             builder: (context, scrollController) => ChatSettingsSheet(
               session: manager.currentSession!,
-              onSave: onSave,
               scrollController: scrollController,
             ),
           ),
@@ -682,24 +752,54 @@ class _ChatScreenState extends State<ChatScreen> {
         child: Column(
           children: [
             SizedBox(height: MediaQuery.of(context).padding.top + 8),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(localizations.history,
-                        style: Theme.of(context).textTheme.titleLarge),
+            _isHistoryMultiSelectMode
+                ? Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                              localizations.itemsSelected(
+                                  _selectedHistorySessionIds.length),
+                              style: Theme.of(context).textTheme.titleLarge),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.select_all),
+                          tooltip: localizations.selectAll,
+                          onPressed: _selectAllHistorySessions,
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete_outline),
+                          tooltip: localizations.deleteSelected,
+                          onPressed: _deleteSelectedHistorySessions,
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: _exitHistoryMultiSelectMode,
+                        ),
+                        const SizedBox(width: 8),
+                      ],
+                    ),
+                  )
+                : Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(localizations.history,
+                              style: Theme.of(context).textTheme.titleLarge),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.add_circle_outline),
+                          tooltip: localizations.newChat,
+                          onPressed: _startNewChat,
+                        ),
+                        const SizedBox(width: 8),
+                      ],
+                    ),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.add_circle_outline),
-                    tooltip: localizations.newChat,
-                    onPressed: _startNewChat,
-                  ),
-                  const SizedBox(width: 8),
-                ],
-              ),
-            ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: TextField(
@@ -748,13 +848,29 @@ class _ChatScreenState extends State<ChatScreen> {
                       final session = filteredSessions[index];
                       final isSelected =
                           manager.currentSession?.id == session.id;
+                      final isMultiSelected =
+                          _selectedHistorySessionIds.contains(session.id);
                       return Card(
                         margin: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 4),
-                        color: isSelected
-                            ? Theme.of(context).colorScheme.secondaryContainer
-                            : Theme.of(context).colorScheme.surfaceContainer,
+                        color: isMultiSelected
+                            ? Theme.of(context).colorScheme.primaryContainer
+                            : isSelected
+                                ? Theme.of(context)
+                                    .colorScheme
+                                    .secondaryContainer
+                                : Theme.of(context)
+                                    .colorScheme
+                                    .surfaceContainer,
                         child: ListTile(
+                          leading: _isHistoryMultiSelectMode
+                              ? Icon(
+                                  isMultiSelected
+                                      ? Icons.check_circle
+                                      : Icons.radio_button_unchecked,
+                                  color: Theme.of(context).colorScheme.primary,
+                                )
+                              : null,
                           title: Text(session.name,
                               maxLines: 1, overflow: TextOverflow.ellipsis),
                           subtitle: Text(
@@ -764,9 +880,15 @@ class _ChatScreenState extends State<ChatScreen> {
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
                           onTap: () {
-                            HapticService.onButtonPress(context);
-                            _chatSessionManager.loadSession(session.id);
+                            if (_isHistoryMultiSelectMode) {
+                              _toggleHistorySelection(session.id);
+                            } else {
+                              HapticService.onButtonPress(context);
+                              _chatSessionManager.loadSession(session.id);
+                            }
                           },
+                          onLongPress: () =>
+                              _enterHistoryMultiSelectMode(session.id),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -935,28 +1057,32 @@ class _ChatScreenState extends State<ChatScreen> {
             }
 
             return GestureDetector(
+              behavior: HitTestBehavior.opaque,
               onLongPress: () => _enterMultiSelectMode(message.id),
               onTap: _isMultiSelectMode
                   ? () => _toggleSelection(message.id)
                   : null,
-              child: MessageBubble(
-                key: ValueKey(message.id),
-                message: message,
-                animatedMessageIds: _animatedMessageIds,
-                onSave: _saveEditedMessage,
-                onDelete: _deleteMessage,
-                onResubmit: _resubmitMessage,
-                onRegenerate: _regenerateResponse,
-                onRefresh: _refreshAsyncTask,
-                onCopy: (text) => copyToClipboard(context, text),
-                branchCount: branchCount,
-                activeBranchIndex: activeBranchIndex,
-                onBranchChange: (newIndex) {
-                  if (aiMessageIdForBranching != null) {
-                    _onBranchChange(aiMessageIdForBranching, newIndex);
-                  }
-                },
-                isSelected: isSelected,
+              child: IgnorePointer(
+                ignoring: _isMultiSelectMode,
+                child: MessageBubble(
+                  key: ValueKey(message.id),
+                  message: message,
+                  animatedMessageIds: _animatedMessageIds,
+                  onSave: _saveEditedMessage,
+                  onDelete: _deleteMessage,
+                  onResubmit: _resubmitMessage,
+                  onRegenerate: _regenerateResponse,
+                  onRefresh: _refreshAsyncTask,
+                  onCopy: (text) => copyToClipboard(context, text),
+                  branchCount: branchCount,
+                  activeBranchIndex: activeBranchIndex,
+                  onBranchChange: (newIndex) {
+                    if (aiMessageIdForBranching != null) {
+                      _onBranchChange(aiMessageIdForBranching, newIndex);
+                    }
+                  },
+                  isSelected: isSelected,
+                ),
               ),
             );
           },

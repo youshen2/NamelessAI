@@ -38,61 +38,50 @@ class _LockScreenState extends State<LockScreen> {
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     return Scaffold(
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-              child: Container(
-                color: theme.colorScheme.surface.withOpacity(0.8),
+      backgroundColor: theme.colorScheme.surface,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 80,
+              height: 80,
+              child: SvgPicture.asset(
+                'assets/icon/icon.svg',
+                colorFilter: ColorFilter.mode(
+                  theme.colorScheme.primary,
+                  BlendMode.srcIn,
+                ),
               ),
             ),
-          ),
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  width: 80,
-                  height: 80,
-                  child: SvgPicture.asset(
-                    'assets/icon/icon.svg',
-                    colorFilter: ColorFilter.mode(
-                      theme.colorScheme.primary,
-                      BlendMode.srcIn,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  localizations.unlockNamelessAI,
-                  style: theme.textTheme.headlineSmall,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  localizations.authenticateToContinue,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(height: 48),
-                FilledButton.icon(
-                  onPressed: () {
-                    HapticService.onButtonPress(context);
-                    _authenticate();
-                  },
-                  icon: const Icon(Icons.fingerprint),
-                  label: Text(localizations.unlock),
-                  style: FilledButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 32, vertical: 16),
-                    textStyle: theme.textTheme.titleMedium,
-                  ),
-                ),
-              ],
+            const SizedBox(height: 24),
+            Text(
+              localizations.unlockNamelessAI,
+              style: theme.textTheme.headlineSmall,
             ),
-          ),
-        ],
+            const SizedBox(height: 8),
+            Text(
+              localizations.authenticateToContinue,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 48),
+            FilledButton.icon(
+              onPressed: () {
+                HapticService.onButtonPress(context);
+                _authenticate();
+              },
+              icon: const Icon(Icons.fingerprint),
+              label: Text(localizations.unlock),
+              style: FilledButton.styleFrom(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                textStyle: theme.textTheme.titleMedium,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:dynamic_color/dynamic_color.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -270,32 +271,33 @@ class _ScreenshotOptionsScreenState extends State<ScreenshotOptionsScreen> {
       padding: const EdgeInsets.all(24.0),
       child: Center(
         child: SingleChildScrollView(
-          child: Card(
-            clipBehavior: Clip.antiAlias,
-            elevation: 2,
-            child: Theme(
-              data: previewTheme,
-              child: Screenshot(
-                controller: _screenshotController,
-                child: _ScreenshotContent(
-                  messages: widget.messages,
-                  backgroundColor: _backgroundColor!,
-                  userBubbleColor: _userBubbleColor!,
-                  aiBubbleColor: _aiBubbleColor!,
-                  bubbleWidth: _bubbleWidth,
-                  enableWatermark: _enableWatermark,
-                  watermarkText: _watermarkController.text,
-                  watermarkPosition: _watermarkPosition,
-                  watermarkFontSize: _watermarkFontSize,
-                  watermarkColor: _watermarkColor!,
-                  watermarkPadding: _watermarkPadding,
-                  cornerRadius: appConfig.cornerRadius,
-                  distinguishAssistantBubble:
-                      appConfig.distinguishAssistantBubble,
+          child: LayoutBuilder(builder: (context, constraints) {
+            return Screenshot(
+              controller: _screenshotController,
+              child: Card(
+                clipBehavior: Clip.antiAlias,
+                elevation: 2,
+                child: Theme(
+                  data: previewTheme,
+                  child: _ScreenshotContent(
+                    messages: widget.messages,
+                    backgroundColor: _backgroundColor!,
+                    userBubbleColor: _userBubbleColor!,
+                    aiBubbleColor: _aiBubbleColor!,
+                    bubbleWidth: _bubbleWidth,
+                    enableWatermark: _enableWatermark,
+                    watermarkText: _watermarkController.text,
+                    watermarkPosition: _watermarkPosition,
+                    watermarkFontSize: _watermarkFontSize,
+                    watermarkColor: _watermarkColor!,
+                    watermarkPadding: _watermarkPadding,
+                    appConfig: appConfig,
+                    previewWidth: constraints.maxWidth,
+                  ),
                 ),
               ),
-            ),
-          ),
+            );
+          }),
         ),
       ),
     );
@@ -310,6 +312,10 @@ class _ScreenshotOptionsScreenState extends State<ScreenshotOptionsScreen> {
       [ScrollController? scrollController]) {
     final localizations = AppLocalizations.of(context)!;
     final appConfig = Provider.of<AppConfigProvider>(context, listen: false);
+    final isDesktop = !kIsWeb &&
+        (defaultTargetPlatform == TargetPlatform.windows ||
+            defaultTargetPlatform == TargetPlatform.macOS ||
+            defaultTargetPlatform == TargetPlatform.linux);
 
     return ListView(
       controller: scrollController,
@@ -362,7 +368,7 @@ class _ScreenshotOptionsScreenState extends State<ScreenshotOptionsScreen> {
                   });
                 }),
               ),
-              if (lightDynamic != null && darkDynamic != null)
+              if (lightDynamic != null && darkDynamic != null && !isDesktop)
                 SwitchListTile(
                   title: Text(localizations.useMonetColors),
                   value: _useMonetColors,
@@ -594,8 +600,8 @@ class _ScreenshotContent extends StatelessWidget {
   final double watermarkFontSize;
   final Color watermarkColor;
   final double watermarkPadding;
-  final double cornerRadius;
-  final bool distinguishAssistantBubble;
+  final AppConfigProvider appConfig;
+  final double previewWidth;
 
   const _ScreenshotContent({
     required this.messages,
@@ -609,61 +615,98 @@ class _ScreenshotContent extends StatelessWidget {
     required this.watermarkFontSize,
     required this.watermarkColor,
     required this.watermarkPadding,
-    required this.cornerRadius,
-    required this.distinguishAssistantBubble,
+    required this.appConfig,
+    required this.previewWidth,
   });
 
   @override
   Widget build(BuildContext context) {
     final themeData = Theme.of(context);
 
+    Widget content;
+    if (appConfig.plainTextMode) {
+      content = ListView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: messages.length,
+        itemBuilder: (context, index) {
+          final message = messages[index];
+          final isUser = message.role == 'user';
+          final isError = message.isError;
+          final textColor = isError
+              ? themeData.colorScheme.error
+              : isUser
+                  ? themeData.colorScheme.primary
+                  : themeData.colorScheme.onSurface;
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+            child: _ScreenshotMessageBubble(
+              message: message,
+              isUser: isUser,
+              bubbleColor: Colors.transparent,
+              textColor: textColor,
+              bubbleWidth: 1.0,
+              previewWidth: previewWidth,
+              appConfig: appConfig,
+              isPlainText: true,
+            ),
+          );
+        },
+      );
+    } else {
+      content = ListView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: messages.length,
+        itemBuilder: (context, index) {
+          final message = messages[index];
+          final isUser = message.role == 'user';
+          final isError = message.isError;
+          return _ScreenshotMessageBubble(
+            message: message,
+            isUser: isUser,
+            bubbleColor: isError
+                ? themeData.colorScheme.errorContainer
+                : isUser
+                    ? userBubbleColor
+                    : aiBubbleColor,
+            textColor: isError
+                ? themeData.colorScheme.onErrorContainer
+                : isUser
+                    ? themeData.colorScheme.onPrimaryContainer
+                    : themeData.colorScheme.onSurface,
+            bubbleWidth: bubbleWidth,
+            previewWidth: previewWidth,
+            appConfig: appConfig,
+            isPlainText: false,
+          );
+        },
+      );
+    }
+
     return Container(
       color: backgroundColor,
       padding: const EdgeInsets.all(16.0),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final previewWidth = constraints.maxWidth;
-          return Stack(
-            children: [
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: messages.length,
-                itemBuilder: (context, index) {
-                  final message = messages[index];
-                  final isUser = message.role == 'user';
-                  return _ScreenshotMessageBubble(
-                    message: message,
-                    isUser: isUser,
-                    bubbleColor: isUser ? userBubbleColor : aiBubbleColor,
-                    textColorOnUser: themeData.colorScheme.onPrimaryContainer,
-                    textColorOnAi: themeData.colorScheme.onSurface,
-                    bubbleWidth: bubbleWidth,
-                    previewWidth: previewWidth,
-                    cornerRadius: cornerRadius,
-                    distinguishAssistantBubble: distinguishAssistantBubble,
-                  );
-                },
-              ),
-              if (enableWatermark && watermarkText.isNotEmpty)
-                Positioned.fill(
-                  child: Align(
-                    alignment: watermarkPosition,
-                    child: Padding(
-                      padding: EdgeInsets.all(watermarkPadding),
-                      child: Text(
-                        watermarkText,
-                        style: TextStyle(
-                          fontSize: watermarkFontSize,
-                          color: watermarkColor,
-                        ),
-                      ),
+      child: Stack(
+        children: [
+          content,
+          if (enableWatermark && watermarkText.isNotEmpty)
+            Positioned.fill(
+              child: Align(
+                alignment: watermarkPosition,
+                child: Padding(
+                  padding: EdgeInsets.all(watermarkPadding),
+                  child: Text(
+                    watermarkText,
+                    style: TextStyle(
+                      fontSize: watermarkFontSize,
+                      color: watermarkColor,
                     ),
                   ),
                 ),
-            ],
-          );
-        },
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -673,33 +716,92 @@ class _ScreenshotMessageBubble extends StatelessWidget {
   final ChatMessage message;
   final bool isUser;
   final Color bubbleColor;
-  final Color textColorOnUser;
-  final Color textColorOnAi;
+  final Color textColor;
   final double bubbleWidth;
   final double previewWidth;
-  final double cornerRadius;
-  final bool distinguishAssistantBubble;
+  final AppConfigProvider appConfig;
+  final bool isPlainText;
 
   const _ScreenshotMessageBubble({
     required this.message,
     required this.isUser,
     required this.bubbleColor,
-    required this.textColorOnUser,
-    required this.textColorOnAi,
+    required this.textColor,
     required this.bubbleWidth,
     required this.previewWidth,
-    required this.cornerRadius,
-    required this.distinguishAssistantBubble,
+    required this.appConfig,
+    required this.isPlainText,
   });
 
   @override
   Widget build(BuildContext context) {
-    final alignment =
-        isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start;
-    final textColor = isUser ? textColorOnUser : textColorOnAi;
+    CrossAxisAlignment alignment;
+    switch (appConfig.bubbleAlignmentOption) {
+      case BubbleAlignmentOption.standard:
+        alignment = isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start;
+        break;
+      case BubbleAlignmentOption.reversed:
+        alignment = isUser ? CrossAxisAlignment.start : CrossAxisAlignment.end;
+        break;
+      case BubbleAlignmentOption.allLeft:
+        alignment = CrossAxisAlignment.start;
+        break;
+      case BubbleAlignmentOption.allRight:
+        alignment = CrossAxisAlignment.end;
+        break;
+    }
+    if (appConfig.chatBubbleAlignment == ChatBubbleAlignment.center) {
+      alignment = CrossAxisAlignment.center;
+    }
+
+    double fontSize;
+    switch (appConfig.fontSize) {
+      case FontSize.small:
+        fontSize = 13;
+        break;
+      case FontSize.large:
+        fontSize = 17;
+        break;
+      case FontSize.medium:
+      default:
+        fontSize = 15;
+        break;
+    }
+
+    final markdownStyleSheet = MarkdownStyleSheet(
+      p: TextStyle(color: textColor, fontSize: fontSize, height: 1.4),
+      code: TextStyle(
+        backgroundColor: Theme.of(context)
+            .colorScheme
+            .surfaceContainerHighest
+            .withOpacity(0.6),
+        color: textColor,
+        fontFamily: 'monospace',
+      ),
+      a: TextStyle(color: Theme.of(context).colorScheme.primary),
+    );
+
+    final content = MarkdownBody(
+      data: message.content,
+      selectable: false,
+      styleSheet: markdownStyleSheet,
+      extensionSet: md.ExtensionSet.gitHubWeb,
+      builders: {
+        'code': MarkdownCodeBlockBuilder(
+            context: context, isSelectable: false, wrapCode: true),
+      },
+    );
+
+    if (isPlainText) {
+      return Column(
+        crossAxisAlignment: alignment,
+        children: [content],
+      );
+    }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      padding:
+          EdgeInsets.symmetric(vertical: appConfig.compactMode ? 1.0 : 4.0),
       child: Column(
         crossAxisAlignment: alignment,
         children: [
@@ -711,8 +813,8 @@ class _ScreenshotMessageBubble extends StatelessWidget {
               color: bubbleColor,
               elevation: 0,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(cornerRadius),
-                side: !isUser && distinguishAssistantBubble
+                borderRadius: BorderRadius.circular(appConfig.cornerRadius),
+                side: !isUser && appConfig.distinguishAssistantBubble
                     ? BorderSide(
                         color: Theme.of(context)
                             .colorScheme
@@ -722,29 +824,9 @@ class _ScreenshotMessageBubble extends StatelessWidget {
                     : BorderSide.none,
               ),
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                child: MarkdownBody(
-                  data: message.content,
-                  selectable: false,
-                  styleSheet: MarkdownStyleSheet(
-                    p: TextStyle(color: textColor, fontSize: 15, height: 1.4),
-                    code: TextStyle(
-                      backgroundColor: Theme.of(context)
-                          .colorScheme
-                          .surfaceContainerHighest
-                          .withOpacity(0.6),
-                      color: textColor,
-                      fontFamily: 'monospace',
-                    ),
-                    a: TextStyle(color: Theme.of(context).colorScheme.primary),
-                  ),
-                  extensionSet: md.ExtensionSet.gitHubWeb,
-                  builders: {
-                    'code': MarkdownCodeBlockBuilder(
-                        context: context, isSelectable: false, wrapCode: true),
-                  },
-                ),
+                padding: EdgeInsets.symmetric(
+                    horizontal: 12, vertical: appConfig.compactMode ? 6 : 10),
+                child: content,
               ),
             ),
           ),

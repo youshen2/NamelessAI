@@ -289,7 +289,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get temperature => 'Temperature';
 
   @override
+  String get temperatureTooltip => '控制随机性。较低的值使模型更具确定性，而较高的值使其更具创造力。';
+
+  @override
   String get topP => 'Top P';
+
+  @override
+  String get topPTooltip => '核心采样。模型只考虑概率最高的词元。较低的值（例如0.1）意味着多样性较低。';
 
   @override
   String get useStreaming => '使用流式输出';

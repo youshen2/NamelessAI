@@ -650,11 +650,23 @@ abstract class AppLocalizations {
   /// **'Temperature'**
   String get temperature;
 
+  /// No description provided for @temperatureTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Controls randomness. Lower values make the model more deterministic, while higher values make it more creative.'**
+  String get temperatureTooltip;
+
   /// No description provided for @topP.
   ///
   /// In en, this message translates to:
   /// **'Top P'**
   String get topP;
+
+  /// No description provided for @topPTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Nucleus sampling. The model considers only the tokens with the highest probability mass. A lower value (e.g., 0.1) means less diversity.'**
+  String get topPTooltip;
 
   /// No description provided for @useStreaming.
   ///

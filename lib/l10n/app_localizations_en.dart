@@ -293,7 +293,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get temperature => 'Temperature';
 
   @override
+  String get temperatureTooltip =>
+      'Controls randomness. Lower values make the model more deterministic, while higher values make it more creative.';
+
+  @override
   String get topP => 'Top P';
+
+  @override
+  String get topPTooltip =>
+      'Nucleus sampling. The model considers only the tokens with the highest probability mass. A lower value (e.g., 0.1) means less diversity.';
 
   @override
   String get useStreaming => 'Use Streaming';

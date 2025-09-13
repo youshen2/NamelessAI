@@ -57,52 +57,54 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         ],
       ),
       body: ListView(
-        padding: EdgeInsets.fromLTRB(
-            16, MediaQuery.of(context).padding.top, 16, isDesktop ? 16 : 96),
+        padding: EdgeInsets.fromLTRB(16,
+            80 + MediaQuery.of(context).padding.top, 16, isDesktop ? 16 : 96),
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              GridView.count(
-                crossAxisCount: isDesktop ? 5 : 2,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                childAspectRatio: 1.2,
-                children: [
-                  _StatInfoCard(
-                    icon: Icons.chat_bubble_outline,
-                    value: statsProvider.totalChats.toString(),
-                    label: localizations.totalChats,
-                  ),
-                  _StatInfoCard(
-                    icon: Icons.message_outlined,
-                    value: statsProvider.totalMessages.toString(),
-                    label: localizations.totalMessages,
-                  ),
-                  _StatInfoCard(
-                    icon: Icons.token_outlined,
-                    value: (statsProvider.totalPromptTokens +
-                            statsProvider.totalCompletionTokens)
-                        .toString(),
-                    label: localizations.totalTokensUsed,
-                  ),
-                  _StatInfoCard(
-                    icon: Icons.input_outlined,
-                    value: statsProvider.totalPromptTokens.toString(),
-                    label: localizations.promptTokens,
-                  ),
-                  _StatInfoCard(
-                    icon: Icons.output_outlined,
-                    value: statsProvider.totalCompletionTokens.toString(),
-                    label: localizations.completionTokens,
-                  ),
-                ],
+          LayoutBuilder(builder: (context, constraints) {
+            final crossAxisCount = isDesktop ? 5 : 2;
+            final itemWidth =
+                (constraints.maxWidth - (crossAxisCount - 1) * 16) /
+                    crossAxisCount;
+
+            final cards = [
+              _StatInfoCard(
+                icon: Icons.chat_bubble_outline,
+                value: statsProvider.totalChats.toString(),
+                label: localizations.totalChats,
               ),
-            ],
-          ),
-          const SizedBox(height: 16),
+              _StatInfoCard(
+                icon: Icons.message_outlined,
+                value: statsProvider.totalMessages.toString(),
+                label: localizations.totalMessages,
+              ),
+              _StatInfoCard(
+                icon: Icons.token_outlined,
+                value: (statsProvider.totalPromptTokens +
+                        statsProvider.totalCompletionTokens)
+                    .toString(),
+                label: localizations.totalTokensUsed,
+              ),
+              _StatInfoCard(
+                icon: Icons.input_outlined,
+                value: statsProvider.totalPromptTokens.toString(),
+                label: localizations.promptTokens,
+              ),
+              _StatInfoCard(
+                icon: Icons.output_outlined,
+                value: statsProvider.totalCompletionTokens.toString(),
+                label: localizations.completionTokens,
+              ),
+            ];
+
+            return Wrap(
+              spacing: 16,
+              runSpacing: 16,
+              children: cards
+                  .map((card) => SizedBox(width: itemWidth, child: card))
+                  .toList(),
+            );
+          }),
+          const SizedBox(height: 32),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -155,20 +157,23 @@ class _StatInfoCard extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Icon(icon, size: 28, color: theme.colorScheme.primary),
-              const Spacer(),
+              const SizedBox(height: 16),
               Text(
                 value,
                 style: theme.textTheme.headlineMedium
                     ?.copyWith(fontWeight: FontWeight.bold),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
               Text(
                 label,
                 style: theme.textTheme.bodyMedium
                     ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                 overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
             ],
           ),
