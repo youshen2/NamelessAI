@@ -63,6 +63,38 @@ class ApiService {
           receiveTimeout: const Duration(minutes: 10),
         ));
 
+  // 处理Dio异常，解析JSON响应中的错误信息
+  Exception _handleDioError(DioException error) {
+    if (error.response?.data != null) {
+      try {
+        // 尝试将响应体解析为JSON
+        Map<String, dynamic> errorData;
+        if (error.response?.data is String) {
+          errorData = jsonDecode(error.response?.data as String);
+        } else {
+          errorData = error.response?.data as Map<String, dynamic>;
+        }
+        
+        // 提取error字段信息
+        if (errorData.containsKey('error')) {
+          final errorObj = errorData['error'];
+          if (errorObj is Map) {
+            final message = errorObj['message'] ?? error.message;
+            return Exception(message);
+          } else {
+            return Exception(errorObj.toString());
+          }
+        } else if (errorData.containsKey('message')) {
+          return Exception(errorData['message']);
+        }
+      } catch (e) {
+        // 如果解析失败，回退到原始错误信息
+        debugPrint('Error parsing error response: $e');
+      }
+    }
+    return error;
+  }
+
   Future<ChatCompletionResponse> getChatCompletion(
       ChatCompletionRequest request,
       [CancelToken? cancelToken]) async {
@@ -79,7 +111,7 @@ class ApiService {
         data: requestBody,
         cancelToken: cancelToken,
       );
-      final rawResponseString =
+      final rawResponseString = 
           response.data is String ? response.data : jsonEncode(response.data);
       debugPrint("NamelessAI - Received Response: $rawResponseString");
 
@@ -111,8 +143,8 @@ class ApiService {
 
       return ChatCompletionResponse.fromJson(response.data,
           rawResponse: rawResponseString);
-    } on DioException {
-      rethrow;
+    } on DioException catch (e) {
+      throw _handleDioError(e);
     }
   }
 
@@ -129,7 +161,7 @@ class ApiService {
       [CancelToken? cancelToken]) async {
     final systemPrompt = request.messages
         .firstWhere((m) => m['role'] == 'system', orElse: () => {})['content'];
-    final userMessages =
+    final userMessages = 
         request.messages.where((m) => m['role'] != 'system').toList();
     final geminiMessages = _transformMessagesToGemini(userMessages);
 
@@ -147,39 +179,43 @@ class ApiService {
     final path = request.model.chatPath ??
         '/v1beta/models/${request.model.name}:generateContent';
 
-    final response = await _dio.post(
-      path,
-      data: requestBody,
-      queryParameters: {'key': provider.apiKey},
-      options: Options(headers: {'Authorization': null}),
-      cancelToken: cancelToken,
-    );
+    try {
+      final response = await _dio.post(
+        path,
+        data: requestBody,
+        queryParameters: {'key': provider.apiKey},
+        options: Options(headers: {'Authorization': null}),
+        cancelToken: cancelToken,
+      );
 
-    final rawResponseString = jsonEncode(response.data);
-    debugPrint("NamelessAI - Received Gemini Response: $rawResponseString");
+      final rawResponseString = jsonEncode(response.data);
+      debugPrint("NamelessAI - Received Gemini Response: $rawResponseString");
 
-    final candidates = response.data['candidates'] as List?;
-    if (candidates == null || candidates.isEmpty) {
-      throw Exception('Gemini API returned no candidates.');
+      final candidates = response.data['candidates'] as List?;
+      if (candidates == null || candidates.isEmpty) {
+        throw Exception('Gemini API returned no candidates.');
+      }
+      final content = candidates.first['content'];
+      final parts = content['parts'] as List;
+      final text = parts.first['text'];
+
+      return ChatCompletionResponse(
+        id: 'gemini-${const Uuid().v4()}',
+        object: 'chat.completion',
+        created: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+        model: request.model.name,
+        choices: [
+          ChatChoice(
+            index: 0,
+            message: ChatMessageResponse(role: 'assistant', content: text),
+            finishReason: 'stop',
+          ),
+        ],
+        rawResponse: rawResponseString,
+      );
+    } on DioException catch (e) {
+      throw _handleDioError(e);
     }
-    final content = candidates.first['content'];
-    final parts = content['parts'] as List;
-    final text = parts.first['text'];
-
-    return ChatCompletionResponse(
-      id: 'gemini-${const Uuid().v4()}',
-      object: 'chat.completion',
-      created: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-      model: request.model.name,
-      choices: [
-        ChatChoice(
-          index: 0,
-          message: ChatMessageResponse(role: 'assistant', content: text),
-          finishReason: 'stop',
-        ),
-      ],
-      rawResponse: rawResponseString,
-    );
   }
 
   Stream<dynamic> _getGeminiChatCompletionStream(ChatCompletionRequest request,
@@ -343,8 +379,8 @@ class ApiService {
           }
         }
       }
-    } on DioException {
-      rethrow;
+    } on DioException catch (e) {
+      throw _handleDioError(e);
     }
   }
 
@@ -365,8 +401,8 @@ class ApiService {
       debugPrint("NamelessAI - Received Image Response: $rawResponseString");
       return ImageGenerationResponse.fromJson(response.data,
           rawResponse: rawResponseString);
-    } on DioException {
-      rethrow;
+    } on DioException catch (e) {
+      throw _handleDioError(e);
     }
   }
 
@@ -386,7 +422,7 @@ class ApiService {
         data: requestBody,
         cancelToken: cancelToken,
       );
-      final rawResponseString =
+      final rawResponseString = 
           response.data is String ? response.data : jsonEncode(response.data);
       debugPrint(
           "NamelessAI - Received Midjourney Task Response: $rawResponseString");
@@ -396,8 +432,8 @@ class ApiService {
 
       return MidjourneyImagineResponse.fromJson(jsonData,
           rawResponse: rawResponseString);
-    } on DioException {
-      rethrow;
+    } on DioException catch (e) {
+      throw _handleDioError(e);
     }
   }
 
@@ -421,8 +457,8 @@ class ApiService {
           "NamelessAI - Received Midjourney Fetch Response: $rawResponseString");
       return MidjourneyFetchResponse.fromJson(response.data,
           rawResponse: rawResponseString);
-    } on DioException {
-      rethrow;
+    } on DioException catch (e) {
+      throw _handleDioError(e);
     }
   }
 
@@ -442,8 +478,8 @@ class ApiService {
           "NamelessAI - Received Video Task Response: $rawResponseString");
       return VideoCreationResponse.fromJson(response.data,
           rawResponse: rawResponseString);
-    } on DioException {
-      rethrow;
+    } on DioException catch (e) {
+      throw _handleDioError(e);
     }
   }
 
@@ -462,8 +498,8 @@ class ApiService {
           "NamelessAI - Received Video Query Response: $rawResponseString");
       return VideoQueryResponse.fromJson(response.data,
           rawResponse: rawResponseString);
-    } on DioException {
-      rethrow;
+    } on DioException catch (e) {
+      throw _handleDioError(e);
     }
   }
 }
